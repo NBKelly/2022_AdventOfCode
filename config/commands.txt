@@ -1,0 +1,3 @@
+FileCommand fc = new FileCommand("Input File", "The input file for this program",
+	       	     		 true, "--input-file", "--file");
+return new Command[]{fc};

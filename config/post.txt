@@ -1,0 +1,2 @@
+lines = readFileLines(((FileCommand)userCommands[0]).getValue());
+setSource(((FileCommand)userCommands[0]).getValue());
