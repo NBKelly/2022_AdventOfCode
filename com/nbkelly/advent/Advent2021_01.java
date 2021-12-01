@@ -8,6 +8,8 @@ import com.nbkelly.drafter.Timer;
 
 /* imports from file */
 import java.util.ArrayList;
+import com.nbkelly.lib.Util;
+
 import java.util.LinkedList;
 
 /**
@@ -33,18 +35,21 @@ public class Advent2021_01 extends Drafter {
 	int ct = 0;
 	int ct_2 = 0;
 
-	for(int i = 1; i < lines.size(); i++) {
-	    int cline = Integer.parseInt(lines.get(i));
+	int WIN_SIZE = 3;
+	
+	var ints = Util.toIntList(lines);
+	for(int i = 1; i < ints.size(); i++) {
+	    int cline = ints.get(i);
 	    //check part one
-	    if(Integer.parseInt(lines.get(i-1)) < cline)
+	    if(ints.get(i-1) < cline)
 	       ct++;
-	    //check part two - this is a sliding window
-	    if(i >= 3 && Integer.parseInt(lines.get(i-3)) < cline)
+	    //check part two - this is a sliding window with size WIN_SIZE
+	    if(i >= WIN_SIZE && ints.get(i-WIN_SIZE) < cline)
 		ct_2++;
 	}
 
-	DEBUGF(2, "PART ONE: ");println(ct);
-	DEBUGF(2, "PART TWO: ");println(ct_2);
+	DEBUGF(2, "PART ONE: "); println(ct);
+	DEBUGF(2, "PART TWO: "); println(ct_2);
 	
 	return DEBUG(1, t.split("Finished Processing"));
     }
