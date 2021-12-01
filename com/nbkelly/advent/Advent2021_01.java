@@ -30,31 +30,21 @@ public class Advent2021_01 extends Drafter {
     @Override public int solveProblem() throws Exception {
 	Timer t = makeTimer();
 
-	LinkedList<Integer> window = new LinkedList<Integer>();
-	
 	int ct = 0;
-	int window_sum = 0;
-	while(hasNextLine()) {
-	    
-	    var next = nextInt();
-	    
+	int ct_2 = 0;
 
-	    if(window.size() == 3) {
-		int last = window_sum;
-		window_sum -= window.poll();
-		window_sum += next;
-
-		if(window_sum > last)
-		    ct++;
-	    }
-	    		
-	    window.add(next);
-
-	    flushLine();
+	for(int i = 1; i < lines.size(); i++) {
+	    int cline = Integer.parseInt(lines.get(i));
+	    //check part one
+	    if(Integer.parseInt(lines.get(i-1)) < cline)
+	       ct++;
+	    //check part two - this is a sliding window
+	    if(i >= 3 && Integer.parseInt(lines.get(i-3)) < cline)
+		ct_2++;
 	}
 
-	println(ct);
-	//println("Part one: " + ct);
+	DEBUGF(2, "PART ONE: ");println(ct);
+	DEBUGF(2, "PART TWO: ");println(ct_2);
 	
 	return DEBUG(1, t.split("Finished Processing"));
     }
@@ -78,7 +68,7 @@ public class Advent2021_01 extends Drafter {
 	//do whatever you want based on the commands you have given
 	//at this stage, they should all be resolved
         /* code injected from file */
-        //lines = readFileLines(((FileCommand)userCommands[0]).getValue());
+        lines = readFileLines(((FileCommand)userCommands[0]).getValue());
         setSource(((FileCommand)userCommands[0]).getValue());
 	return 0;
     }
