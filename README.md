@@ -19,7 +19,7 @@ Here's a brief summary of the 2021 advent of code deep lore.
 
 | Problem | Plot |
 | :-----: | :--- |
-| Day 01  | You're minding your own business on a boat when santas keys go flying over the edge. To find his keys, we start by performing a depth analysis of the ocean floor. Because this measurement wasn't useful, we then need to smooth the data using an aggregation technique.
+| Day 01  | You're minding your own business on a boat when Santa (now black) has his keys go flying over the edge. To find his keys, we start by performing a depth analysis of the ocean floor. Because this measurement wasn't useful, we then need to smooth/aggregate that data.
 
 
 ## Problem Ratings
