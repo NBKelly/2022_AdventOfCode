@@ -955,4 +955,25 @@ public final class Util {
 
 	return res;	
     }
+
+
+    /**
+     * Converts a list of strings into a list of integer.
+     * If the string cannot be converted, null is instead returned.
+     * @param li list to convert
+     * @return a list of integers, which may include null values
+     */
+    public static ArrayList<Integer> toIntList(List<String> li) {
+	ArrayList<Integer> res = new ArrayList<Integer>();
+	for(String s : li) {
+	    try {
+		var val = Integer.parseInt(s);
+		res.add(val);
+	    } catch (Exception e) {
+		res.add(null);
+	    }
+	}
+
+	return res;
+    }
 }
