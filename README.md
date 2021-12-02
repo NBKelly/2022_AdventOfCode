@@ -69,12 +69,12 @@ The seabed that we are scanning (The elf dropped the keys into marianas trench).
 ### Day 02: Dive
 Visualizations for part one, part two, and both overlaid.
 
-<img src="/images/02_out_01.png" alt="drawing" width="400">
+<img src="/images/02_out_1.png" alt="drawing" width="400">
 
 The graphs for part two and three have been scaled (vertically) down by 100x.
 
-<img src="/images/02_out_02.png" alt="drawing" width="400">
+<img src="/images/02_out_2.png" alt="drawing" width="400">
 
 For the graph with both overlaid, the path for part one has been scaled up 20x to be visible.
 
-<img src="/images/02_out_03.png" alt="drawing" width="400">
+<img src="/images/02_out_3.png" alt="drawing" width="400">
