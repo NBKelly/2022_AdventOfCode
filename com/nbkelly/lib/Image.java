@@ -54,6 +54,16 @@ public class Image {
 	g2d.dispose();
     }
 
+    public void line(Color c, int x1, int y1, int x2, int y2, int thickness) {
+	g2d = bufferedImage.createGraphics();
+	g2d.setColor(c);
+	for(int i = 0; i < thickness; i++) {
+	    g2d.drawLine(x1, y1+i, x2, y2+i);	    
+	    g2d.drawLine(x1, y1-i, x2, y2-i);
+	}
+	g2d.dispose();
+    }
+
     /**
      * Saves this simple image as a png file with the given filename
      */
