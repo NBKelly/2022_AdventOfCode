@@ -80,7 +80,7 @@ public class Advent2021_01 extends Drafter {
 	var image = new Image(width, max);
 
 	for(int i = 0; i < ints.size(); i++)
-	    image.rect(Image.C1, i, 0, i+1, ints.get(i));
+	    image.rect(Image.C1, i, 0, 1, ints.get(i));
 
 	image.savePNG(filename);
     }
