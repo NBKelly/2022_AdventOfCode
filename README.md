@@ -47,9 +47,13 @@ Whenever you move on the sliding window, you are adding the element at *i*, and 
 More visually, we are making the comparison ```[i-3] + [i-2] + [i-1] < [i-2] + [i-1] + [i]```. It is trivial to see that we can factor this out to ```[i-3] < [i]```.
 
 ### Day 02: Dive!
-#### Part One: Simply keep a tally of ```loc``` and ```depth```. This is a simple switch statement on your input.
+#### Part One: Manhattan distance
 
-#### Part Two: Keep track of an aim variable too
+Simply keep a tally of ```loc``` and ```depth```. This is a simple switch statement on your input.
+
+#### Part Two: Manhattan product
+
+Just keep track of an aim variable too.
 
 This is mostly the same procedure, you just move all your state changes into the handler for ```forward``` - ```up``` and ```down``` only change your aim.
 
@@ -65,6 +69,12 @@ The seabed that we are scanning (The elf dropped the keys into marianas trench).
 ### Day 02: Dive
 Visualizations for part one, part two, and both overlaid.
 
+<img src="/images/02_out_01.png" alt="drawing" width="400">
+
 The graphs for part two and three have been scaled (vertically) down by 100x.
 
+<img src="/images/02_out_02.png" alt="drawing" width="400">
+
 For the graph with both overlaid, the path for part one has been scaled up 20x to be visible.
+
+<img src="/images/02_out_03.png" alt="drawing" width="400">
