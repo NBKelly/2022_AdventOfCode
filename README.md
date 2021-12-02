@@ -16,7 +16,7 @@ All of the solutions are available in the ```com/nbkelly/advent``` folder, and c
 2. Run with optional args, such as debug mode - ```./run.sh 01 input.txt --debug```
 
 ## Lore
-Here's a brief summary of the 2021 advent of code deep lore.
+Here's a brief summary of the 2021 advent of code **deep** lore.
 
 | Problem | Plot |
 | :-----: | :--- |
@@ -28,7 +28,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 
 | Problem | Complexity (Part One) | Complexity (Part Two) | Comments |
 | ------- |:---------------------:|:---------------------:|:-------- |
-| Day 01  | *O(N)*                  | *O(N)*      |
+| Day 01  | *O(N)*                  | *O(N)*      | A good solution should read the input from a file one line at a time - this would allow processing of arbitrarily large files.
 
 ## Solutions
 
@@ -43,6 +43,7 @@ The same as above, but note every time ```li(i) > li(i-3)``` instead.
 
 Whenever you move on the sliding window, you are adding the element at *i*, and removing the element at *i-3* from the sum of that window, so you can determine the value of that change by directly comparing those two elements.
 
+More visually, we are making the comparison ```[i-3] + [i-2] + [i-1] < [i-2] + [i-1] + [i]```. It is trivial to see that we can factor this out to ```[i-3] < [i]```.
 
 ## Visualizations
 
