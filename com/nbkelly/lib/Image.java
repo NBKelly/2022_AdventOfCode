@@ -40,10 +40,17 @@ public class Image {
     /**
      * Fills a rectangle in this simple image
      */
-    public void rect(Color c, int x1, int y1, int x2, int y2) {
+    public void rect(Color c, int x1, int y1, int width, int height) {
 	g2d = bufferedImage.createGraphics();
 	g2d.setColor(c);
-	g2d.fillRect(x1, y1, x2, y2);
+	g2d.fillRect(x1, y1, width, height);
+	g2d.dispose();
+    }
+
+    public void line(Color c, int x1, int y1, int x2, int y2) {
+	g2d = bufferedImage.createGraphics();
+	g2d.setColor(c);
+	g2d.drawLine(x1, y1, x2, y2);
 	g2d.dispose();
     }
 
