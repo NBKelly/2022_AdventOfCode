@@ -60,6 +60,8 @@ public class Image {
 	for(int i = 0; i < thickness; i++) {
 	    g2d.drawLine(x1, y1+i, x2, y2+i);	    
 	    g2d.drawLine(x1, y1-i, x2, y2-i);
+	    g2d.drawLine(x1-i, y1, x2-i, y2);
+	    g2d.drawLine(x1+i, y1, x2+i, y2);
 	}
 	g2d.dispose();
     }
