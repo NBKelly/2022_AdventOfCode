@@ -48,7 +48,7 @@ Whenever you move on the sliding window, you are adding the element at *i*, and 
 
 Where I can, I will try to produce visualizations for the puzzles.
 
-### Day 01
+### Day 01: Sonar Sweep
 The seabed that we are scanning (The elf dropped the keys into marianas trench).
 
 ![A real trench](/images/01_out.png)
