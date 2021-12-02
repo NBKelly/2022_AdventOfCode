@@ -28,7 +28,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 
 | Problem | Complexity (Part One) | Complexity (Part Two) | Comments |
 | ------- |:---------------------:|:---------------------:|:-------- |
-| Day 01  | *O(N)*                  | *O(N)*      | A good solution should read the input from a file one line at a time - this would allow processing of arbitrarily large files.
+| Day 01  | *O(N)*                  | *O(N)*      | A good solution should read the input from a file one line at a time - this would allow processing of arbitrarily large files. <br/> Eric should have had the window size be larger, say 5 or 10, to force some of the programmers to ask "is there an easier way". 
 
 ## Solutions
 
