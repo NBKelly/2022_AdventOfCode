@@ -7,6 +7,7 @@ This is the set of all my 2021 Advent of Code solutions. (At some point later th
 2. [Lore]
 3. [Problem Ratings]
 4. [Solutions]
+5. [Visualizations]
 
 ## Project Structure
 All of the solutions are available in the ```com/nbkelly/advent``` folder, and can be run using the ```run.sh``` script, like so:
@@ -41,3 +42,9 @@ Simply read through the list, and note every time ```li(i) > li(i-1)```.
 The same as above, but note every time ```li(i) > li(i-3)``` instead.
 
 Whenever you move on the sliding window, you are adding the element at *i*, and removing the element at *i-3* from the sum of that window, so you can determine the value of that change by directly comparing those two elements.
+
+
+## Visualizations
+
+Where I can, I will try to produce visualizations for the puzzles.
+
