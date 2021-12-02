@@ -4,7 +4,7 @@ FileCommand fc = new FileCommand("Input File", "The input file for this program"
 /* visualizer */
 BooleanCommand vc = new BooleanCommand("Visualize Output",
 				       "The visualized output for this program", 
-				       false, "--out-file");
+				       false, "--out-file", "--output-file", "--out-image");
 
 return new Command[]{fc, vc};
 

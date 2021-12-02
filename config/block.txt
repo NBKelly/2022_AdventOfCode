@@ -3,4 +3,6 @@ public void generate_output() throws Exception {
 	    return;
 	
 	println(">generating output");
+
+	/* output goes here */
 }
