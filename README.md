@@ -7,6 +7,7 @@ This is the set of all my 2021 Advent of Code solutions. (At some point later th
 2. [Lore]
 3. [Problem Ratings]
 4. [Solutions]
+5. [Visualizations]
 
 ## Project Structure
 All of the solutions are available in the ```com/nbkelly/advent``` folder, and can be run using the ```run.sh``` script, like so:
@@ -19,7 +20,7 @@ Here's a brief summary of the 2021 advent of code deep lore.
 
 | Problem | Plot |
 | :-----: | :--- |
-| Day 01  | You're minding your own business on a boat when santas keys go flying over the edge. To find his keys, we start by performing a depth analysis of the ocean floor. Because this measurement wasn't useful, we then need to smooth the data using an aggregation technique.
+| Day 01  | You're minding your own business on a boat when Santa (now black) has his keys go flying over the edge. To find his keys, we start by performing a depth analysis of the ocean floor. Because this measurement wasn't useful, we then need to smooth/aggregate that data.
 
 
 ## Problem Ratings
@@ -41,3 +42,9 @@ Simply read through the list, and note every time ```li(i) > li(i-1)```.
 The same as above, but note every time ```li(i) > li(i-3)``` instead.
 
 Whenever you move on the sliding window, you are adding the element at *i*, and removing the element at *i-3* from the sum of that window, so you can determine the value of that change by directly comparing those two elements.
+
+
+## Visualizations
+
+Where I can, I will try to produce visualizations for the puzzles.
+
