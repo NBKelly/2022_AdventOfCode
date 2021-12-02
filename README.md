@@ -3,11 +3,11 @@
 This is the set of all my 2021 Advent of Code solutions. (At some point later they will be cleaned). They are all produced in java, using my (very awful) workflow tools and hacks - I significantly improved and rewrote these since last year.
 
 #  Table of Contents
-1. [Project Structure]
-2. [Lore]
-3. [Problem Ratings]
-4. [Solutions]
-5. [Visualizations]
+1. [Project Structure](#Project-Structure)
+2. [Lore](#Lore)
+3. [Problem Ratings](#Problem-Ratings)
+4. [Solutions](#Solutions)
+5. [Visualizations](#Visualizations)
 
 ## Project Structure
 All of the solutions are available in the ```com/nbkelly/advent``` folder, and can be run using the ```run.sh``` script, like so:
@@ -48,3 +48,7 @@ Whenever you move on the sliding window, you are adding the element at *i*, and 
 
 Where I can, I will try to produce visualizations for the puzzles.
 
+### Day 01
+The seabed that we are scanning (The elf dropped the keys into marianas trench).
+
+![A real trench](/images/01_out.png)
