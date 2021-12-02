@@ -1248,18 +1248,35 @@ public class DiGraph {
 
 	ArrayList<Path> complete = new ArrayList<Path>();
 
+	HashMap<Path, Integer> best_currently = new HashMap<Path, Integer>();
+
+	int iterations = 0;
+	
 	while(paths.size() > 0) {
 	    var ct = paths.poll();
 	    var available_domain = new HashSet<Integer>();
 	    available_domain.addAll(domain);
 	    available_domain.removeAll(ct.visited);
-
+	    
 	    if(available_domain.size() == 0)
-		complete.add(new Path(ct, start));
+		complete.add(new Path(ct, start));	    
 	    else
-		for(var next : available_domain)		    
-		    paths.add(new Path(ct, next));
+		for(var next : available_domain) {
+		    var next_path = new Path(ct, next);
+		    //see if a better path already exists
+		    Integer already_better = best_currently.get(next_path);
+		    if(already_better != null && already_better > next_path.dist)
+			continue;
+		    else
+			best_currently.put(next_path, next_path.dist);
+		    
+		    paths.add(next_path);
+		}
+
+	    iterations++;
 	}
+
+	//System.out.println("Iterations taken: " + iterations);
 
 	int best = complete.get(0).dist;
 	for(var path : complete)
@@ -1269,6 +1286,20 @@ public class DiGraph {
     }
 
     private class Path implements Comparable<Path> {
+	@Override public int hashCode() {
+	    long result = 31*31*last + visited.hashCode();
+	    return (int)result;
+	}
+
+	@Override public boolean equals(Object o) {
+	    if(o instanceof Path) {
+		Path p = (Path)o;
+		return p.visited.equals(visited) && (p.last == last);
+	    }
+
+	    return false;
+	}
+	
 	public Path(int start) {
 	    visited.add(start);
 	    dist = 0;
@@ -1290,4 +1321,5 @@ public class DiGraph {
 	    return dist - p.dist;
 	}
     }
+    
 }
