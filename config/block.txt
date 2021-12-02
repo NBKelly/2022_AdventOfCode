@@ -1,0 +1,6 @@
+public void generate_output() throws Exception {
+	if(!generate_output)
+	    return;
+	
+	println(">generating output");
+}

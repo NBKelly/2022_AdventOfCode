@@ -1,3 +1,11 @@
 FileCommand fc = new FileCommand("Input File", "The input file for this program",
 	       	     		 true, "--input-file", "--file");
-return new Command[]{fc};
+
+/* visualizer */
+BooleanCommand vc = new BooleanCommand("Visualize Output",
+				       "The visualized output for this program", 
+				       false, "--out-file");
+
+return new Command[]{fc, vc};
+
+

@@ -1,2 +1,4 @@
 lines = readFileLines(((FileCommand)userCommands[0]).getValue());
 setSource(((FileCommand)userCommands[0]).getValue());
+
+generate_output = ((BooleanCommand)userCommands[1]).matched();

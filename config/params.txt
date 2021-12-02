@@ -1,1 +1,5 @@
 ArrayList<String> lines;
+
+//generate output
+boolean generate_output = false;
+String filename = "out.png";
