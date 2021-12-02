@@ -1,4 +1,4 @@
-# ADVENT OF CODE 2020
+# ADVENT OF CODE 2021
 
 This is the set of all my 2021 Advent of Code solutions. (At some point later they will be cleaned). They are all produced in java, using my (very awful) workflow tools and hacks - I significantly improved and rewrote these since last year.
 
