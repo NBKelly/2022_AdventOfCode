@@ -4,13 +4,16 @@ package com.nbkelly.advent;
 import com.nbkelly.drafter.Drafter;
 import com.nbkelly.drafter.Command;
 import com.nbkelly.drafter.FileCommand;
+import com.nbkelly.drafter.BooleanCommand;
 import com.nbkelly.drafter.Timer;
 
 /* imports from file */
 import java.util.ArrayList;
 import com.nbkelly.lib.Util;
+import com.nbkelly.lib.Image;
 
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 /**
  * Extension of Drafter directed towards a general case.
@@ -27,6 +30,8 @@ public class Advent2021_01 extends Drafter {
     
     /* params injected from file */
     ArrayList<String> lines;
+    boolean generate_output = false;
+    String filename = "out.png";
     
     /* solve problem here */
     @Override public int solveProblem() throws Exception {
@@ -51,9 +56,34 @@ public class Advent2021_01 extends Drafter {
 	DEBUGF(2, "PART ONE: "); println(ct);
 	DEBUGF(2, "PART TWO: "); println(ct_2);
 	
+	generate_output();
+	
 	return DEBUG(1, t.split("Finished Processing"));
     }
 
+    public void generate_output() throws Exception {
+	if(!generate_output)
+	    return;
+	
+	println(">generating output");
+	
+	var ints = Util.toIntList(lines);
+	int width = ints.size();
+
+	//find the biggest element
+	var set = new TreeSet<Integer>();
+	set.addAll(ints);
+	var max = set.last();
+
+	printf(">width: %d height: %d%n", width, max);
+
+	var image = new Image(width, max);
+
+	for(int i = 0; i < ints.size(); i++)
+	    image.rect(Image.C1, i, 0, i+1, ints.get(i));
+
+	image.savePNG(filename);
+    }
 
     /* set commands */
     @Override public Command[] setCommands() {
@@ -65,7 +95,13 @@ public class Advent2021_01 extends Drafter {
         /* code injected from file */
         FileCommand fc = new FileCommand("Input File", "The input file for this program",
         	       	     		 true, "--input-file", "--file");
-        return new Command[]{fc};
+	
+	/* visualizer */
+	BooleanCommand vc = new BooleanCommand("Visualize Output",
+					       "The visualized output for this program", 
+					       false, "--out-file");
+
+	return new Command[]{fc, vc};
     }
     
     /* act after commands processed - userCommands stores all the commands set in setCommands */
@@ -75,6 +111,10 @@ public class Advent2021_01 extends Drafter {
         /* code injected from file */
         lines = readFileLines(((FileCommand)userCommands[0]).getValue());
         setSource(((FileCommand)userCommands[0]).getValue());
+
+	
+	generate_output = ((BooleanCommand)userCommands[1]).matched();
+	
 	return 0;
     }
 
