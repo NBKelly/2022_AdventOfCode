@@ -20,15 +20,16 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 
 | Problem | Plot |
 | :-----: | :--- |
-| Day 01  | You're minding your own business on a boat when Santa (now black) has his keys go flying over the edge. To find his keys, we start by performing a depth analysis of the ocean floor. Because this measurement wasn't useful, we then need to smooth/aggregate that data.
-
+| Day 01  | You're minding your own business on a boat when Santa (now black) has his keys go flying over the edge. To find his keys, we start by performing a depth analysis of the ocean floor using a handy submarine. Because this measurement wasn't useful, we then need to smooth/aggregate that data.
+| Day 02  | Today we learnt to pilot the submarine. The course is pre-programmed, so we just need to figure out where we are going. To make matters worse, the manual is in chinese, so we calculated the wrong number the first time.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
 
 | Problem | Complexity (Part One) | Complexity (Part Two) | Comments |
 | ------- |:---------------------:|:---------------------:|:-------- |
-| Day 01  | *O(N)*                  | *O(N)*      | A good solution should read the input from a file one line at a time - this would allow processing of arbitrarily large files. <br/> Eric should have had the window size be larger, say 5 or 10, to force some of the programmers to ask "is there an easier way". 
+| Day 01  | *O(N)*                  | *O(N)*      | A good solution should read the input from a file one line at a time - this would allow processing of arbitrarily large files. <br/> Eric should have had the window size be larger, say 5 or 10, to force some of the programmers to ask "is there an easier way".
+| Day 02  | *O(N)*		    | *O(N)*	  | This problem is pretty straightforward. It looks messy if you use the same data twice. I quite like this problem.
 
 ## Solutions
 
@@ -45,6 +46,13 @@ Whenever you move on the sliding window, you are adding the element at *i*, and 
 
 More visually, we are making the comparison ```[i-3] + [i-2] + [i-1] < [i-2] + [i-1] + [i]```. It is trivial to see that we can factor this out to ```[i-3] < [i]```.
 
+### Day 02: Dive!
+#### Part One: Simply keep a tally of ```loc``` and ```depth```. This is a simple switch statement on your input.
+
+#### Part Two: Keep track of an aim variable too
+
+This is mostly the same procedure, you just move all your state changes into the handler for ```forward``` - ```up``` and ```down``` only change your aim.
+
 ## Visualizations
 
 Where I can, I will try to produce visualizations for the puzzles.
@@ -54,3 +62,9 @@ The seabed that we are scanning (The elf dropped the keys into marianas trench).
 
 <img src="/images/01_out.png" alt="drawing" width="400">
 
+### Day 02: Dive
+Visualizations for part one, part two, and both overlaid.
+
+The graphs for part two and three have been scaled (vertically) down by 100x.
+
+For the graph with both overlaid, the path for part one has been scaled up 20x to be visible.
