@@ -31,7 +31,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | ------- |:---------------------:|:---------------------:|:-------- |
 | Day 01  | *O(N)*                  | *O(N)*      | A good solution should read the input from a file one line at a time - this would allow processing of arbitrarily large files. <br/> Eric should have had the window size be larger, say 5 or 10, to force some of the programmers to ask "is there an easier way".
 | Day 02  | *O(N)*		    | *O(N)*	  | This problem is pretty straightforward. It looks messy if you use the same data twice. I quite like this problem.
-| Day 03  | *O(N.B)*		    | *O(N*B)*	  | *B = Bit-length* - If it wasn't for the absurd walls of text, this would be a pretty straightforward problem. Part one is simple consensus, part two is closer to finding a dominant taxa from a character table. There's a bad solution to part 2, and a nice solution. For real though, it's unbelievable how absurdly obfuscated the text is for this one.
+| Day 03  | *O(N.B)*		    | *O(N.B)*	  | *B = Bit-length* - If it wasn't for the absurd walls of text, this would be a pretty straightforward problem. Part one is simple consensus, part two is closer to finding a dominant taxa from a character table. There's a bad solution to part 2, and a nice solution. For real though, it's unbelievable how absurdly obfuscated the text is for this one.
 
 ## Solutions
 
@@ -141,10 +141,4 @@ For the graph with both overlaid, the path for part one has been scaled up 20x t
 ### Day 03: Binary Diagnostic
 There's really nothing exciting to look at for today. I produced some images anyway, but I don't want to embed them.
 
-[One](/images/03_out_1.png)
-
-[Two](/images/03_out_2.png)
-
-[Three](/images/03_out_3.png)
-
-[Four](/images/03_out_4.png)
+[ONE](/images/03_out_1.png) [TWO](/images/03_out_2.png) [SEVEN](/images/03_out_3.png) [THREE](/images/03_out_4.png)
