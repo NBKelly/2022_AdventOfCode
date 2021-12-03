@@ -51,11 +51,8 @@ public class Advent2021_03 extends Drafter {
     @Override public int solveProblem() throws Exception {
 	Timer t = makeTimer();
 
-	//convert input to an array
-	String[] arr = lines.toArray(new String[0]);
-
 	//luckily I had a pre-prepared method for finding consensus
-	var cons =  Util.consensus(arr);
+	var cons =  Util.consensus(lines.toArray(new String[0]));
 
 	var gamma_rate = parse(cons);
 	var epsilon_rate = parse(invert(cons));
@@ -64,7 +61,6 @@ public class Advent2021_03 extends Drafter {
 	DEBUGF(1, "PART ONE: "); println(p1_ans);
 	
 	/* part two */
-
 	Tree tree = new Tree();
 	for(String s : lines)
 	    tree.add(s);
@@ -74,7 +70,7 @@ public class Advent2021_03 extends Drafter {
 	String carbon = tree.traverse(false, false);
 	var p2_ans = parse(oxygen)*parse(carbon);
 
-	DEBUGF(1, "PART TWO: "); println(p2_ans);//todo
+	DEBUGF(1, "PART TWO: "); println(p2_ans);
 		
         /* visualize output here */
         generate_output(lines);
@@ -119,8 +115,8 @@ public class Advent2021_03 extends Drafter {
 
 	    if((one.weight > zero.weight) ^ !common)
 		return "1" + one.traverse(common, ones);
-	    else
-		return "0" + zero.traverse(common, ones);
+	    
+	    return "0" + zero.traverse(common, ones);
 	}
     }    
     
