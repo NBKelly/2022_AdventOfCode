@@ -43,8 +43,8 @@ public class Advent2021_03 extends Drafter {
     }
 
     /* parses a binary string */
-    private Integer parse(String s) {
-	return Integer.parseInt(s, 2);
+    private Long parse(String s) {
+	return Long.parseLong(s, 2);
     }
     
     /* solve problem here */
@@ -59,11 +59,11 @@ public class Advent2021_03 extends Drafter {
 	var p1_ans = gamma_rate * epsilon_rate;		
 
 	DEBUGF(1, "PART ONE: "); println(p1_ans);
-	
+	DEBUG(2, t.split("P1 Time: "));
 	/* part two */
 	Tree tree = new Tree();
 	for(String s : lines)
-	    tree.add(s);
+	    tree.add(s, 0);
 
 	//most common, prefer one
 	String oxygen = tree.traverse(true, true);
@@ -71,7 +71,8 @@ public class Advent2021_03 extends Drafter {
 	var p2_ans = parse(oxygen)*parse(carbon);
 
 	DEBUGF(1, "PART TWO: "); println(p2_ans);
-		
+	DEBUG(2, t.split("P2 Time: "));
+	
         /* visualize output here */
         generate_output(lines);
 	
@@ -84,25 +85,24 @@ public class Advent2021_03 extends Drafter {
 	private Tree one = null;
 	
 	public Tree() {}
-	public Tree(String s) { add(s); }
+	public Tree(String s, int index) { add(s, index); }
 
-	public void add(String s) {
+	public void add(String s, int index) {
 	    weight++;
 	    
-	    if(s.length() == 0)
+	    if(index >= s.length())
 		return;
 
-	    var child = s.substring(1);
-	    if(s.charAt(0) == '0')
+	    if(s.charAt(index) == '0')
 		if(zero == null)
-		    zero = new Tree(child);
+		    zero = new Tree(s, index+1);
 		else
-		    zero.add(child);	    
+		    zero.add(s, index+1);	    
 	    else 
 		if(one == null)
-		    one = new Tree(child);
+		    one = new Tree(s, index+1);
 		else
-		    one.add(child);		
+		    one.add(s, index+1);		
 	}
 
 	public String traverse(boolean common, boolean ones) {
