@@ -126,7 +126,8 @@ public class Advent2021_03 extends Drafter {
     	    return;
 	
     	println(">generating output");	
-    
+
+	Collections.sort(lines);
     	/* output goes here */
 	String[] arr = new String[lines.size()];
 	for(int i = 0; i < lines.size(); i++)
