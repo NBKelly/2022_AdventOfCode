@@ -2,8 +2,8 @@
 
 println("Hello World");
 
-DEBUGF(2, "PART ONE: "); //todo
-DEBUGF(2, "PART TWO: "); //todo
+DEBUGF(1, "PART ONE: "); //todo
+DEBUGF(1, "PART TWO: "); //todo
 
 /* visualize output here */
 generate_output();

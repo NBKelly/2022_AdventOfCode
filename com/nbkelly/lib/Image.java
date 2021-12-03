@@ -1,6 +1,7 @@
 package com.nbkelly.lib;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -21,6 +22,9 @@ public class Image {
     public static Color C4 = new Color(0xFCE4D8);
     public static Color C5 = new Color(0x05668D);
 
+    public static Font F1 = new Font("Consolas", Font.PLAIN, 10);
+    public static Integer F1_SPACE = 12;
+    
     /**
      * Creates a simple image with the given dimensions
      */
@@ -46,7 +50,7 @@ public class Image {
 	g2d.fillRect(x1, y1, width, height);
 	g2d.dispose();
     }
-
+    
     public void line(Color c, int x1, int y1, int x2, int y2) {
 	g2d = bufferedImage.createGraphics();
 	g2d.setColor(c);
@@ -63,6 +67,14 @@ public class Image {
 	    g2d.drawLine(x1-i, y1, x2-i, y2);
 	    g2d.drawLine(x1+i, y1, x2+i, y2);
 	}
+	g2d.dispose();
+    }
+
+    public void text(Color c, Font f, int x1, int y1, String s) {
+	g2d = bufferedImage.createGraphics();
+	g2d.setColor(c);
+	g2d.setFont(f);
+	g2d.drawString(s, x1, y1);
 	g2d.dispose();
     }
 
