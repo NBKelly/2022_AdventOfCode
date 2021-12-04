@@ -183,3 +183,15 @@ For the graph with both overlaid, the path for part one has been scaled up 20x t
 There's really nothing exciting to look at for today. I produced some images anyway, but I don't want to embed them.
 
 [ONE](/images/03_out_1.png) [TWO](/images/03_out_2.png) [SEVEN](/images/03_out_3.png) [THREE](/images/03_out_4.png)
+
+### Day 04: Giant Squid
+Again, there's nothing too exciting to see. Here's what the bingo boards look like when the first and last winner have been draw.
+
+For the samples:
+<img src="/images/04_out_1s.png" alt="winner" width="400">
+
+<img src="/images/04_out_2s.png" alt="loser" width="400">
+
+For the actual input:
+
+[WINNING](/images/04_out_1i.png) [LOSING](/images/04_out_2i.png)
