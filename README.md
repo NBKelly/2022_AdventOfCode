@@ -116,13 +116,13 @@ private class Tree {
     }
 }    
 
+```
+
 ### Day 4: Giant Squad
 
 I'm not writing much here, except that the most effecient way to find each terminating round is through the use of a binary search.
 
 Additionally, the easiest way to check rows/colums is to just make sets once, and simply check if row/column is a subset of the current draw. This multiplies your space usage by 2, because you're storing each bingo card twice.
-
-```
 
 ## Visualizations
 
