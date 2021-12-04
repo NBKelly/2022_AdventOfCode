@@ -123,10 +123,39 @@ I'm not writing much here, except that the most effecient way to find each termi
 
 Additionally, the easiest way to check rows/colums is to just make sets once, and simply check if row/column is a subset of the current draw. This multiplies your space usage by 2, because you're storing each bingo card twice.
 
-Here's what a binary search for part two looks like:
+Here's what a binary search for part two looks like. It's worth noting that the condition for our search is the first element in the collection where every board is complete.
 
+```Java
+int left = 0;
+int right = draws_list.size();
+	
+Bingo last_match = null;
+int last_matching_round = 0;
 
+while(left < right) {
+    int mid = (left + right) / 2;
+    int round = mid;
 
+    var draws = new HashSet<Integer>();
+    draws.addAll(draws_list.subList(0, round+1));
+
+    //see if any board satisfies - we want to find a state where every board is correct
+    var match = boards.parallelStream().filter(board->!board.check(draws))
+        .findAny();
+
+    if(match.isPresent()) {
+        last_match = match.get();
+        last_matching_round = round +1;
+        left = mid+1;
+    }
+    else
+        right = mid;	    
+}
+
+var draws = new HashSet<Integer>();
+draws.addAll(draws_list.subList(0, last_matching_round+1));
+return draws_list.get(last_matching_round) * last_match.score(draws);
+```
 
 ## Visualizations
 
