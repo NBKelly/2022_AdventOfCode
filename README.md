@@ -80,7 +80,6 @@ private class Tree {
     private Tree one = null;
 
     public Tree() {}
-    public Tree(String s) { add(s); }
 
     public void add(String s) {
         weight++;
@@ -89,18 +88,18 @@ private class Tree {
             return;
 
         var child = s.substring(1);
-        if(s.charAt(0) == '0')
+        if(s.charAt(0) == '0') {
             if(zero == null)
-                zero = new Tree(child);
-            else
-                zero.add(child);	    
-	else 
-            if(one == null)
-                one = new Tree(child);
-            else
-                one.add(child);		
+                zero = new Tree();
+            zero.add(child);
         }
-
+	else  {
+            if(one == null)
+                one = new Tree();
+            one.add(child);		
+        }
+    }
+    
     public String traverse(boolean common, boolean ones) {
         if(one == null && zero == null) return "";
         if(one == null) return "0" + zero.traverse(common, ones);
@@ -116,13 +115,18 @@ private class Tree {
     }
 }    
 
-### Day 4: Giant Squad
+```
+
+### Day 4: Giant Squid
 
 I'm not writing much here, except that the most effecient way to find each terminating round is through the use of a binary search.
 
 Additionally, the easiest way to check rows/colums is to just make sets once, and simply check if row/column is a subset of the current draw. This multiplies your space usage by 2, because you're storing each bingo card twice.
 
-```
+Here's what a binary search for part two looks like:
+
+
+
 
 ## Visualizations
 
