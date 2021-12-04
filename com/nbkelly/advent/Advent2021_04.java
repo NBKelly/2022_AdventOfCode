@@ -13,6 +13,7 @@ import java.util.HashSet;
 /* my imported libs */
 import com.nbkelly.lib.Util;
 import com.nbkelly.drafter.BooleanCommand; //visualize cmd
+import com.nbkelly.drafter.IntCommand; //visualize cmd
 import com.nbkelly.lib.Image; //visualizer lib
 
 /**
@@ -33,6 +34,9 @@ public class Advent2021_04 extends Drafter {
     
     //generate output
     boolean generate_output = false;
+
+    //set bingo board size
+    int bingo_size = 5;
     
     /* solve problem here */
     @Override public int solveProblem() throws Exception {
@@ -46,7 +50,8 @@ public class Advent2021_04 extends Drafter {
 	
 	flushLine(1);
 
-	int bingo_size = 5;
+	
+	
 	ArrayList<Bingo> boards = new ArrayList<Bingo>();
 	while(hasNextLine()) {
 	    var bingo = new Bingo(bingo_size);
@@ -61,138 +66,26 @@ public class Advent2021_04 extends Drafter {
 	    flushLine();
 	}
 
+	/* INPUT PROCESSED */
 	DEBUG(2, t.split(">input processed"));
-	
-	int p1_ans = 0;
-	//linear search
-	outer: for(int round = 0; round < draws_list.size(); round++) {
-	    var draws = new HashSet<Integer>();
-	    draws.addAll(draws_list.subList(0, round+1));
 
-	    //see if any board satisfies
-	    for(var board : boards)
-		if(board.check(draws)) {
-		    
-		    p1_ans = draws_list.get(round) * board.score(draws);
-		    break outer;
-		}
-	}
-
+	/* part one: linear search */
+	int p1_ans = p1_linear(boards, draws_list);
 	DEBUG(2, ("p1 (linear): " + p1_ans));
 	DEBUG(2, t.split(">linear search (p1)"));
 	
-	//binary search
-	int left = 0;
-	int right = draws_list.size();
-	int p1_binary_ans = 0;
-	
-	while(left < right) {
-	    int mid = (left + right) / 2;
-	    int round = mid;
-
-	    /* check the condition */
-	    boolean match = false;
-	    
-	    var draws = new HashSet<Integer>();
-	    draws.addAll(draws_list.subList(0, round+1));
-
-	    //see if any board satisfies
-	    for(var board : boards)
-		if(board.check(draws)) {
-		    match = true;
-		    if(mid +1 >= right)
-			p1_binary_ans = draws_list.get(round) * board.score(draws);
-		    break;
-		}
-
-	    if(match)
-		right = mid;
-	    else
-		left = mid + 1;	
-	}
-
-	int last_round = left;
-	
-	DEBUGF(2, "p1 (binary): ");println(p1_binary_ans);
-
+	/* part one: binary search */
+	int p1_binary_ans = p1_binary(boards, draws_list);	
+	DEBUGF(2, "p1 (binary): ");println(p1_binary_ans);	
 	DEBUG(2, t.split(">binary search (p1)"));
 
 	/* part two : linear search */
-
-	int round = 0;
-	
-	outer: for(round = 0; round < draws_list.size(); round++) {
-	    var draws = new HashSet<Integer>();
-	    draws.addAll(draws_list.subList(0, round+1));
-	    
-	    boolean match = false;
-	    //find the smallest element where every board is correct
-	    for(var board : boards)
-		if(!board.check(draws)) {
-		    match = true;		    
-		    break;
-		}
-
-	    if(!match) {
-		round--;
-		break;
-	    }
-	}
-
-	var draws_2 = new HashSet<Integer>();
-	draws_2.addAll(draws_list.subList(0, round+1));
-	
-	//there should only be one board left
-	for(var board : boards)
-	    if(!board.check(draws_2)) {
-		draws_2.add(draws_list.get(round+1));
-		var ans = board.score(draws_2) * draws_list.get(round+1);
-		DEBUG(2, "p2 (linear): " + ans);
-		break;
-	    }
-		
+	int p2_ans = p2_linear(boards, draws_list);
+	DEBUG(2, "p2 (linear): " + p2_ans);
 	DEBUG(2, t.split(">linear search (p2)"));
 	
 	/* part two : binary search */	
-	left = 0;
-	right = draws_list.size();
-
-	int p2_binary_ans = 0;
-	round = 0;
-	while(left < right) {
-	    int mid = (left + right) / 2;
-	    round = draws_list.size() - mid;
-
-	    /* check the condition */
-	    boolean match = false;
-	    
-	    var draws = new HashSet<Integer>();
-	    draws.addAll(draws_list.subList(0, round+1));
-
-	    //find the smallest element where every board is correct
-	    for(var board : boards)
-		if(!board.check(draws)) {
-		    match = true;		    
-		    break;
-		}
-
-	    if(match)
-		right = mid;
-	    else
-		left = mid + 1;	
-	}
-
-	var draws = new HashSet<Integer>();
-	draws.addAll(draws_list.subList(0, round+1));
-	
-	//there should only be one board left
-	for(var board : boards)
-	    if(!board.check(draws)) {
-		draws.add(draws_list.get(round+1));
-		p2_binary_ans = board.score(draws) * draws_list.get(round+1);
-		break;
-	    }
-
+	int p2_binary_ans = p2_binary(boards, draws_list);
 	DEBUGF(2, "p2 (binary): "); println(p2_binary_ans);
 	DEBUG(2, t.split(">binary search (p2)"));
 		
@@ -202,6 +95,109 @@ public class Advent2021_04 extends Drafter {
 	return DEBUG(1, t.split("Finished Processing"));
     }
 
+    public Integer p2_binary(ArrayList<Bingo> boards, ArrayList<Integer> draws_list) {
+	int left = 0;
+	int right = draws_list.size();
+	
+	Bingo last_match = null;
+	int last_matching_round = 0;
+	while(left < right) {
+	    int mid = (left + right) / 2;
+	    int round = mid;
+
+	    var draws = new HashSet<Integer>();
+	    draws.addAll(draws_list.subList(0, round+1));
+
+	    //see if any board satisfies - we want to find a state where every board is correct
+	    var match = boards.parallelStream().filter(board->!board.check(draws))
+		.findAny();
+
+	    if(match.isPresent()) {
+		last_match = match.get();
+		last_matching_round = round +1;
+		    
+		left = mid+1;
+	    }
+	    else
+		right = mid;	    
+	}
+
+	var draws = new HashSet<Integer>();
+	draws.addAll(draws_list.subList(0, last_matching_round+1));
+	return draws_list.get(last_matching_round) * last_match.score(draws);
+    }
+    
+    public Integer p1_binary(ArrayList<Bingo> boards, ArrayList<Integer> draws_list) {
+	int left = 0;
+	int right = draws_list.size();
+	int p1_binary_ans = 0;
+
+	Bingo last_match = null;
+	int last_matching_round = 0;
+	while(left < right) {
+	    int mid = (left + right) / 2;
+	    int round = mid;
+
+	    /* check the condition */
+	    //boolean match = false;
+	    
+	    var draws = new HashSet<Integer>();
+	    draws.addAll(draws_list.subList(0, round+1));
+
+	    //see if any board satisfies
+	    var match = boards.parallelStream().filter(board->board.check(draws))
+		.findAny();
+
+	    if(match.isPresent()) {
+		last_match = match.get();
+		last_matching_round = round;
+		    
+		right = mid;
+	    }
+	    else
+		left = mid+1;
+	}
+
+	var draws = new HashSet<Integer>();
+	draws.addAll(draws_list.subList(0, last_matching_round+1));
+	return draws_list.get(last_matching_round) * last_match.score(draws);
+    }
+    
+    public Integer p1_linear(ArrayList<Bingo> boards, ArrayList<Integer> draws_list) {
+	for(int round = 0; round < draws_list.size(); round++) {
+	    var draws = new HashSet<Integer>();
+	    draws.addAll(draws_list.subList(0, round+1));
+
+	    //see if any board satisfies
+	    var res = boards.parallelStream().filter(board -> board.check(draws)).findAny();
+	    if(res.isPresent()) {
+		return draws_list.get(round) * res.get().score(draws);
+	    }
+	}
+	return -1;
+    }
+
+    public Integer p2_linear(ArrayList<Bingo> boards, ArrayList<Integer> draws_list) {
+	int round = 0;
+
+	Bingo last_unmatched = null;
+	for(round = 0; round < draws_list.size(); round++) {
+	    var draws = new HashSet<Integer>();
+	    draws.addAll(draws_list.subList(0, round+1));
+	    
+	    var match = boards.parallelStream().filter(board -> !board.check(draws))
+		.findAny();
+	    
+	    if(match.isPresent())
+		last_unmatched = match.get();
+	    else {
+		return last_unmatched.score(draws) * draws_list.get(round);
+	    }
+	}
+
+	return -1;
+    }
+    
     private class Bingo {
 	ArrayList<HashSet<Integer>> rows = new ArrayList<>();
 	ArrayList<HashSet<Integer>> cols = new ArrayList<>();
@@ -270,8 +266,10 @@ public class Advent2021_04 extends Drafter {
         BooleanCommand vc = new BooleanCommand("Visualize Output",
         				       "The visualized output for this program", 
         				       false, "--out-file", "--output-file", "--out-image");
-        
-        return new Command[]{fc, vc};
+
+	/* bingo size */
+	IntCommand bs = new IntCommand(5, 50, false, 5, "--bingo-size", "--board-size");
+        return new Command[]{fc, vc, bs};
         
         
     }
@@ -285,6 +283,8 @@ public class Advent2021_04 extends Drafter {
         setSource(((FileCommand)userCommands[0]).getValue());
         
         generate_output = ((BooleanCommand)userCommands[1]).matched();
+
+	bingo_size = ((IntCommand)userCommands[2]).getValue();
 	return 0;
     }
 
