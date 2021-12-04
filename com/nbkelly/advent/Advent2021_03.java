@@ -93,16 +93,16 @@ public class Advent2021_03 extends Drafter {
 	    if(index >= s.length())
 		return;
 
-	    if(s.charAt(index) == '0')
+	    if(s.charAt(index) == '0') {
 		if(zero == null)
-		    zero = new Tree(s, index+1);
-		else
-		    zero.add(s, index+1);	    
-	    else 
+		    zero = new Tree();
+		zero.add(s, index+1);
+	    }
+	    else  {
 		if(one == null)
-		    one = new Tree(s, index+1);
-		else
-		    one.add(s, index+1);		
+		    one = new Tree();
+		one.add(s, index+1);
+	    }
 	}
 
 	public String traverse(boolean common, boolean ones) {
