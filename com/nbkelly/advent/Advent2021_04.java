@@ -37,7 +37,10 @@ public class Advent2021_04 extends Drafter {
 
     //set bingo board size
     int bingo_size = 5;
-    
+
+    int p1_round_complete = 0;
+    int p2_round_complete = 0;
+    Bingo p2_loser = null;
     /* solve problem here */
     @Override public int solveProblem() throws Exception {
 	Timer t = makeTimer();
@@ -48,9 +51,7 @@ public class Advent2021_04 extends Drafter {
 	for(int i = 0; i < _draws_unfiltered.length; i++)
 	    draws_list.add(Integer.parseInt(_draws_unfiltered[i]));
 	
-	flushLine(1);
-
-	
+	flushLine(1);	
 	
 	ArrayList<Bingo> boards = new ArrayList<Bingo>();
 	while(hasNextLine()) {
@@ -94,7 +95,7 @@ public class Advent2021_04 extends Drafter {
 	DEBUG(2, t.split(">binary search (p2)"));
 		
         /* visualize output here */
-        generate_output();
+        generate_output(boards, bingo_size, draws_list);
 	
 	return DEBUG(1, t.total());
     }
@@ -126,6 +127,8 @@ public class Advent2021_04 extends Drafter {
 		right = mid;	    
 	}
 
+	p2_loser = last_match;
+	p2_round_complete = last_matching_round;
 	var draws = new HashSet<Integer>();
 	draws.addAll(draws_list.subList(0, last_matching_round+1));
 	return draws_list.get(last_matching_round) * last_match.score(draws);
@@ -142,9 +145,6 @@ public class Advent2021_04 extends Drafter {
 	    int mid = (left + right) / 2;
 	    int round = mid;
 
-	    /* check the condition */
-	    //boolean match = false;
-	    
 	    var draws = new HashSet<Integer>();
 	    draws.addAll(draws_list.subList(0, round+1));
 
@@ -162,6 +162,8 @@ public class Advent2021_04 extends Drafter {
 		left = mid+1;
 	}
 
+	p1_round_complete = last_matching_round;
+	
 	var draws = new HashSet<Integer>();
 	draws.addAll(draws_list.subList(0, last_matching_round+1));
 	return draws_list.get(last_matching_round) * last_match.score(draws);
@@ -203,8 +205,8 @@ public class Advent2021_04 extends Drafter {
     }
     
     private class Bingo {
-	ArrayList<HashSet<Integer>> rows = new ArrayList<>();
-	ArrayList<HashSet<Integer>> cols = new ArrayList<>();
+	public ArrayList<HashSet<Integer>> rows = new ArrayList<>();
+	public ArrayList<HashSet<Integer>> cols = new ArrayList<>();
 
 	public Bingo(int bingo_size) {
 	    for(int i = 0; i < bingo_size; i++) {
@@ -246,13 +248,91 @@ public class Advent2021_04 extends Drafter {
     }
 
     /* code injected from file */
-    public void generate_output() throws Exception {
+    public void generate_output(ArrayList<Bingo> boards, int bingo_size, ArrayList<Integer> draws_list) throws Exception {
     	if(!generate_output)
     	    return;
-    	
+
+	/* output goes here */
     	println(">generating output");
-    
-    	/* output goes here */
+	
+	int bingo_width = bingo_size*40;
+	int height = bingo_size * 12 * 2;
+
+	Image image = new Image(bingo_width*boards.size() + 4, height);
+
+	var draws = new HashSet<Integer>();
+	draws.addAll(draws_list.subList(0, p1_round_complete+2));
+	
+	for(int _board = 0; _board < boards.size(); _board++) {
+	    //we know when each round is complete, and who the ultimate loser is
+	    //draw every bingo board, and highlight matched values
+	    int x_start = 2 + (40*bingo_size*_board);
+	    int y_start = 10;
+
+	    var lines = new ArrayList<HashSet<Integer>>();
+	    lines.addAll(boards.get(_board).rows);
+	    lines.addAll(boards.get(_board).cols);
+
+	    for(int i = 0; i < lines.size(); i++) {
+		int y = y_start + (i*10);
+
+		ArrayList<Integer> cline = new ArrayList<Integer>();
+		cline.addAll(lines.get(i));
+
+		for(int j = 0; j < cline.size(); j++) {
+		    var val = cline.get(j);
+		    
+		    var color = draws.contains(val) ? Image.W1 : Image.C1;
+
+		    color = draws.containsAll(cline) ? Image.C3 : color;
+		    int x = x_start + 30*j;
+		    image.text(color, Image.F1, x, y, "" + val);
+		}
+	    }
+	}
+
+	image.savePNG("out1.png");
+	println(">out1.png");
+
+	image = new Image(bingo_width*boards.size() + 4, height);
+	draws = new HashSet<Integer>();
+	draws.addAll(draws_list.subList(0, p2_round_complete+2));
+	
+	for(int _board = 0; _board < boards.size(); _board++) {
+	    //we know when each round is complete, and who the ultimate loser is
+	    //draw every bingo board, and highlight matched values
+	    int x_start = 2 + (40*bingo_size*_board);
+	    int y_start = 10;
+
+	    if(boards.get(_board) == p2_loser)
+		image.text(Image.C3, Image.F1, x_start, y_start, "l o s e r");
+
+	    y_start += 12;
+	    
+	    var lines = new ArrayList<HashSet<Integer>>();
+	    lines.addAll(boards.get(_board).rows);
+	    lines.addAll(boards.get(_board).cols);
+
+	    for(int i = 0; i < lines.size(); i++) {
+		int y = y_start + (i*10);
+
+		ArrayList<Integer> cline = new ArrayList<Integer>();
+		cline.addAll(lines.get(i));
+
+		for(int j = 0; j < cline.size(); j++) {
+		    var val = cline.get(j);
+		    
+		    var color = draws.contains(val) ? Image.W1 : Image.C1;
+		    color = draws.containsAll(cline) ? Image.C3 : color;
+		    
+		    int x = x_start + 30*j;
+		    image.text(color, Image.F1, x, y, "" + val);
+		}
+	    }
+	}
+
+	image.savePNG("out2.png");
+	println(">out2.png");
     }
 
     /* set commands */

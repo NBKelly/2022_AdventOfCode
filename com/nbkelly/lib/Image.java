@@ -22,6 +22,9 @@ public class Image {
     public static Color C4 = new Color(0xFCE4D8);
     public static Color C5 = new Color(0x05668D);
 
+    public static Color W1 = new Color(0xFFFFFF);
+    public static Color W2 = new Color(0xCCCCCC);
+    
     public static Font F1 = new Font("Consolas", Font.PLAIN, 10);
     public static Integer F1_SPACE = 12;
     
