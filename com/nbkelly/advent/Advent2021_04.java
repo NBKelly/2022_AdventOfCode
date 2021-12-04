@@ -70,9 +70,11 @@ public class Advent2021_04 extends Drafter {
 	DEBUG(2, t.split(">input processed"));
 
 	/* part one: linear search */
-	int p1_ans = p1_linear(boards, draws_list);
-	DEBUG(2, ("p1 (linear): " + p1_ans));
-	DEBUG(2, t.split(">linear search (p1)"));
+	if(GET_DEBUG_LEVEL() >= 2) {
+	    int p1_ans = p1_linear(boards, draws_list);
+	    DEBUG(2, ("p1 (linear): " + p1_ans));
+	    DEBUG(2, t.split(">linear search (p1)"));
+	}
 	
 	/* part one: binary search */
 	int p1_binary_ans = p1_binary(boards, draws_list);	
@@ -80,9 +82,11 @@ public class Advent2021_04 extends Drafter {
 	DEBUG(2, t.split(">binary search (p1)"));
 
 	/* part two : linear search */
-	int p2_ans = p2_linear(boards, draws_list);
-	DEBUG(2, "p2 (linear): " + p2_ans);
-	DEBUG(2, t.split(">linear search (p2)"));
+	if(GET_DEBUG_LEVEL() >= 2) {
+	    int p2_ans = p2_linear(boards, draws_list);
+	    DEBUG(2, "p2 (linear): " + p2_ans);
+	    DEBUG(2, t.split(">linear search (p2)"));
+	}
 	
 	/* part two : binary search */	
 	int p2_binary_ans = p2_binary(boards, draws_list);
@@ -92,7 +96,7 @@ public class Advent2021_04 extends Drafter {
         /* visualize output here */
         generate_output();
 	
-	return DEBUG(1, t.split("Finished Processing"));
+	return DEBUG(1, t.total());
     }
 
     public Integer p2_binary(ArrayList<Bingo> boards, ArrayList<Integer> draws_list) {
