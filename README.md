@@ -116,18 +116,12 @@ private class Tree {
 }    
 
 ```
-
-<<<<<<< HEAD
 ### Day 4: Giant Squid
-=======
-### Day 4: Giant Squad
->>>>>>> efaf7c4543de7f50b359e990c69456142f9b48cc
 
 I'm not writing much here, except that the most effecient way to find each terminating round is through the use of a binary search.
 
 Additionally, the easiest way to check rows/colums is to just make sets once, and simply check if row/column is a subset of the current draw. This multiplies your space usage by 2, because you're storing each bingo card twice.
 
-<<<<<<< HEAD
 Here's what a binary search for part two looks like. It's worth noting that the condition for our search is the first element in the collection where every board is complete.
 
 ```Java
@@ -161,9 +155,6 @@ var draws = new HashSet<Integer>();
 draws.addAll(draws_list.subList(0, last_matching_round+1));
 return draws_list.get(last_matching_round) * last_match.score(draws);
 ```
-
-=======
->>>>>>> efaf7c4543de7f50b359e990c69456142f9b48cc
 ## Visualizations
 
 Where I can, I will try to produce visualizations for the puzzles.
@@ -195,6 +186,7 @@ There's really nothing exciting to look at for today. I produced some images any
 Again, there's nothing too exciting to see. Here's what the bingo boards look like when the first and last winner have been draw.
 
 For the samples:
+
 <img src="/images/04_out_1s.png" alt="winner" width="400">
 
 <img src="/images/04_out_2s.png" alt="loser" width="400">
