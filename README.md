@@ -33,7 +33,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 01  | *O(N)*                  | *O(N)*      | A good solution should read the input from a file one line at a time - this would allow processing of arbitrarily large files. <br/> Eric should have had the window size be larger, say 5 or 10, to force some of the programmers to ask "is there an easier way".
 | Day 02  | *O(N)*		    | *O(N)*	  | This problem is pretty straightforward. It looks messy if you use the same data twice. I quite like this problem.
 | Day 03  | *O(N.B)*		    | *O(N.B)*	  | *B = Bit-length* - If it wasn't for the absurd walls of text, this would be a pretty straightforward problem. Part one is simple consensus, part two is closer to finding a dominant taxa from a character table. There's a bad solution to part 2, and a nice solution. For real though, it's unbelievable how absurdly obfuscated the text is for this one.
-| Day 04  | *O(log2(N).S.B)*	    | *O(log2(N).S.B)* | *N,S,B = number of draws,size(num_cols) of the board, and number of boards* - This was a fun problem. Parsing may be hard for people not using python or java, specifically because eric decided to left pad numbers on the bingo boards (why couldn't they just leave spacing up to the user to pretty print?). Fuck you eric for not counting the diagonals.
+| Day 04  | *O(log<sub>2</sub>(N).S.B)* **OR** *O(B + Nlog<sub>2</sub>N)*	    | *O(log<sub>2</sub>(N).S.B)* or *O(B + Nlog<sub>2</sub>N)* | *N,S,B = number of draws,size(num_cols) of the board, and number of boards* - This was a fun problem. Parsing may be hard for people not using python or java, specifically because eric decided to left pad numbers on the bingo boards (why couldn't they just leave spacing up to the user to pretty print?). Fuck you eric for not counting the diagonals. The second time complexity is for when you solve the bingo boards through condensing them into "I win at this index". You have to sort them still, so it ends up being *Nlog<sub>2</sub>N*
 
 ## Solutions
 
@@ -48,7 +48,7 @@ The same as above, but note every time ```li(i) > li(i-3)``` instead.
 
 Whenever you move on the sliding window, you are adding the element at *i*, and removing the element at *i-3* from the sum of that window, so you can determine the value of that change by directly comparing those two elements.
 
-More visually, we are making the comparison ```[i-3] + [i-2] + [i-1] < [i-2] + [i-1] + [i]```. It is trivial to see that we can factor this out to ```[i-3] < [i]```.
+More visually, we are making the comparison ```[i-3] + [i-] + [i-1] < [i-2] + [i-1] + [i]```. It is trivial to see that we can factor this out to ```[i-3] < [i]```.
 
 ### Day 02: Dive!
 #### Part One: Manhattan distance
