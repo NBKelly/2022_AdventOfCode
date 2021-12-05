@@ -293,10 +293,14 @@ For the actual input:
 
 This one actually has some pretty pictures. Dissapoining that no art was hidden in it. My personal headcannon is that we're looking down at some lateral hydrothermal vents in a massive underwater tube/trench.
 
-Intersections highlighted orange.
+_Intersections highlighted orange._
 
 <img src="/images/05_out_1i.png" alt="all" width="700">
 
-Only the intersections.
+_Only the intersections._
 
 <img src="/images/05_out_2i.png" alt="intersections only" width="700">
+
+_My image got nabbed for this, so I'm nabbing it back._
+
+<img src="/images/05_art.png" alt="no refunds" width="700">
