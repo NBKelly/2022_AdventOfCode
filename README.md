@@ -155,6 +155,15 @@ var draws = new HashSet<Integer>();
 draws.addAll(draws_list.subList(0, last_matching_round+1));
 return draws_list.get(last_matching_round) * last_match.score(draws);
 ```
+
+#### Alternative Method
+A more effective method exists for solving this problem. 
+
+* Replace each number in your bingo board with it's index in the list of draws (if it exists)
+* Each row or column can be reduced to the highest number in that row or column - that's the index of the draw which completes it
+* Each board can then be reduced to the lowest reduced row/column - this is the first index which completes the board (and the round it completes) - we can call this it's condensation
+* The set of boards can then be sorted based on their condensations. The board with the lowest condensation is the first winner, and the board with the highest condensation is the last winner.
+
 ## Visualizations
 
 Where I can, I will try to produce visualizations for the puzzles.
