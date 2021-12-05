@@ -24,6 +24,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 02  | Today we learnt to pilot the submarine. The course is pre-programmed, so we just need to figure out where we are going. To make matters worse, the manual is in chinese, so we calculated the wrong number the first time.
 | Day 03  | The submarine appears to be faulty (cheap chinese merchandise), so we run a diagnostic. We're concerned with the **power consumption** and the **life support rating** of the vessel.
 | Day 04  | 1.5km below the surface, a giant squid has grappled our submarine (revenge for chinese fishery practices). Eric decides it wants to play bingo. We use the bingo program on the ship to print a set of boards and draws, and then game the system to see the best ways to win and lose.
+| Day 05  | We've come accross a network of hydrothermal vents on the ocean floor. To get through safely, we must map them. Hey where did that octopus go? We never found out what he wanted?
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
