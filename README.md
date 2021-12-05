@@ -164,6 +164,83 @@ A more effective method exists for solving this problem.
 * Each board can then be reduced to the lowest reduced row/column - this is the first index which completes the board (and the round it completes) - we can call this it's condensation
 * The set of boards can then be sorted based on their condensations. The board with the lowest condensation is the first winner, and the board with the highest condensation is the last winner.
 
+To find the condensations:
+
+```Java
+public Integer condensation(TreeMap<Integer, Integer> grades) {
+    Integer best = null;
+
+    row: for(var row: rows) {
+        int highest = 0;
+        for(var token : row) {
+            var key = grades.get(token);
+            if(key != null)
+                highest = Math.max(key, highest);
+            else
+                continue row;
+        }
+
+        if(best == null)
+            best = highest;
+        else
+            best = Math.min(best, highest);
+    }
+
+    col: for(var col: cols) {
+        int highest = 0;
+	for(var token : col) {
+            var key = grades.get(token);
+            if(key != null)
+                highest = Math.max(key, highest);
+            else
+                continue col;
+        }
+
+        if(best == null)
+            best = highest;
+        else
+            best = Math.min(best, highest);
+        }
+
+
+    return best;
+}
+```
+
+Once that's done, the actual solution looks like this:
+
+```Java
+public void solve_fast(ArrayList<Bingo> boards, ArrayList<Integer> draws) {
+    TreeMap<Integer, Bingo> condensations = new TreeMap<>();
+
+    TreeMap<Integer, Integer> grades = new TreeMap<Integer, Integer>();
+    for(int i = 0; i < draws.size(); i++)
+        grades.put(draws.get(i), i);
+	
+    for(var board : boards) {
+        var con = board.condensation(grades);
+        condensations.put(con, board);
+    }
+
+    //get the first item/round
+    var first_pair = condensations.firstEntry();
+    var first_index = first_pair.getKey();
+    var first_draw = draws.get(first_index);	
+    var first_valid_draws = new HashSet<Integer>(draws.subList(0, first_index+1));
+    var first_score = first_pair.getValue().score(first_valid_draws) * first_draw;
+    DEBUGF(2, "Part One (CONDENSATION): %d%n", first_score);
+
+    //get the last item/round
+    var last_pair = condensations.lastEntry();
+    var last_index = last_pair.getKey();
+    var last_draw = draws.get(last_index);
+    var last_valid_draws = new HashSet<Integer>(draws.subList(0, last_index+1));
+    var last_score = last_pair.getValue().score(last_valid_draws) * last_draw;
+    DEBUGF(2, "Part Two (CONDENSATION): %d%n", last_score);
+}
+
+```
+
 ## Visualizations
 
 Where I can, I will try to produce visualizations for the puzzles.

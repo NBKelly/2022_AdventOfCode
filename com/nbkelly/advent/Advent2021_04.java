@@ -12,6 +12,7 @@ import java.util.HashSet;
 
 /* my imported libs */
 import com.nbkelly.lib.Util;
+import java.util.TreeMap;
 import com.nbkelly.drafter.BooleanCommand; //visualize cmd
 import com.nbkelly.drafter.IntCommand; //visualize cmd
 import com.nbkelly.lib.Image; //visualizer lib
@@ -41,6 +42,7 @@ public class Advent2021_04 extends Drafter {
     int p1_round_complete = 0;
     int p2_round_complete = 0;
     Bingo p2_loser = null;
+
     /* solve problem here */
     @Override public int solveProblem() throws Exception {
 	Timer t = makeTimer();
@@ -93,13 +95,47 @@ public class Advent2021_04 extends Drafter {
 	int p2_binary_ans = p2_binary(boards, draws_list);
 	DEBUGF(2, "p2 (binary): "); println(p2_binary_ans);
 	DEBUG(2, t.split(">binary search (p2)"));
-		
+
+	/* fast mode with condensations */
+	if(GET_DEBUG_LEVEL() >= 2) {
+	    solve_fast(boards, draws_list);	
+	    DEBUG(2, t.split(">condensed (p1+p2)"));
+	}
         /* visualize output here */
         generate_output(boards, bingo_size, draws_list);
 	
 	return DEBUG(1, t.total());
     }
 
+    public void solve_fast(ArrayList<Bingo> boards, ArrayList<Integer> draws) {
+	TreeMap<Integer, Bingo> condensations = new TreeMap<>();
+
+	TreeMap<Integer, Integer> grades = new TreeMap<Integer, Integer>();
+	for(int i = 0; i < draws.size(); i++)
+	    grades.put(draws.get(i), i);
+	
+	for(var board : boards) {
+	    var con = board.condensation(grades);
+	    condensations.put(con, board);
+	}
+
+	//get the first item/round
+	var first_pair = condensations.firstEntry();
+	var first_index = first_pair.getKey();
+	var first_draw = draws.get(first_index);	
+	var first_valid_draws = new HashSet<Integer>(draws.subList(0, first_index+1));
+	var first_score = first_pair.getValue().score(first_valid_draws) * first_draw;
+	DEBUGF(2, "Part One (CONDENSATION): %d%n", first_score);
+
+	//get the last item/round
+	var last_pair = condensations.lastEntry();
+	var last_index = last_pair.getKey();
+	var last_draw = draws.get(last_index);
+	var last_valid_draws = new HashSet<Integer>(draws.subList(0, last_index+1));
+	var last_score = last_pair.getValue().score(last_valid_draws) * last_draw;
+	DEBUGF(2, "Part Two (CONDENSATION): %d%n", last_score);
+    }
+    
     public Integer p2_binary(ArrayList<Bingo> boards, ArrayList<Integer> draws_list) {
 	int left = 0;
 	int right = draws_list.size();
@@ -215,6 +251,45 @@ public class Advent2021_04 extends Drafter {
 	    }		
 	}
 
+	public Integer condensation(TreeMap<Integer, Integer> grades) {
+	    Integer best = null;
+
+	    row: for(var row: rows) {
+		int highest = 0;
+		for(var token : row) {
+		    var key = grades.get(token);
+		    if(key != null)
+			highest = Math.max(key, highest);
+		    else
+			continue row;
+		}
+
+		if(best == null)
+		    best = highest;
+		else
+		    best = Math.min(best, highest);
+	    }
+
+	    col: for(var col: cols) {
+		int highest = 0;
+		for(var token : col) {
+		    var key = grades.get(token);
+		    if(key != null)
+			highest = Math.max(key, highest);
+		    else
+			continue col;
+		}
+
+		if(best == null)
+		    best = highest;
+		else
+		    best = Math.min(best, highest);
+	    }
+
+
+	    return best;
+	}
+	
 	public boolean check(HashSet<Integer> draws) {
 	    for(var row : rows)
 		if(draws.containsAll(row))
