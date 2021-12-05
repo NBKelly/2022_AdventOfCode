@@ -24,6 +24,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 02  | Today we learnt to pilot the submarine. The course is pre-programmed, so we just need to figure out where we are going. To make matters worse, the manual is in chinese, so we calculated the wrong number the first time.
 | Day 03  | The submarine appears to be faulty (cheap chinese merchandise), so we run a diagnostic. We're concerned with the **power consumption** and the **life support rating** of the vessel.
 | Day 04  | 1.5km below the surface, a giant squid has grappled our submarine (revenge for chinese fishery practices). Eric decides it wants to play bingo. We use the bingo program on the ship to print a set of boards and draws, and then game the system to see the best ways to win and lose.
+| Day 05  | We've come accross a network of hydrothermal vents on the ocean floor. To get through safely, we must map them. Hey where did that octopus go? We never found out what he wanted?
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -34,6 +35,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 02  | *O(N)*		    | *O(N)*	  | This problem is pretty straightforward. It looks messy if you use the same data twice. I quite like this problem.
 | Day 03  | *O(N.B)*		    | *O(N.B)*	  | *B = Bit-length* - If it wasn't for the absurd walls of text, this would be a pretty straightforward problem. Part one is simple consensus, part two is closer to finding a dominant taxa from a character table. There's a bad solution to part 2, and a nice solution. For real though, it's unbelievable how absurdly obfuscated the text is for this one.
 | Day 04  | *O(log<sub>2</sub>(N).S.B)* **OR** *O(B + Nlog<sub>2</sub>N)*	    | *O(log<sub>2</sub>(N).S.B)* or *O(B + Nlog<sub>2</sub>N)* | *N,S,B = number of draws,size(num_cols) of the board, and number of boards* - This was a fun problem. Parsing may be hard for people not using python or java, specifically because eric decided to left pad numbers on the bingo boards (why couldn't they just leave spacing up to the user to pretty print?). Fuck you eric for not counting the diagonals. The second time complexity is for when you solve the bingo boards through condensing them into "I win at this index". You have to sort them still, so it ends up being *Nlog<sub>2</sub>N*
+| Day 05  | *O(N.L)*		    | *O(N.L)*	| *number of lines, average line length* - Note that there is a better way to do this, which involves a linear sort on all of the line segments, so you can scan left to right picking out all the intersections. This problem produces some pretty pictures.
 
 ## Solutions
 
@@ -241,6 +243,12 @@ public void solve_fast(ArrayList<Bingo> boards, ArrayList<Integer> draws) {
 
 ```
 
+
+### Day 05: Hydrothermal Venture
+
+The simple way to do this is simply to put all line segments into a hashmap (cell by cell), and mark any point that gets intersected in a hashset.
+The answer is simply the size of that hashset.
+
 ## Visualizations
 
 Where I can, I will try to produce visualizations for the puzzles.
@@ -280,3 +288,19 @@ For the samples:
 For the actual input:
 
 [WINNING](/images/04_out_1i.png) [LOSING](/images/04_out_2i.png)
+
+### Day 05: Hydrothermal Venture
+
+This one actually has some pretty pictures. Dissapoining that no art was hidden in it. My personal headcannon is that we're looking down at some lateral hydrothermal vents in a massive underwater tube/trench.
+
+_Intersections highlighted orange._
+
+<img src="/images/05_out_1i.png" alt="all" width="700">
+
+_Only the intersections._
+
+<img src="/images/05_out_2i.png" alt="intersections only" width="700">
+
+_My image got nabbed for this, so I'm nabbing it back._
+
+<img src="/images/05_art.png" alt="no refunds" width="700">
