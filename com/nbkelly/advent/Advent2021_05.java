@@ -36,31 +36,6 @@ public class Advent2021_05 extends Drafter {
     //generate output
     boolean generate_output = false;
 
-    private class Line {
-	IntPair start;
-	IntPair end;
-
-	public Line(int x1, int y1, int x2, int y2) {
-	    start = new IntPair(x1, y1);
-	    end = new IntPair(x2, y2);
-	}
-	public boolean straight() {
-	    return start.X == end.X || start.Y == end.Y;
-	}
-
-	
-    }
-
-    public boolean ccw(IntPair A, IntPair B, IntPair C) {
-	return (C.Y-A.Y) * (B.X-A.X) > (B.Y-A.Y) * (C.X-A.X);
-    }
-
-    //a->b, c->d
-    public boolean intersect(IntPair A, IntPair B, IntPair C, IntPair D) {
-	return (ccw(A,C,D) != ccw(B,C,D)) && (ccw(A,B,C) != ccw(A,B,D));
-    }
-
-    
     /* solve problem here */
     @Override public int solveProblem() throws Exception {
 	Timer t = makeTimer();
@@ -101,14 +76,9 @@ public class Advent2021_05 extends Drafter {
 	    max_y = Math.max(max_y, Math.max(sy, fy));
 	}
 
-	println(intersections.size());
+	DEBUGF("Part two: "); println(intersections.size());
 	
-	println("Hello World");
-        
-        DEBUGF(1, "PART ONE: "); //todo
-        DEBUGF(1, "PART TWO: "); //todo
-        
-        /* visualize output here */
+	/* visualize output here */
         generate_output(min_x, min_y, max_x, max_y, tally);
 	
 	return DEBUG(1, t.split("Finished Processing"));
