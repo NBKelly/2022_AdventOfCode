@@ -40,8 +40,72 @@ public class Advent2021_05 extends Drafter {
     boolean generate_output = false;
 
     static int __ID = 0;
-    private class Horizontal {
+
+    private class Ascending {
+	int x1;
+	int x2;
+	int y1;
+	int y2;
+	int id = ++__ID;
 	
+	public Ascending(int x1, int x2, int y1, int y2) {
+	    if(x1 < x2) {
+		this.x1 = x1;
+		this.x2 = x2;
+		this.y1 = y1;
+		this.y2 = y2;
+	    }
+	    else {
+		this.x1 = x2;
+		this.x2 = x1;
+		this.y1 = y2;
+		this.y2 = y1;
+	    }
+	    int id = ++__ID;
+	}
+
+	public String toString() {
+	    return String.format(" asc ((%d -> %d), (%d -> %d))", x1+1, x2+1, y1+1, y2+1);
+	}
+
+	public int length() {
+	    return 1 + (x2 - x1);
+	}
+    }
+
+    private class Descending {
+	int x1;
+	int x2;
+	int y1;
+	int y2;
+	int id = ++__ID;
+	
+	public Descending(int x1, int x2, int y1, int y2) {
+	    if(x1 < x2) {
+		this.x1 = x1;
+		this.x2 = x2;
+		this.y1 = y1;
+		this.y2 = y2;
+	    }
+	    else {
+		this.x1 = x2;
+		this.x2 = x1;
+		this.y1 = y2;
+		this.y2 = y1;
+	    }
+	    int id = ++__ID;
+	}
+
+	public String toString() {
+	    return String.format("desc ((%d -> %d), (%d -> %d))", x1+1, x2+1, y1+1, y2+1);
+	}
+
+	public int length() {
+	    return 1 + (x2 - x1);
+	}
+    }
+    
+    private class Horizontal {	
 	public Horizontal(int y, int x1, int x2) {
 	    this.y = y;
 	    this.x1 = Math.min(x1, x2);
@@ -88,6 +152,9 @@ public class Advent2021_05 extends Drafter {
 
 	ArrayList<Horizontal> hlines = new ArrayList<Horizontal>();
 	ArrayList<Vertical> vlines = new ArrayList<Vertical>();
+
+	ArrayList<Ascending> alines = new ArrayList<Ascending>();
+	ArrayList<Descending> dlines = new ArrayList<Descending>();
 	
         while(hasNextLine()) {
 	    var line = nextLine();
@@ -103,13 +170,43 @@ public class Advent2021_05 extends Drafter {
 		hlines.add(new Horizontal(y1, x1, x2));
 	    else if (x1 == x2)
 		vlines.add(new Vertical(x1, y1, y2));
+	    else {
+		//normalize x, so the line is left->right
+		if(x1 > x2) {
+		    var tmp = x2;
+		    x2 = x1;
+		    x1 = tmp;
+
+		    tmp = y2;
+		    y2 = y1;
+		    y1 = tmp;
+		}
+
+		//see if it's asc or desc
+		if(y1 > y2)
+		    dlines.add(new Descending(x1, x2, y1, y2));
+		else
+		    alines.add(new Ascending(x1, x2, y1, y2));
+	    }
 	}
 
+
+	for(var asc : alines)
+	    println(asc);
+
+	for(var dsc : dlines)
+	    println(dsc);
+		
 	println("Hello World");
 
 	int val = solve_orthogonal(hlines, vlines, 0);
 	println(val);
-	
+
+	val = solve_octogonal(hlines,
+			      vlines,
+			      alines,
+			      dlines);
+	println(val);
         DEBUGF(1, "PART ONE: "); //todo
         DEBUGF(1, "PART TWO: "); //todo
         
@@ -119,6 +216,58 @@ public class Advent2021_05 extends Drafter {
 	return DEBUG(1, t.split("Finished Processing"));
     }
 
+    private Integer solve_octogonal(ArrayList<Horizontal> horizontal,
+				    ArrayList<Vertical> vertical,
+				    ArrayList<Ascending> ascending,
+				    ArrayList<Descending> descending) {
+	var descending_sorted_xy
+	    = new TreeSet<Descending>((Descending left, Descending right) ->
+				      Util.compareTo(left.x1 + left.y1, right.x1 + right.y1,
+						     left.id, right.id));
+
+	descending_sorted_xy.addAll(descending);
+
+	var ascending_sorted_xy
+	    = new TreeSet<Ascending>((Ascending left, Ascending right) ->
+				     Util.compareTo(left.y1 - left.x1, right.y1 - right.x1,
+						    left.id, right.id));
+
+	ascending_sorted_xy.addAll(ascending);
+	
+	
+	//println(ascending_sorted_xy);
+
+	var colinear_ascending = select_colinear_ascending(ascending_sorted_xy);
+	
+	for(var entry : colinear_ascending.entrySet()) {
+	    //find the set of intersections
+	    var isect = intersections_ascending(entry.getValue());
+
+	    
+	    if(isect.size() == 0)
+		continue;
+	    println(isect);
+	}
+
+
+	println();
+	
+	//println(descending_sorted_xy);
+	var colinear_descending = select_colinear_descending(descending_sorted_xy);
+
+	for(var entry : colinear_descending.entrySet()) {
+	    //println("colinear elements: " + entry.getValue());	    
+	    var isect = intersections_descending(entry.getValue());
+	    
+	    if(isect.size() == 0)
+		continue;
+
+	    println(isect);
+	}
+	
+	return -1;
+    }
+    
     private Integer solve_orthogonal(ArrayList<Horizontal> horizontal,
 				     ArrayList<Vertical> vertical, int depth) {	
 	/* sort all horizontal lines */
@@ -310,6 +459,13 @@ public class Advent2021_05 extends Drafter {
 	public void add(Vertical h) {
 	    add(h.y1, h.y2);
 	}
+	public void add(Ascending a) {
+	    add(a.y1, a.y2);
+	}
+	public void add(Descending d) {
+	    add(d.y1, d.y2);
+	}
+	
 	public void add(int open, int close) {
 	    Range range = new Range(open, close);
 
@@ -342,6 +498,34 @@ public class Advent2021_05 extends Drafter {
 	    }
 	}
 
+	public ArrayList<Descending> to_descending(int tendency) {
+	    ArrayList<Descending> components = new ArrayList<>();
+	    int sum = tendency;
+	    for(var range: ranges) {
+		int x1 = sum - range.open;
+		int y1 = sum - x1;
+		int x2 = sum - range.close;
+		int y2 = sum - x2;
+		components.add(new Descending(x1, y1, x2, y2));
+	    }
+
+	    return components;
+	}
+
+	public ArrayList<Ascending> to_ascending(int tendency) {
+	    ArrayList<Ascending> components = new ArrayList<>();
+	    int sum = tendency;
+	    for(var range: ranges) {
+		int x1 = sum + range.open;
+		int y1 = sum - x1;
+		int x2 = sum + range.close;
+		int y2 = sum - x2;
+		components.add(new Ascending(x1, y1, x2, y2));
+	    }
+
+	    return components;
+	}
+	
 	public ArrayList<Horizontal> to_horizontal(int y) {
 	    ArrayList<Horizontal> components = new ArrayList<>();
 	    for(var range: ranges)
@@ -362,6 +546,77 @@ public class Advent2021_05 extends Drafter {
     /**
      *  INTERSECTIONS
      */
+
+    private ArrayList<Descending> intersections_descending(ArrayList<Descending> colinear) {
+	if(colinear.size() < 2)
+	    return new ArrayList<>();
+	
+	ArrayList<Descending> intersections = new ArrayList<Descending>();
+
+	int tendency = colinear.get(0).y1 + colinear.get(0).x1;
+	println("tendency: " + tendency);
+
+	for(int a = 0; a < colinear.size(); a++) {
+	    var left = colinear.get(a);
+	    for(int b = a + 1; b < colinear.size(); b++) {
+		var right = colinear.get(b);
+
+		//1, 2, 3
+		if(left.x1 <= right.x1) {
+		    //1
+		    if(left.x2 < right.x1) continue;
+		    if(left.x2 < right.x2) intersections.add(new Descending(right.x1, left.x2,
+									    right.y1, left.y2));
+		    else intersections.add(new Descending(right.x1, right.x2,
+							  right.y1, right.y2));
+		}
+		//4, 5
+		else if(left.x1 <= right.x2) {
+		    if(left.x2 <= right.x2) intersections.add(new Descending(left.x1, left.x2,
+									     left.y1, left.y2));
+		    else intersections.add(new Descending(left.x2, right.x2,
+							  left.y2, right.y2));
+		}
+	    }
+	}
+	
+	return intersections;
+    }
+    
+    private ArrayList<Ascending> intersections_ascending(ArrayList<Ascending> colinear) {
+	if(colinear.size() < 2)
+	    return new ArrayList<>();
+
+	ArrayList<Ascending> intersections = new ArrayList<Ascending>();
+
+	int tendency = colinear.get(0).y1 - colinear.get(0).x1;
+	println("tendency: " + tendency);
+	for(int a = 0; a < colinear.size(); a++) {
+	    var left = colinear.get(a);
+	    for(int b = a + 1; b < colinear.size(); b++) {
+		var right = colinear.get(b);
+
+		//1, 2, 3
+		if(left.y1 <= right.y1) {
+		    //1
+		    if(left.y2 < right.y1) continue;
+		    if(left.y2 < right.y2) intersections.add(new Ascending(right.x1, left.x2,
+									   right.y1, left.y2));
+		    else intersections.add(new Ascending(right.x1, right.x2,
+							 right.y1, right.y2));
+		}
+		//4, 5
+		else if(left.y1 <= right.y2) {
+		    if(left.y2 <= right.y2) intersections.add(new Ascending(left.x1, left.x2,
+									    left.y1, left.y2));
+		    else intersections.add(new Ascending(left.x2, right.x2,
+							 left.y2, right.y2));
+		}
+	    }
+	}
+	
+	return intersections;
+    }
     
     private ArrayList<Vertical> intersections_vertical(ArrayList<Vertical> colinear) {
 	if(colinear.size() < 2)
@@ -465,11 +720,40 @@ public class Advent2021_05 extends Drafter {
 	return intersections;
     }
 
+
+    private TreeMap<Integer, ArrayList<Descending>>
+	select_colinear_descending(AbstractCollection<Descending> descending) {
+	TreeMap<Integer, ArrayList<Descending>> colinear = new TreeMap<>();
+
+	for(var line : descending) {
+	    var key = line.y1 + line.x1;
+	    if(!colinear.containsKey(key))
+		colinear.put(key, new ArrayList<>());
+	    colinear.get(key).add(line);
+	}
+
+	return colinear;
+    }
+    
+    private TreeMap<Integer, ArrayList<Ascending>>
+	select_colinear_ascending(AbstractCollection<Ascending> ascending) {
+	TreeMap<Integer, ArrayList<Ascending>> colinear = new TreeMap<>();
+
+	for(var line : ascending) {
+	    var key = line.y1 - line.x1;
+	    if(!colinear.containsKey(key))
+		colinear.put(key, new ArrayList<>());
+	    colinear.get(key).add(line);
+	}
+
+	return colinear;
+    }
+    
     private TreeMap<Integer, ArrayList<Horizontal>>
-	select_colinear_horizontal(AbstractCollection<Horizontal> horizontal_sorted) {
+	select_colinear_horizontal(AbstractCollection<Horizontal> horizontal) {
 	TreeMap<Integer, ArrayList<Horizontal>> colinear = new TreeMap<>();
 
-	for(var line : horizontal_sorted) {
+	for(var line : horizontal) {
 	    if(!colinear.containsKey(line.y))
 		colinear.put(line.y, new ArrayList<>());
 	    colinear.get(line.y).add(line);
@@ -479,10 +763,10 @@ public class Advent2021_05 extends Drafter {
     }
 
     private TreeMap<Integer, ArrayList<Vertical>>
-	select_colinear_vertical(AbstractCollection<Vertical> vertical_sorted) {
+	select_colinear_vertical(AbstractCollection<Vertical> vertical) {
 	TreeMap<Integer, ArrayList<Vertical>> colinear = new TreeMap<>();
 
-	for(var line : vertical_sorted) {
+	for(var line : vertical) {
 	    if(!colinear.containsKey(line.x))
 		colinear.put(line.x, new ArrayList<>());
 	    colinear.get(line.x).add(line);
