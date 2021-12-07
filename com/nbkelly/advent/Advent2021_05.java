@@ -40,7 +40,7 @@ public class Advent2021_05 extends Drafter {
     boolean generate_output = false;
 
     static int __ID = 0;
-
+    int offset = 1;
     private class Ascending {
 	int x1;
 	int x2;
@@ -65,11 +65,34 @@ public class Advent2021_05 extends Drafter {
 	}
 
 	public String toString() {
-	    return String.format(" asc ((%d -> %d), (%d -> %d))", x1+1, x2+1, y1+1, y2+1);
+	    return String.format(" asc ((%d -> %d), (%d -> %d)) %d",// (%d -> %d))",
+				 x1+offset, x2+offset, y1+offset, y2+offset,
+				 tendency(), z1(), z2());
+
 	}
 
 	public int length() {
 	    return 1 + (x2 - x1);
+	}
+
+	public int tendency() {
+	    return y1 - x1;
+	}
+
+	public int z1() {
+	    return y1 + x1;
+	}
+
+	public int z2() {
+	    return y2 + x2;
+	}
+
+	public Ascending warp(int x1, int x2) {
+	    //tendency = y1 - x1
+	    //tendency + x1 = y1;
+	    int y1 = tendency() + x1;
+	    int y2 = tendency() + x2;
+	    return new Ascending(x1, x2, y1, y2);
 	}
     }
 
@@ -97,11 +120,33 @@ public class Advent2021_05 extends Drafter {
 	}
 
 	public String toString() {
-	    return String.format("desc ((%d -> %d), (%d -> %d))", x1+1, x2+1, y1+1, y2+1);
+	    return String.format("desc ((%d -> %d), (%d -> %d), %d",// (%d -> %d))",
+				 x1+offset, x2+offset, y1+offset, y2+offset,
+				 tendency(), z1(), z2());
 	}
 
 	public int length() {
 	    return 1 + (x2 - x1);
+	}
+
+	public int tendency() {
+	    return y1 + x1;
+	}
+
+	public int z2() {
+	    return y1 - x1;
+	}
+
+	public int z1() {
+	    return y2 - x2;
+	}
+
+	public Descending warp(int x1, int x2) {
+	    //tendency = x1 + y1
+	    //tendency - x1 = y1
+	    int y1 = tendency() - x1;
+	    int y2 = tendency() - x2;
+	    return new Descending(x1, x2, y1, y2);
 	}
     }
     
@@ -144,7 +189,6 @@ public class Advent2021_05 extends Drafter {
 	    return (1 + y2) - y1;
 	}
     }
-
     
     /* solve problem here */
     @Override public int solveProblem() throws Exception {
@@ -158,6 +202,10 @@ public class Advent2021_05 extends Drafter {
 	
         while(hasNextLine()) {
 	    var line = nextLine();
+
+	    if(line.equals(""))
+		break;
+	    
 	    var nums = line.split(",| -> ");
 
 	    int x1 = Integer.parseInt(nums[0]);
@@ -191,21 +239,23 @@ public class Advent2021_05 extends Drafter {
 	}
 
 
-	for(var asc : alines)
+	/*for(var asc : alines)
 	    println(asc);
 
 	for(var dsc : dlines)
-	    println(dsc);
+	println(dsc);*/
 		
 	println("Hello World");
 
-	int val = solve_orthogonal(hlines, vlines, 0);
-	println(val);
+	int val = 0;
+	/*val = solve_orthogonal(hlines, vlines, 0);
+	  println(val);*/
 
 	val = solve_octogonal(hlines,
 			      vlines,
 			      alines,
-			      dlines);
+			      dlines,
+			      1);
 	println(val);
         DEBUGF(1, "PART ONE: "); //todo
         DEBUGF(1, "PART TWO: "); //todo
@@ -219,17 +269,110 @@ public class Advent2021_05 extends Drafter {
     private Integer solve_octogonal(ArrayList<Horizontal> horizontal,
 				    ArrayList<Vertical> vertical,
 				    ArrayList<Ascending> ascending,
-				    ArrayList<Descending> descending) {
+				    ArrayList<Descending> descending,
+				    int depth) {
+	/**
+	 * WORK ON ORTHOGONALS
+	 */
+	/* sort all horizontal lines */
+	var horizontal_sorted_y
+	    = new TreeSet<Horizontal>((Horizontal left, Horizontal right) ->
+				      Util.compareTo(left.y, right.y,   left.x1, right.x1,
+						     left.x2, right.x2, left.id, right.id));	
+	horizontal_sorted_y.addAll(horizontal);
+	
+	/* find the set of colinear horizontal lines */
+	var colinear_horizontal = select_colinear_horizontal(horizontal_sorted_y);
+	//horizontal_sorted_y = null;
+	
+	ArrayList<Horizontal> horizontal_colinear_overlaps = new ArrayList<>();
+	
+	for(var entry : colinear_horizontal.entrySet()) {
+	    //find the set of intersections
+	    var isect = intersections_horizontal(entry.getValue());
+	    
+	    if(isect.size() == 0)
+		continue;
+	    
+	    var y = isect.get(0).y;
+	    Ranger r = new Ranger();
+	    for(var segment : isect)
+		r.add(segment);
+
+	    var segments = r.to_horizontal(y);	    
+	    horizontal_colinear_overlaps.addAll(segments);
+	}
+
+	/* print these all out */
+	for(var line : horizontal_colinear_overlaps)
+	  println("h_segments: " + line);
+
+	/* sort all vertical lines */
+	var vertical_sorted_x
+	    = new TreeSet<Vertical>((Vertical left, Vertical right) ->
+				    Util.compareTo(left.x, right.x,   left.y1, right.y1,
+						   left.y2, right.y2, left.id, right.id));
+	vertical_sorted_x.addAll(vertical);
+
+	/* find the set of colinear vertical lines */
+	var colinear_vertical = select_colinear_vertical(vertical_sorted_x);
+
+	ArrayList<Vertical> vertical_colinear_overlaps = new ArrayList<>();
+
+	for(var entry : colinear_vertical.entrySet()) {
+	    var isect = intersections_vertical(entry.getValue());
+
+	    if(isect.size() == 0)
+		continue;
+
+	    var x = isect.get(0).x;
+	    Ranger r = new Ranger();
+	    for(var segment : isect)
+		r.add(segment);
+
+	    var segments = r.to_vertical(x);
+	    vertical_colinear_overlaps.addAll(segments);
+	}
+
+	/* print these all out */
+	/*for(var line : vertical_colinear_overlaps)
+	  println("v_segments: " + line);*/
+
+	
+	int line_orthogonal_size = 0;
+	for(var line : vertical_colinear_overlaps)
+	    line_orthogonal_size += line.length();
+
+	for(var line : horizontal_colinear_overlaps)
+	    line_orthogonal_size += line.length();
+
+	println("lazy orthogonal space: " + line_orthogonal_size);
+	
+	/* stratify all horizontal  overlaps */
+	var strata_horizontal = select_colinear_horizontal(horizontal_colinear_overlaps);
+	var strata_vertical = select_colinear_vertical(vertical_colinear_overlaps);
+
+	/**
+	 * WORK ON DIAGONALS
+	 */
+
+
+	
+	
 	var descending_sorted_xy
 	    = new TreeSet<Descending>((Descending left, Descending right) ->
-				      Util.compareTo(left.x1 + left.y1, right.x1 + right.y1,
+				      Util.compareTo(left.tendency(), right.tendency(),
+						     left.x1, right.x1,
+						     left.x2, right.x2,
 						     left.id, right.id));
 
 	descending_sorted_xy.addAll(descending);
 
 	var ascending_sorted_xy
 	    = new TreeSet<Ascending>((Ascending left, Ascending right) ->
-				     Util.compareTo(left.y1 - left.x1, right.y1 - right.x1,
+				     Util.compareTo(left.tendency(), right.tendency(),
+						    left.y1, right.y1,
+						    left.y2, right.y1,
 						    left.id, right.id));
 
 	ascending_sorted_xy.addAll(ascending);
@@ -238,15 +381,25 @@ public class Advent2021_05 extends Drafter {
 	//println(ascending_sorted_xy);
 
 	var colinear_ascending = select_colinear_ascending(ascending_sorted_xy);
+	ArrayList<Ascending> ascending_colinear_overlaps = new ArrayList<>();
 	
 	for(var entry : colinear_ascending.entrySet()) {
 	    //find the set of intersections
 	    var isect = intersections_ascending(entry.getValue());
-
 	    
 	    if(isect.size() == 0)
 		continue;
-	    println(isect);
+	    
+	    //println(isect);
+
+	    var tendency = isect.get(0).tendency();
+	    Ranger r = new Ranger();
+	    for(var segment : isect)
+		r.add(segment);
+
+	    var segments = r.to_ascending(tendency);
+	    //println("segments: " + segments);
+	    ascending_colinear_overlaps.addAll(segments);
 	}
 
 
@@ -254,18 +407,531 @@ public class Advent2021_05 extends Drafter {
 	
 	//println(descending_sorted_xy);
 	var colinear_descending = select_colinear_descending(descending_sorted_xy);
-
+	ArrayList<Descending> descending_colinear_overlaps = new ArrayList<>();
+	
 	for(var entry : colinear_descending.entrySet()) {
 	    //println("colinear elements: " + entry.getValue());	    
 	    var isect = intersections_descending(entry.getValue());
-	    
+
 	    if(isect.size() == 0)
 		continue;
 
-	    println(isect);
+	    //println(isect);
+
+	    var tendency = isect.get(0).tendency();
+	    Ranger r = new Ranger();
+	    for(var segment : isect)
+		r.add(segment);
+	    
+	    var segments = r.to_descending(tendency);
+	    //println("segments: " + segments);
+	    descending_colinear_overlaps.addAll(segments);
 	}
+
+	int line_lazy_size = 0;
+	for(var line : ascending_colinear_overlaps)
+	    line_lazy_size += line.length();
+
+	for(var line : descending_colinear_overlaps)
+	    line_lazy_size += line.length();
+
+	println("lazy line space: " + line_lazy_size);
 	
-	return -1;
+	HashSet<IntPair> collisions = new HashSet<IntPair>();
+
+
+	/* statified overlaps */
+	var strata_descending_colinear = select_colinear_descending(descending_colinear_overlaps);
+	var strata_ascending_colinear = select_colinear_ascending(ascending_colinear_overlaps);
+	
+	//now to find all the points where diagonal lines overlap
+	
+	ArrayList<Ascending> asc_sorted_x1 = new ArrayList<Ascending>(ascending);
+	asc_sorted_x1.sort((Ascending left, Ascending right) ->
+			   Util.compareTo(left.x1, right.x1,
+					  left.x2, right.x2,
+					  left.tendency(), right.tendency(),
+					  left.id, right.id));
+
+	ArrayList<Descending> dsc_sorted_x1 = new ArrayList<Descending>(descending);
+	dsc_sorted_x1.sort((Descending left, Descending right) ->
+			   Util.compareTo(left.x1, right.x1,
+					  left.x2, right.x2,
+					  left.tendency(), right.tendency(),
+					  left.id, right.id));
+
+	TreeSet<Descending> open_set
+	    = new TreeSet<Descending>((Descending left, Descending right) ->
+				      Util.compareTo(left.x2, right.x2,
+						     left.x1, right.x1,
+						     left.tendency(), right.tendency(),
+						     left.id, right.id));
+
+	println("resolving diagonal collisions");
+	
+	int index = 0;
+	for(var asc_line : asc_sorted_x1) {
+	    int x1 = asc_line.x1;
+
+	    while(index < dsc_sorted_x1.size() &&
+		  dsc_sorted_x1.get(index).x1 <= x1) {
+		open_set.add(dsc_sorted_x1.get(index));
+		index++;
+	    }
+
+	    while(!open_set.isEmpty() && open_set.first().x2 < x1)
+		open_set.pollFirst();
+
+	    //check every line in the open set to see if it collides with the ascending line
+	    collider: for(var dsc_line : dsc_sorted_x1) {//open_set) {
+		//these lines are guaranteed to collide on the x scale
+		//how to find out of they collide on y?
+		//find out if there's a point on dsc which equals the tendency of y?
+		//if asc.y1 < dsc.y1, no intersection
+
+		var pair = diagonal_collision(asc_line, dsc_line);
+		//TODO: also filter against orthogonal lines
+		pair = filter_strata(pair, strata_ascending_colinear, strata_descending_colinear,
+				     strata_horizontal, strata_vertical);
+		if(pair != null)
+		    collisions.add(pair);
+	    }
+	}
+
+	open_set = null;
+	println("num collisions (diag x diag): " + collisions.size());
+
+	/**
+	 * FIND HORIZONTAL COLLISIONS
+	 */
+	
+	
+	//find all the points where horizontal lines intersect eachother
+	//this is all of the horizontal lines sorted by x1
+	ArrayList<Horizontal> horizontal_sorted_x1 = new ArrayList<>();
+	horizontal_sorted_x1.addAll(horizontal);
+	horizontal_sorted_x1.sort((Horizontal left, Horizontal right)->
+				  Util.compareTo(left.x1, right.x1, left.x2, right.x2,
+						 left.y, right.y, left.id, right.id));
+
+	//this will only be the horizontal lines that are open, sorted by x2
+	TreeSet<Horizontal> open_interval //horizontal_sorted_x2
+	    = new TreeSet<>((Horizontal left, Horizontal right)->
+			  Util.compareTo(left.x2, right.x2, left.x1, right.x1,
+					 left.y, right.y, left.id, right.id));
+
+	//this will be all of the vertical lines, sorted by x - this is already defined
+	/*TreeSet<Vertical> vertical_sorted_x
+	    = new TreeSet((Vertical left, Vertical right)->
+			  Util.compareTo(left.x, right.x,   left.y1, right.y1,
+			  left.y2, right.y2, left.id, right.id));*/
+
+	index = 0;
+	
+	//HashSet<IntPair> collisions = new HashSet<IntPair>();
+
+	/* stratify all colinear overlaps */
+	//var strata_horizontal = select_colinear_horizontal(horizontal_colinear_overlaps);
+	//var strata_vertical = select_colinear_vertical(vertical_colinear_overlaps);
+	
+	for(var vertical_line : vertical_sorted_x) {
+	    int x = vertical_line.x;
+
+	    /* pick up all lines that start to the left (or in line) with this one */
+	    while(index < horizontal_sorted_x1.size() &&
+		  horizontal_sorted_x1.get(index).x1 <= x) {
+		open_interval.add(horizontal_sorted_x1.get(index));
+		index++;
+	    }
+
+	    /* throw away all lines which end to the left of this one */
+	    while(!open_interval.isEmpty() && open_interval.first().x2 < x)
+		open_interval.pollFirst();
+
+	    /* now we scan throw all lines in the interval, and see which ones intersect 
+	       note that these lines are all guaranteed to line up on x - only y is suspect */
+	    outer: for(var horizontal_line : open_interval) {
+		IntPair pair = new IntPair(x, horizontal_line.y);
+		if(vertical_line.y1 <= horizontal_line.y &&
+		   horizontal_line.y <= vertical_line.y2) {		    
+		    /* see if this is marked by an overlapping line already */
+		    pair = filter_strata(pair, strata_ascending_colinear, strata_descending_colinear,
+				     strata_horizontal, strata_vertical);
+		    if(pair != null)
+			collisions.add(pair);
+		}		   
+	    }
+	}
+
+	open_interval = null;
+	println("num collisions (diag x diag) + (horiz x vert): " + collisions.size());
+
+
+	/**
+	 * Find all the points where an ascending line intersects a vertical line
+	 */
+
+	//interval = asc line (x1, x2)
+	//need to have: ascending lines sorted on x1, x2
+	//vertical lines sorted by x
+	//
+	/* asc_sorted_x1 */
+	/* vertical_sorted_x */
+	TreeSet<Ascending> open_av
+	    = new TreeSet<Ascending>((Ascending left, Ascending right)->
+				     Util.compareTo(left.x2, right.x2,
+						    left.y1, right.y1,
+						    left.id, right.id));
+
+	index = 0;
+
+	for(var vertical_line : vertical_sorted_x) {
+	    int x = vertical_line.x;
+	    
+	    while(index < asc_sorted_x1.size()
+		  && asc_sorted_x1.get(index).x1 <= x) {
+		open_av.add(asc_sorted_x1.get(index));
+		index++;
+	    }
+	    
+	    while(!open_av.isEmpty() && open_av.first().x2 < x)
+		open_av.pollFirst();
+
+	    for(var asc_line : open_av) {
+		//does it intersect? we know what the x has to be
+		//which means we can calculate where the y has to be
+		var tendency = asc_line.tendency();
+
+		//tendency = y - x
+		//tendency + x = y
+		var y_target = tendency + x;
+
+		if(vertical_line.y1 <= y_target && y_target <= vertical_line.y2) {
+		    IntPair pair = new IntPair(x, y_target);
+		    pair = filter_strata(pair, strata_ascending_colinear, strata_descending_colinear,
+				     strata_horizontal, strata_vertical);
+		    if(pair != null)
+			collisions.add(pair);		    
+		}
+	    }
+	}
+
+	open_av = null;
+	println("num collisions (diag x diag) + (horiz x vert) + (asc x vert): "
+		+ collisions.size());
+
+	/**
+	 * Find all the points where a descending line intersects a vertical line
+	 */
+	/* dsc_sorted_x1 */
+	/* vertical_sorted_x */
+	TreeSet<Descending> open_dv
+	    = new TreeSet<Descending>((Descending left, Descending right)->
+				     Util.compareTo(left.x2, right.x2,
+						    left.y1, right.y1,
+						    left.id, right.id));
+
+	index = 0;
+
+	for(var vertical_line : vertical_sorted_x) {
+	    int x = vertical_line.x;
+	    
+	    while(index < dsc_sorted_x1.size()
+		  && dsc_sorted_x1.get(index).x1 <= x) {
+		open_dv.add(dsc_sorted_x1.get(index));
+		index++;
+	    }
+
+	    while(!open_dv.isEmpty() && open_dv.first().x2 < x)
+		open_dv.pollFirst();
+
+	    for(var dsc_line : open_dv) {
+		//does it intersect? we know what the x has to be
+		//which means we can calculate where the y has to be
+		var tendency = dsc_line.tendency();
+
+		//tendency = y + x
+		//tendency - x = y
+		var y_target = tendency - x;
+
+		if(vertical_line.y1 <= y_target && y_target <= vertical_line.y2) {
+		    IntPair pair = new IntPair(x, y_target);
+		    pair = filter_strata(pair, strata_ascending_colinear, strata_descending_colinear,
+				     strata_horizontal, strata_vertical);
+		    if(pair != null)
+			collisions.add(pair);		    
+		}
+	    }
+	}
+
+	open_dv = null;
+	println("num collisions (diag x diag) + (horiz x vert) + (asc x vert) +"
+		+ " (dsc x vert): "
+		+ collisions.size());
+
+	/**
+	 * Find all the points where an ascending line intersects with a horizontal line
+	 */
+
+	//asc_sorted_y1
+	var asc_sorted_y1 = new ArrayList<Ascending>(ascending);
+	asc_sorted_y1.sort(((Ascending left, Ascending right)->
+			    Util.compareTo(left.y1, right.y1,
+					   left.y2, right.y2,
+					   left.x1, right.x1,
+					   left.id, right.id)));
+			   
+	var open_ah = new TreeSet<Ascending>((Ascending left, Ascending right)->
+					     Util.compareTo(left.y2, right.y2,
+							    left.y1, right.y1,
+							    left.x1, right.x1,
+							    left.id, right.id));
+
+	/*horizontal_sorted_y*/
+	index = 0;
+	for(var horizontal_line : horizontal_sorted_y) {
+	    int y = horizontal_line.y;
+
+	    while(index < asc_sorted_y1.size() &&
+		  asc_sorted_y1.get(index).y1 <= y) {
+		open_ah.add(asc_sorted_y1.get(index));
+		index++;
+	    }
+
+	    while(!open_ah.isEmpty() && open_ah.first().y2 < y)
+		open_ah.pollFirst();
+
+	    for(var asc_line : open_ah) {
+		//does it intersect? we know what the x has to be
+		//which means we can calculate where the y has to be
+		var tendency = asc_line.tendency();
+
+		//tendency = y - x
+		//tendency + x = y
+		//x = y - tendency
+		//y - tendency = x
+		var x_target = y - tendency;
+
+		if(horizontal_line.x1 <= x_target && x_target <= horizontal_line.x2) {
+		    IntPair pair = new IntPair(x_target, y);
+		    pair = filter_strata(pair, strata_ascending_colinear, strata_descending_colinear,
+				     strata_horizontal, strata_vertical);
+		    if(pair != null)
+			collisions.add(pair);		    
+		}
+	    }
+	}
+
+	open_ah = null;
+	println("num collisions (diag x diag) + (horiz x vert) + (asc x vert) +"
+		+ " (dsc x vert) + (asc x hori): "
+		+ collisions.size());
+
+
+	/**
+	 * Find all descending x horizontal intersections
+	 */
+	index = 0;
+
+	var dsc_sorted_y2 = new ArrayList<Descending>(descending);
+	dsc_sorted_y2.sort(((Descending left, Descending right)->
+			    Util.compareTo(left.y2, right.y2,
+					   left.y1, right.y1,
+					   left.x1, right.x1,
+					   left.id, right.id)));
+			   
+	var open_dh = new TreeSet<Descending>((Descending left, Descending right)->
+					     Util.compareTo(left.y1, right.y1,
+							    left.y2, right.y2,
+							    left.x1, right.x1,
+							    left.id, right.id));
+
+	
+	for(var horizontal_line : horizontal_sorted_y) {
+	    int y = horizontal_line.y;
+
+	    while(index < dsc_sorted_y2.size() &&
+		  dsc_sorted_y2.get(index).y2 <= y) {
+		open_dh.add(dsc_sorted_y2.get(index));
+		index++;
+	    }
+
+	    while(!open_dh.isEmpty() && open_dh.first().y1 < y)
+		open_dh.pollFirst();
+
+	    for(var dsc_line : open_dh) {
+		//does it intersect? we know what the x has to be
+		//which means we can calculate where the y has to be
+		var tendency = dsc_line.tendency();
+
+		//tendency = y + x
+		//tendency - y = x		
+		var x_target = tendency - y;
+
+		if(horizontal_line.x1 <= x_target && x_target <= horizontal_line.x2) {
+		    IntPair pair = new IntPair(x_target, y);
+		    pair = filter_strata(pair, strata_ascending_colinear, strata_descending_colinear,
+				     strata_horizontal, strata_vertical);
+		    if(pair != null)
+			collisions.add(pair);
+		}
+	    }
+	}
+	open_dh = null;
+	println("num collisions (diag x diag) + (horiz x vert) + (asc x vert) +"
+		+ " (dsc x vert) + (asc x hori) + (dsc x hori): "
+		+ collisions.size());
+
+	println("cursory sum: " + (collisions.size() + line_lazy_size + line_orthogonal_size));
+
+
+	//now we need to remove 1 for every time a vertical colinear segment collided with
+	//a horizontal colinear segment or diagonal colinear segment, etc
+	
+	var res = collisions.size() + line_lazy_size + line_orthogonal_size;
+	//fortunately, we can do this recursively
+	var removal = 0;
+	if(horizontal_colinear_overlaps.size() > 0 ||
+	   vertical_colinear_overlaps.size() > 0 ||
+	   descending_colinear_overlaps.size() > 0 ||
+	   ascending_colinear_overlaps.size() > 0) {
+	    DEBUG(2, "recursively solving for depth " + (depth + 1) + "\n");
+
+	    //we actually need to seperately do the diagxdiag, vertxhoriz, etc ones
+	    //because we could have 3+ intersecting in the same place
+	    var empty_horizontal = new ArrayList<Horizontal>();
+	    var empty_vertical = new ArrayList<Vertical>();
+	    var empty_ascending = new ArrayList<Ascending>();
+	    var empty_descending = new ArrayList<Descending>();
+
+	    //diag x diag
+	    removal = solve_octogonal(empty_horizontal,
+				      empty_vertical,
+				      ascending_colinear_overlaps,
+				      descending_colinear_overlaps,
+				      depth+1);
+
+	    removal += solve_octogonal(empty_horizontal,
+				       vertical_colinear_overlaps,
+				       empty_ascending,
+				       descending_colinear_overlaps,
+				       depth+1);
+
+	    removal += solve_octogonal(horizontal_colinear_overlaps,
+				       empty_vertical,
+				       empty_ascending,
+				       descending_colinear_overlaps,
+				       depth+1);
+
+	    removal += solve_octogonal(empty_horizontal,
+				       vertical_colinear_overlaps,
+				       ascending_colinear_overlaps,
+				       empty_descending,
+				       depth+1);
+
+	    removal += solve_octogonal(horizontal_colinear_overlaps,
+				       empty_vertical,
+				       ascending_colinear_overlaps,
+				       empty_descending,
+				       depth+1);
+
+	    removal += solve_octogonal(horizontal_colinear_overlaps,
+				       vertical_colinear_overlaps,
+				       empty_ascending,
+				       empty_descending,
+				       depth+1);
+	    
+	    
+	    /*removal = solve_octogonal(horizontal_colinear_overlaps,
+				       vertical_colinear_overlaps,
+				      ascending_colinear_overlaps,
+				      descending_colinear_overlaps,
+				      depth + 1);*/
+	    DEBUG(2, "finished solving for depth " + (depth + 1) + "\n");
+	}
+
+	res = res - removal;
+	println("Size of overlap of colinear overlaps: " + removal);
+	//println("collision size: " + collisions.size());
+
+	return res;
+    }
+    
+    private IntPair filter_strata(IntPair input,
+				  TreeMap<Integer, ArrayList<Ascending>> asc_strata,
+				  TreeMap<Integer, ArrayList<Descending>> dsc_strata,
+				  TreeMap<Integer, ArrayList<Horizontal>> h_strata,
+				  TreeMap<Integer, ArrayList<Vertical>> v_strata) {	
+	if(input == null)
+	    return input;	
+	
+	var selected_h = h_strata.get(input.Y);
+	if(selected_h != null)
+	    for(var hline : selected_h)
+		if(input.Y == hline.y)
+		    if(hline.x1 <= input.X && input.X <= hline.x2)
+			return null;	
+	
+	var selected_v = v_strata.get(input.X);
+	if(selected_v != null)
+	    for(var vline : selected_v)
+		if(input.X == vline.x)
+		    if(vline.y1 <= input.Y && input.Y <= vline.y2)
+			return null;
+	
+	
+	int asc_tendency = input.Y - input.X;
+	var selected_asc = asc_strata.get(asc_tendency);
+	if(selected_asc != null)
+	    for(var asc : selected_asc)
+		if(asc.x1 <= input.X && input.X <= asc.x2)
+		    return null;
+	
+	int dsc_tendency = input.Y + input.X;
+	var selected_dsc = dsc_strata.get(dsc_tendency);
+	if(selected_dsc != null)
+	    for(var dsc : selected_dsc)
+		if(dsc.x1 <= input.X && input.X <= dsc.x2)
+		    return null;	
+		
+	return input;
+    }
+    
+    private IntPair diagonal_collision(Ascending asc, Descending dsc) {	
+	//uneven lines can never intersect
+	if(Math.abs(asc.tendency() + dsc.tendency())%2 == 1)
+	  return null;
+
+	var p0_x = asc.x1;
+	var p0_y = asc.y1;
+
+	var p1_x = asc.x2;
+	var p1_y = asc.y2;
+
+	var p2_x = dsc.x1;
+	var p2_y = dsc.y1;
+
+	var p3_x = dsc.x2;
+	var p3_y = dsc.y2;
+
+	
+	float s1_x, s1_y, s2_x, s2_y;
+	s1_x = p1_x - p0_x;     s1_y = p1_y - p0_y;
+	s2_x = p3_x - p2_x;     s2_y = p3_y - p2_y;	
+	
+	float s, t;
+	s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
+	t = ( s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+	if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
+	    Integer x = Math.round(p0_x + (t * s1_x));
+	    Integer y = Math.round(p0_y + (t * s1_y));
+	    //printf("X, Y: %d, %d%n", x, y);
+
+	    return new IntPair((int)x, (int)(y));
+	}
+			
+	return null;
     }
     
     private Integer solve_orthogonal(ArrayList<Horizontal> horizontal,
@@ -332,8 +998,8 @@ public class Advent2021_05 extends Drafter {
 	}
 
 	/* print these all out */
-	for(var line : vertical_colinear_overlaps)
-	    println("v_segments: " + line);
+	/*for(var line : vertical_colinear_overlaps)
+	  println("v_segments: " + line);*/
 
 	
 	int line_lazy_size = 0;
@@ -463,7 +1129,7 @@ public class Advent2021_05 extends Drafter {
 	    add(a.y1, a.y2);
 	}
 	public void add(Descending d) {
-	    add(d.y1, d.y2);
+	    add(d.x1, d.x2);
 	}
 	
 	public void add(int open, int close) {
@@ -500,13 +1166,16 @@ public class Advent2021_05 extends Drafter {
 
 	public ArrayList<Descending> to_descending(int tendency) {
 	    ArrayList<Descending> components = new ArrayList<>();
+
+	    //tendency = y1 + x1
+	    //tendency - y1 = x1
 	    int sum = tendency;
 	    for(var range: ranges) {
-		int x1 = sum - range.open;
-		int y1 = sum - x1;
-		int x2 = sum - range.close;
-		int y2 = sum - x2;
-		components.add(new Descending(x1, y1, x2, y2));
+		int x1 = range.open;
+		int y1 = tendency - x1;
+		int x2 = range.close;
+		int y2 = tendency - x2;
+		components.add(new Descending(x1, x2, y1, y2));
 	    }
 
 	    return components;
@@ -514,13 +1183,17 @@ public class Advent2021_05 extends Drafter {
 
 	public ArrayList<Ascending> to_ascending(int tendency) {
 	    ArrayList<Ascending> components = new ArrayList<>();
-	    int sum = tendency;
-	    for(var range: ranges) {
-		int x1 = sum + range.open;
-		int y1 = sum - x1;
-		int x2 = sum + range.close;
-		int y2 = sum - x2;
-		components.add(new Ascending(x1, y1, x2, y2));
+
+	    //tendency = y1 - x1
+	    //tendency + x1 = y1
+	    //y1 - tendency = x1;
+	    //range is the y1 values	    
+	    for(var range: ranges) {		
+		int y1 = range.open;
+		int x1 = y1 - tendency;		
+		int y2 = range.close;
+		int x2 = y2 - tendency;
+		components.add(new Ascending(x1, x2, y1, y2));
 	    }
 
 	    return components;
@@ -554,7 +1227,7 @@ public class Advent2021_05 extends Drafter {
 	ArrayList<Descending> intersections = new ArrayList<Descending>();
 
 	int tendency = colinear.get(0).y1 + colinear.get(0).x1;
-	println("tendency: " + tendency);
+	//println("tendency: " + tendency);
 
 	for(int a = 0; a < colinear.size(); a++) {
 	    var left = colinear.get(a);
@@ -590,7 +1263,7 @@ public class Advent2021_05 extends Drafter {
 	ArrayList<Ascending> intersections = new ArrayList<Ascending>();
 
 	int tendency = colinear.get(0).y1 - colinear.get(0).x1;
-	println("tendency: " + tendency);
+	//println("tendency: " + tendency);
 	for(int a = 0; a < colinear.size(); a++) {
 	    var left = colinear.get(a);
 	    for(int b = a + 1; b < colinear.size(); b++) {
