@@ -26,6 +26,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 04  | 1.5km below the surface, a giant squid has grappled our submarine (revenge for chinese fishery practices). Eric decides it wants to play bingo. We use the bingo program on the ship to print a set of boards and draws, and then game the system to see the best ways to win and lose.
 | Day 05  | We've come accross a network of hydrothermal vents on the ocean floor. To get through safely, we must map them. Hey where did that octopus go? We never found out what he wanted?
 | Day 06  | Still heading down, we see some lanternfish. We attempt to model their growth rate.
+| Day 07  | On the way down, a whale attacks. Fortunately, a swarm of crabs (in their own crab submersibles) is ready to assist. We need to compute the optimal way to align the crabmarines so they can blow the floor out of the ocean, and let us into an underwater cave system. Any by most optimal, Eric means we have to make sure they save on fuel - "crabs" are notorius cheapskates (what did Eric mean by this?)
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -38,6 +39,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 04  | *O(log<sub>2</sub>(N).S.B)* **OR** *O(B + Nlog<sub>2</sub>N)*	    | *O(log<sub>2</sub>(N).S.B)* or *O(B + Nlog<sub>2</sub>N)* | *N,S,B = number of draws,size(num_cols) of the board, and number of boards* - This was a fun problem. Parsing may be hard for people not using python or java, specifically because eric decided to left pad numbers on the bingo boards (why couldn't they just leave spacing up to the user to pretty print?). Fuck you eric for not counting the diagonals. The second time complexity is for when you solve the bingo boards through condensing them into "I win at this index". You have to sort them still, so it ends up being *Nlog<sub>2</sub>N*
 | Day 05  | *O(N.L)*		    | *O(N.L)*	| *number of lines, average line length* - Note that there is a better way to do this, which involves a linear sort on all of the line segments, so you can scan left to right picking out all the intersections. This problem produces some pretty pictures.
 | Day 06  | *O(N)*		    | *O(N)*	| *N = number of days* - This one was quite easy, but the way it's written may catch people off guard for part 2 (a brute force solution will slow to a crawl). I like it. **your puzzle input: FUCK YOU**
+| Day 07  | *O(N)*		    | *O(N)*	| This is one of the easiest days so far. In terms of programming, there's effectively nothing you need to do. You need to know how to take an average, find the median, and sum a series of integers. Recognizing the problem is slightly harder, but still not too hard.
 
 ## Solutions
 
@@ -284,7 +286,15 @@ for(int i = 0; i < 9; i++)
 DEBUGF(1, "PART TWO: "); println(sum);
 ```
 
+### Day 07: The Treachery of Wales
 
+#### Part One
+Find the median value, then compute the distance for that index. This is ```ints(ints.size()/2)```.
+
+#### Part Two
+First, recall the formula for a sum of n integers: ```1 + 2 + ... + n == n (n+1)```. If you want a better visual proof, look in the code, or write the series down twice, once backwards, and add the two together.
+
+Then find the average of the set, and compute your distance from that number.
 
 ## Visualizations
 
