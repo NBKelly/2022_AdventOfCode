@@ -310,13 +310,13 @@ For this one, you have to actually work out what all the numbers are and decode 
 To start with, we know four numbers for free already. Using that, the process I used is as follows:
 
 * We can make an intermediate product (let's call it **X**) with ```|8| - |4|.```
-* |2| = k in unresolved, where size(k) == 5 and size(k - **X**) == 2
+* |2| = k in unresolved, *where* ```size(k) == 5``` and ```size(k - X) == 2```
 * **mid** = |2| - |1| - **X**
 * |0| = |8| - **mid**
 * |6| = |8| - (|2| ^ |1|)
-* |9| = k in unresolved, where size(k) == 6
-* |3| = k in unresolved, where |2|^|1| in k
-* |5| = last element in unresolved
+* |9| = k in unresolved, *where* ```size(k) == 6```
+* |3| = k in unresolved, *where* |2|^|1| in k
+* |5| = |unresolved|
 
 ## Visualizations
 
