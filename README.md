@@ -27,6 +27,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 05  | We've come accross a network of hydrothermal vents on the ocean floor. To get through safely, we must map them. Hey where did that octopus go? We never found out what he wanted?
 | Day 06  | Still heading down, we see some lanternfish. We attempt to model their growth rate.
 | Day 07  | On the way down, a whale attacks. Fortunately, a swarm of crabs (in their own crab submersibles) is ready to assist. We need to compute the optimal way to align the crabmarines so they can blow the floor out of the ocean, and let us into an underwater cave system. Any by most optimal, Eric means we have to make sure they save on fuel - "crabs" are notorius cheapskates (what did Eric mean by this?)
+| Day 08  | We made in into the cave (at the cheapest price possible for the crabs), by the width of a hair. We know there's an exit somewhere deeper, but the seven-segment displays in our submarine are faulty. Time to debug them!
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -40,6 +41,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 05  | *O(N.L)*		    | *O(N.L)*	| *number of lines, average line length* - Note that there is a better way to do this, which involves a linear sort on all of the line segments, so you can scan left to right picking out all the intersections. This problem produces some pretty pictures.
 | Day 06  | *O(N)*		    | *O(N)*	| *N = number of days* - This one was quite easy, but the way it's written may catch people off guard for part 2 (a brute force solution will slow to a crawl). I like it. **your puzzle input: FUCK YOU**
 | Day 07  | *O(N)*		    | *O(N)*	| This is one of the easiest days so far. In terms of programming, there's effectively nothing you need to do. You need to know how to take an average, find the median, and sum a series of integers. Recognizing the problem is slightly harder, but still not too hard.
+| Day 08  | *O(N)*		    | *O(N)*	| Eric needs to take lessons in technical writing. This entire page is a mess. The first part of the problem is braindead easy, but figuring out what the fuck eric wants from you is a challenge. The second part is actually a fun puzzle, but it's still a challenge finding out what the fuck eric is asking you.
 
 ## Solutions
 
@@ -295,6 +297,26 @@ Find the median value, then compute the distance for that index. This is ```ints
 First, recall the formula for a sum of n integers: ```1 + 2 + ... + n == n (n+1)```. If you want a better visual proof, look in the code, or write the series down twice, once backwards, and add the two together.
 
 Then find the average of the set, and compute your distance from that number.
+
+### Day 08: Seven Segment Search
+
+#### Part One
+The numbers 1, 4, 7 and 8 each have a unique number of segments required to produce them. (2, 4, 3, 7). Simply count the number of times the output (the four numbers on the right) contains these numbers.
+
+#### Part Two
+
+For this one, you have to actually work out what all the numbers are and decode all of the outputs.
+
+To start with, we know four numbers for free already. Using that, the process I used is as follows:
+
+* We can make an intermediate product (let's call it **X**) with ```|8| - |4|.```
+* |2| = k in unresolved, where size(k) == 5 and size(k - **X**) == 2
+* **mid** = |2| - |1| - **X**
+* |0| = |8| - **mid**
+* |6| = |8| - (|2| ^ |1|)
+* |9| = k in unresolved, where size(k) == 6
+* |3| = k in unresolved, where |2|^|1| in k
+* |5| = last element in unresolved
 
 ## Visualizations
 
