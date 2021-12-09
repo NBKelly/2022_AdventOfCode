@@ -28,6 +28,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 06  | Still heading down, we see some lanternfish. We attempt to model their growth rate.
 | Day 07  | On the way down, a whale attacks. Fortunately, a swarm of crabs (in their own crab submersibles) is ready to assist. We need to compute the optimal way to align the crabmarines so they can blow the floor out of the ocean, and let us into an underwater cave system. Any by most optimal, Eric means we have to make sure they save on fuel - "crabs" are notorius cheapskates (what did Eric mean by this?)
 | Day 08  | We made in into the cave (at the cheapest price possible for the crabs), by the width of a hair. We know there's an exit somewhere deeper, but the seven-segment displays in our submarine are faulty. Time to debug them!
+| Day 09  | The caves are actually alva tubes, and are filling with smoke. We need to model the smoke to find a safe way through.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -42,6 +43,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 06  | *O(N)*		    | *O(N)*	| *N = number of days* - This one was quite easy, but the way it's written may catch people off guard for part 2 (a brute force solution will slow to a crawl). I like it. **your puzzle input: FUCK YOU**
 | Day 07  | *O(N)*		    | *O(N)*	| This is one of the easiest days so far. In terms of programming, there's effectively nothing you need to do. You need to know how to take an average, find the median, and sum a series of integers. Recognizing the problem is slightly harder, but still not too hard.
 | Day 08  | *O(N)*		    | *O(N)*	| Eric needs to take lessons in technical writing. This entire page is a mess. The first part of the problem is braindead easy, but figuring out what the fuck eric wants from you is a challenge. The second part is actually a fun puzzle, but it's still a challenge finding out what the fuck eric is asking you.
+| Day 09  | *O(N<sup>2</sup>)*	    | *O(N<sup>2</sup>)* | This problem was alright, but it's a little lame. The only possible difficulty you can have is reading the question wrong (which a lot of people did).
 
 ## Solutions
 
@@ -318,6 +320,14 @@ To start with, we know four numbers for free already. Using that, the process I 
 * |3| = k in unresolved, *where* |2|^|1| in k
 * |5| = |unresolved|
 
+
+### Day 09: Smoke Basin
+#### Part One
+Simply select tiles which are surrounded by tiles with a bigger number.
+
+#### Part Two
+Floor fill from all of the tiles found in Part One, selecting every tile which is not 9. Sort the areas, the select the tree largest and multiply them together.
+
 ## Visualizations
 
 Where I can, I will try to produce visualizations for the puzzles.
@@ -373,3 +383,10 @@ _Only the intersections._
 _My image got nabbed for this, so I'm nabbing it back._
 
 <img src="/images/05_art.png" alt="no refunds" width="700">
+
+
+### Day 09: Smoke Basin
+
+Finally a day where a visualization doesn't feel like a waste of time.
+
+<img src="/images/09_out.png" alt="spooky pools" width="700">
