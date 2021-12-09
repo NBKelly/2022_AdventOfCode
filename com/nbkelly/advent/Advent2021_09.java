@@ -90,8 +90,8 @@ public class Advent2021_09 extends Drafter {
 	
 	return DEBUG(1, t.split("Finished Processing"));
     }
-
-    public Integer find_basins(HashMap<IntPair, Integer> space, ArrayList<IntPair> lows) {
+        
+    public Long find_basins(HashMap<IntPair, Integer> space, ArrayList<IntPair> lows) {
 	HashMap<IntPair, Integer> pool_size = new HashMap<IntPair, Integer>();
 
 	HashSet<IntPair> lows_set = new HashSet<IntPair>();
@@ -100,12 +100,30 @@ public class Advent2021_09 extends Drafter {
 	HashMap<IntPair, Integer> best = new HashMap<IntPair, Integer>();
 
 	HashSet<IntPair> visited = new HashSet<>();
+	
+	lows.parallelStream().forEach(pair -> {				      
+		var grade =  space.get(pair);
+		for(int i = grade; i< 9; i++) {
+		    var pool = find_basin(space, pair, i);
+		    var diff = new TreeSet<>(lows);
+		    diff.retainAll(pool);
 
-	for(var pair : lows) {
-	    DEBUGF(3, "FIND BASIN FOR PAIR %s%n", pair);
-	    //for(var pair : space.keySet()) {
-	    if(space.get(pair) != 9 && !visited.contains(pair)) {
-		/* find the pool size for this time */
+		    if(diff.size() != 1)
+			break;
+
+		    synchronized(best) {
+			var best_prev = best.get(diff.first());
+			if(best_prev != null && best_prev >= pool.size())
+			    continue;
+
+			best.put(diff.first(), pool.size());
+		    }
+		}
+	    });
+		    
+	    //for(var pair : space.keySet()) {				      
+	    /*if(space.get(pair) != 9 && !visited.contains(pair)) {
+	
 		var pool = find_basin(space, pair);
 		var diff = new TreeSet<>(lows);
 		diff.retainAll(pool);
@@ -121,8 +139,8 @@ public class Advent2021_09 extends Drafter {
 
 		best.put(new ArrayList<>(diff).get(0), pool.size());
 		visited.addAll(pool);
-	    }
-	}
+	    }*/
+	    
 	
 	//println("pools: " + best);
 
@@ -133,19 +151,19 @@ public class Advent2021_09 extends Drafter {
 
 	pools_score.sort((Integer left, Integer right) -> right - left);
 
-	var score = 1;
+	long score = 1;
 	for(int i = 0; i < 3; i++)
 	    score *= pools_score.get(i);
 
 	return score;
     }
 
-    public HashSet<IntPair> find_basin(HashMap<IntPair, Integer> space, IntPair start) {
+    public HashSet<IntPair> find_basin(HashMap<IntPair, Integer> space, IntPair start, int height) {
 	//make a considered set
 	//find all points adjacent to the considered set which are not part of it
 	//if any of these points are lower than thefind the smallest point higher than the considered
 	//for each of these points, floodfill down : if they reach a node which is lower than/
-	int height = 8;//space.get(start);
+	    //int height = 8;//space.get(start);
 
 	HashSet<IntPair> visited = new HashSet<IntPair>();
 	TreeSet<IntPair> considered = new TreeSet<IntPair>();

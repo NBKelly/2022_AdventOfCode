@@ -8,6 +8,7 @@ This is the set of all my 2021 Advent of Code solutions. (At some point later th
 3. [Problem Ratings](#Problem-Ratings)
 4. [Solutions](#Solutions)
 5. [Visualizations](#Visualizations)
+6. [Bonus Puzzles](#Bonus)
 
 ## Project Structure
 All of the solutions are available in the ```com/nbkelly/advent``` folder, and can be run using the ```run.sh``` script, like so:
@@ -390,3 +391,109 @@ _My image got nabbed for this, so I'm nabbing it back._
 Finally a day where a visualization doesn't feel like a waste of time.
 
 <img src="/images/09_out.png" alt="spooky pools" width="700">
+
+
+
+
+
+
+
+
+
+
+## Bonus
+
+### 2018
+
+Puzzles from the year 2018.
+
+### Day 15
+The two requirements to beating this are being able to follow directions and implementing a map searching algorithm effectively.
+
+#### Map Search
+First, we can easily define a map based on any set of input strings by assigning each token to (token, x, y). For this specific puzzle, it helps to not define the elves and goblins as part of the map, but just assign them as empty space and keep track of them seperately.
+
+It will help to define a single function to get the neighbors of any pair.
+
+Then to get a path, consider first a Metric:
+```
+num_moves;
+location(x,y);
+dist; //manhattan
+score;
+
+compareTo(metric) = (left, right) ->
+		  (left.score, right.score,
+		  left.moves, right.moves,
+		  left.dist, right.dist,
+		  left.location.y, right.location.y,
+		  left.location.x, right.location.x);
+
+
+init :: score = num_moves + dist;
+```
+
+So the metric sorts first on score, then the number of moves (we want to minimize this), then the distance remaining, then it sorts on `reading order` (from the puzzle).
+
+Then to find out the distance, consider a function
+
+```
+dist(from(x, y), to(x, y), f_pathable(ch -> bool), f_neighbors(ch -> bool):
+
+    if(from == to)
+        return 0;
+
+    if(!f_pathable(get(from)) || !(f_pathable(get(to))))
+        return null;
+
+    TreeSet<Metric> metrics = new TreeSet<>();
+    metrics.add(new Metric(dist=0, from, to));
+
+    HashMap<IntPair, Integer> best = new HashMap<IntPair, Integer>();
+    
+    while(metrics.size() > 0) {
+        var metric = metrics.pollFirst();
+	var old_score = best.containsKey(metric.location);
+	if(old_score <= null && old_score <= metric.score)
+	    continue;
+
+        best.put(metric.location, metric.score);
+	
+        if(metric.location.equals(to))
+	    return metric.num_moves;
+
+        var pathable_neighbors = f_neighbors(metric.location).filter(f_pathable);
+
+        for(var neighbor : pathable_neighbors)
+	    metrics.add(new Metric(metric.moves + 1, neighbor, to));
+    }
+
+    return null;
+```
+		  
+So now we can find distances in the map, so long as we pass the arguments ```f_pathable == !'#'``` and ```f_neighbors(loc) = adjacent_neighbors && not_a_unit(loc)```. Note that it may be worthwhile to have not_a_unit ignore the source/target.
+
+Now all that you need to do is follow the directions in the puzzle, or:
+
+* construct a map
+* define all of the units
+
+```while(actions_possible)```
+
+* sort all alive units by reading order
+* construct an occupancy grid for the units
+* while active units in turn is not empty:
+* select the active unit
+* check the unit is alive
+* find the set of all targets for the unit - if any are adjacent, skip straight to attack
+* find the optimal position to move to
+* find the optimal first move for that position
+* **attack**: pick the adjacent target with the lowest health
+* break ties by reading order
+* remove health from that unit equal to attack
+* if that unit is dead, remove it from the occupancy grid
+
+If a round finishes without a valid move being taken, the combat is over, and you can count hp.
+
+#### Part Two
+Just perform a binary search. It will take at most 6-7 runs to find the optimal answer.

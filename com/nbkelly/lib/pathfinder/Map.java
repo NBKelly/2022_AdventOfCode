@@ -92,13 +92,11 @@ public class Map {
 
 	while(metrics.size() > 0) {
 	    var metric = metrics.pollFirst();
-	    if(bestScore.containsKey(metric.location)) {
-		int score = bestScore.get(metric.location);
-		if (score < metric.score)
+	    var last_best = bestScore.get(metric.location);
+	    if(last_best != null && last_best <= metric.score)
 		    continue;
-	    }
-	    else
-		bestScore.put(metric.location, metric.score);
+	    
+	    bestScore.put(metric.location, metric.score);
 
 	    if(metric.location.equals(destination))
 		return metric.moves;
@@ -177,7 +175,9 @@ public class Map {
 
 
 	public int compareTo(Metric2 m) {
-	    return Util.compareTo(score, m.score, location.X, m.location.X, location.Y, m.location.Y);
+	    return Util.compareTo(score, m.score,
+				  location.X, m.location.X,
+				  location.Y, m.location.Y);
 	}
 
 	public String toString() {
@@ -201,8 +201,8 @@ public class Map {
 
 	public int compareTo(Metric m) {
 	    return Util.compareTo(score, m.score,
-				  moves, m.moves,
 				  dist, m.dist,
+				  moves, m.moves,				  
 				  location.X, m.location.X,
 				  location.Y, m.location.Y);
 	}
