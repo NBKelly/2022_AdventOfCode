@@ -75,7 +75,7 @@ public class Map {
     public Integer distance_orthogonal(int sx, int sy, int dx, int dy,
 				       Function<Character, Boolean> pathable,
 				       Function<IntPair, List<IntPair>> neighbors) {
-	if(sx == dx
+ 	if(sx == dx
 	   && sy == dy)
 	    return 0;
 	if(!pathable.apply(get(sx, sy)) || !pathable.apply(get(dx, dy)))
@@ -183,21 +183,28 @@ public class Map {
 	public String toString() {
 	    return String.format("%d | %s | %d", moves, location.toString(), score);
 	}
-    }
+    }    
     
     private class Metric implements Comparable<Metric> {
 	int moves;
 	IntPair location;
 	int score;
+	long dist;
 	
 	public Metric(int moves, IntPair location, IntPair destination) {
 	    this.moves = moves;
 	    this.location = location;
-	    score = moves + (int)_dist(location.X, location.Y, destination.X, destination.Y, false);
+	    this.dist = Math.round(_dist(location.X, location.Y,
+					 destination.X, destination.Y, false));
+	    score = moves + (int)this.dist;
 	}
 
 	public int compareTo(Metric m) {
-	    return Util.compareTo(score, m.score, location.X, m.location.X, location.Y, m.location.Y);
+	    return Util.compareTo(score, m.score,
+				  moves, m.moves,
+				  dist, m.dist,
+				  location.X, m.location.X,
+				  location.Y, m.location.Y);
 	}
 
 	public String toString() {
@@ -205,6 +212,38 @@ public class Map {
 	}
     }
 
+    public String format(IntPair start, IntPair end,
+				 Function<IntPair, Character> overlay) {
+	StringBuilder s = new StringBuilder();
+
+	s.append(String.format(">%s -> %s%n", start, end));
+
+	for(int x = start.X; x <= end.X+1; x++)
+	    s.append(x == start.X ? '+' : '-');
+	s.append("+\n");
+	for(int y = start.Y; y <= end.Y; y++) {
+	    s.append("|");
+	    for(int x = start.X; x <= end.X; x++) {
+		
+		var ch = get(x, y);
+		var repl = overlay.apply(new IntPair(x, y));
+		if(repl != null)
+		    ch = repl;
+		if(ch != null)
+		    s.append(ch);
+		else
+		    s.append(' ');
+	    }
+	    s.append("|\n");
+	}
+
+	for(int x = start.X; x <= end.X+1; x++)
+	    s.append(x == start.X ? '+' : '-');
+	s.append("+\n");
+
+	return s.toString();
+    }
+    
     public String format(IntPair start, IntPair end) {
 	StringBuilder s = new StringBuilder();
 
