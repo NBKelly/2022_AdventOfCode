@@ -29,7 +29,8 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 06  | Still heading down, we see some lanternfish. We attempt to model their growth rate.
 | Day 07  | On the way down, a whale attacks. Fortunately, a swarm of crabs (in their own crab submersibles) is ready to assist. We need to compute the optimal way to align the crabmarines so they can blow the floor out of the ocean, and let us into an underwater cave system. Any by most optimal, Eric means we have to make sure they save on fuel - "crabs" are notorius cheapskates (what did Eric mean by this?)
 | Day 08  | We made in into the cave (at the cheapest price possible for the crabs), by the width of a hair. We know there's an exit somewhere deeper, but the seven-segment displays in our submarine are faulty. Time to debug them!
-| Day 09  | The caves are actually alva tubes, and are filling with smoke. We need to model the smoke to find a safe way through.
+| Day 09  | The caves are actually lava tubes, and are filling with smoke. We need to model the smoke to find a safe way through.
+| Day 10  | Our submarine can't find us the best way out of the cave because the entire computer is fucked. Today, we check syntax for some reason.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -45,6 +46,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 07  | *O(N)*		    | *O(N)*	| This is one of the easiest days so far. In terms of programming, there's effectively nothing you need to do. You need to know how to take an average, find the median, and sum a series of integers. Recognizing the problem is slightly harder, but still not too hard.
 | Day 08  | *O(N)*		    | *O(N)*	| Eric needs to take lessons in technical writing. This entire page is a mess. The first part of the problem is braindead easy, but figuring out what the fuck eric wants from you is a challenge. The second part is actually a fun puzzle, but it's still a challenge finding out what the fuck eric is asking you.
 | Day 09  | *O(N<sup>2</sup>)*	    | *O(N<sup>2</sup>)* | This problem was alright, but it's a little lame. The only possible difficulty you can have is reading the question wrong (which a lot of people did).
+| Day 10  | *O(N)*		    | *O(N)*		 | This problem should have been on day three or four. It's something completely trivial to do. It's also drastically overexplained, meaning you have to search for the important parts of the question (the numbers assigned to the digits).
 
 ## Solutions
 
@@ -328,6 +330,16 @@ Simply select tiles which are surrounded by tiles with a bigger number.
 
 #### Part Two
 Floor fill from all of the tiles found in Part One, selecting every tile which is not 9. Sort the areas, the select the tree largest and multiply them together.
+
+### Day 10: Syntax Scoring
+
+Just use a stack. You know what a stack is, right?
+
+#### Part One
+Add opening parenthesis to a stack, pop when you see a closing parenthesis and compare.
+
+#### Part Two
+Count whatever is left in the stack after your line is cleared.
 
 ## Visualizations
 
