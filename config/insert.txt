@@ -1,6 +1,6 @@
 //var ints = Util.toIntList(lines);
 
-println("Hello World");
+println(">Good Morning!");
 
 DEBUGF(1, "PART ONE: "); //todo
 DEBUGF(1, "PART TWO: "); //todo

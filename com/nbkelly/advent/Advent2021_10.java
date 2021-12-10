@@ -38,11 +38,6 @@ public class Advent2021_10 extends Drafter {
     @Override public int solveProblem() throws Exception {
 	Timer t = makeTimer();
 
-        /* code injected from file */
-        //var ints = Util.toIntList(lines);
-        
-        println("Good Morning!");
-
 	long score = 0;	
 	var comp_scores = new ArrayList<Long>();
 	
@@ -82,10 +77,10 @@ public class Advent2021_10 extends Drafter {
 	    }
 	}
 
-	comp_scores.sort((Long left, Long right) -> (left - right) > 0 ? 1 : -1);
+	comp_scores.sort((Long left, Long right) -> left.compareTo(right));
 		
-        DEBUGF(1, "PART ONE: "); println(score); //todo
-        DEBUGF(1, "PART TWO: "); println(comp_scores.get(comp_scores.size()/2));//todo
+        DEBUGF(1, "PART ONE: "); println(score);
+        DEBUGF(1, "PART TWO: "); println(comp_scores.get(comp_scores.size()/2));
         
         /* visualize output here */
         generate_output();
@@ -97,10 +92,10 @@ public class Advent2021_10 extends Drafter {
     public void generate_output() throws Exception {
     	if(!generate_output)
     	    return;
-    	
+
+	/* todo */
+	
     	println(">generating output");
-    
-    	/* output goes here */
     }
 
     /* set commands */
