@@ -456,12 +456,6 @@ Finally a day where a visualization doesn't feel like a waste of time.
 
 The puzzle:
 
-<figure class="video_container">
-  <video controls="true" allowfullscreen="true">
-    <source src="videos/day_11_output.webm" type="video/webm">
-  </video>
-</figure>
-
 ![puzzle](videos/day_11_output.webm)
 
 Some fun:
