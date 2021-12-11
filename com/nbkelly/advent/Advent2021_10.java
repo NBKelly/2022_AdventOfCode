@@ -14,7 +14,9 @@ import com.nbkelly.lib.Util;
 import com.nbkelly.drafter.BooleanCommand; //visualize cmd
 import com.nbkelly.lib.Image; //visualizer lib
 import java.util.LinkedList;
-
+import java.math.BigInteger;
+import com.nbkelly.lib.Pair;
+import java.util.stream.Collectors;
 /**
  * Extension of Drafter directed towards a general case.
  *
@@ -38,12 +40,11 @@ public class Advent2021_10 extends Drafter {
     @Override public int solveProblem() throws Exception {
 	Timer t = makeTimer();
 
-	long score = 0;	
-	var comp_scores = new ArrayList<Long>();
-	
+	BigInteger score = BigInteger.ZERO;	
+	var comp_scores = new ArrayList<BigInteger>();
+
 	for(var line : lines) {
 	    LinkedList<Character> stack  = new LinkedList<Character>();
-
 	    long line_score = 0;
 	    outer: for(int i = 0; i < line.length(); i++) {
 		var token = line.charAt(i);
@@ -53,31 +54,36 @@ public class Advent2021_10 extends Drafter {
 		    stack.push(token);
 		    continue outer;
 		}
-
+		
 		if((1 + token - stack.pop())/2 != 1)
 		    switch(token) {
 		    case '>': line_score += 23940;
 		    case '}': line_score += 1140;
 		    case ']': line_score += 54;
 		    case ')': line_score += 3;
-			score += line_score;
+			score = score.add(BigInteger.valueOf(line_score));
 			break outer;
 		    }
 	    }	    	    
 
 	    if(line_score == 0) {
+		var m_score = BigInteger.ZERO;
+		BigInteger five = BigInteger.valueOf(5);
 		for(char token : stack) {
-		    line_score *= 5;
+		    m_score = m_score.multiply(five);
 		    switch(token) {
-		    case '<': line_score += 1; case '{': line_score += 1;
-		    case '[': line_score += 1; case '(': line_score += 1;
+		    case '<': m_score = m_score.add(BigInteger.ONE);
+		    case '{': m_score = m_score.add(BigInteger.ONE);
+		    case '[': m_score = m_score.add(BigInteger.ONE);
+		    case '(': m_score = m_score.add(BigInteger.ONE);
 		    }
 		}
-		comp_scores.add(line_score);
+		comp_scores.add(m_score);
 	    }
-	}
 
-	comp_scores.sort((Long left, Long right) -> left.compareTo(right));
+	}	
+	
+	comp_scores.sort((left, right) -> left.compareTo(right));
 		
         DEBUGF(1, "PART ONE: "); println(score);
         DEBUGF(1, "PART TWO: "); println(comp_scores.get(comp_scores.size()/2));
