@@ -44,10 +44,13 @@ public class Advent2021_11 extends Drafter {
         //var ints = Util.toIntList(lines);
 	TreeMap<IntPair, Integer> space = new TreeMap<IntPair, Integer>();
 
+	int dumbo_count = 0;
 	int y = 0;
 	for(var line : lines) {
-	    for(int x = 0; x < line.length(); x++)
+	    for(int x = 0; x < line.length(); x++) {
 		space.put(new IntPair(x, y), Integer.parseInt("" + line.charAt(x)));
+		dumbo_count++;
+	    }
 	    y++;
 	}
 
@@ -64,7 +67,7 @@ public class Advent2021_11 extends Drafter {
 	    i++;
 	    
 	    /* see if it lines up */
-	    if(synchro < 0 && ct_step == 100) //empty_space(space))
+	    if(synchro < 0 && ct_step == dumbo_count)
 		synchro = i;
 
 	    if(i % 100 == 0)
