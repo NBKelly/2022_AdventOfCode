@@ -24,6 +24,19 @@ public class Image {
 
     public static Color W1 = new Color(0xFFFFFF);
     public static Color W2 = new Color(0xCCCCCC);
+
+    public static Color H11= new Color(0xFFFFCC);
+    public static Color H10= new Color(0xE8F1C6);
+    public static Color H9 = new Color(0xD2E3C1);
+    public static Color H8 = new Color(0xBBD5BB);
+    public static Color H7 = new Color(0xA4C7B5);
+    public static Color H6 = new Color(0x8DB9AF);
+    public static Color H5 = new Color(0x77ACAA);
+    public static Color H4 = new Color(0x609EA4);
+    public static Color H3 = new Color(0x49909E);
+    public static Color H2 = new Color(0x328298);
+    public static Color H1 = new Color(0x1C7493);
+    public static Color H0 = new Color(0x05668D);
     
     public static Font F1 = new Font("Consolas", Font.PLAIN, 10);
     public static Integer F1_SPACE = 12;
