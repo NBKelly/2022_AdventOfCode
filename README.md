@@ -322,8 +322,32 @@ DEBUGF(1, "PART TWO: "); println(sum);
 
 ### Day 07: The Treachery of Wales
 
+#### Summary
+Find the median point and average points of a set of numbers.
+
 #### Part One
 Find the median value, then compute the distance for that index. This is ```ints(ints.size()/2)```.
+
+For why this is the median, first consider a set of crabs at positions 1, 5, 7.
+
+If the target location is 5, then crabs at position 1 and 7 will not need to move. If you offset the position in either direction, you will find that despite disp(1) and disp(7) having the same sum, 5 has to move as well. So it's trivial to see that 5 is optimal.
+
+This example scales up for any odd-numbered set of crabs. Consider a slightly larger example:
+
+```
+set: 1, 2, 3, 8, 9, 10, 11
+
+00  01  02  03  04  05  06  07  08  09  10  11 
+    01---------------------------
+                                 -----------11
+        02-----------------------
+	                         -------10
+            03-------------------
+	                         ---09
+                                08
+```
+
+It's plain to see that each pair of non-median numbers requires a span with a distance of (max-min) to cover it, and that shifting the meeting point away from the median increases the required distance in all cases.
 
 #### Part Two
 First, recall the formula for a sum of n integers: ```1 + 2 + ... + n == n (n+1)```. If you want a better visual proof, look in the code, or write the series down twice, once backwards, and add the two together.
