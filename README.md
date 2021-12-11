@@ -51,6 +51,11 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 ## Solutions
 
 ### Day 01: Sonar Sweep
+#### Summary
+Count the number of times a number is greater than the last number.
+
+For part two, count the number of times a group of 3 number window is greater than the last 3 number window. (1-2-3 / 2-3-4 / 3-4-5).
+
 #### Part One: Count how many times a list increments.
 
 Simply read through the list, and note every time ```li(i) > li(i-1)```.
@@ -64,6 +69,9 @@ Whenever you move on the sliding window, you are adding the element at *i*, and 
 More visually, we are making the comparison ```[i-3] + [i-] + [i-1] < [i-2] + [i-1] + [i]```. It is trivial to see that we can factor this out to ```[i-3] < [i]```.
 
 ### Day 02: Dive!
+#### Summary
+Follow a set of commands to move the submarine in straight lines. For part two, follow a set of commands to move the submarine in diagonal lines.
+
 #### Part One: Manhattan distance
 
 Simply keep a tally of ```loc``` and ```depth```. This is a simple switch statement on your input.
@@ -75,6 +83,9 @@ Just keep track of an aim variable too.
 This is mostly the same procedure, you just move all your state changes into the handler for ```forward``` - ```up``` and ```down``` only change your aim.
 
 ### Day 03: Binary Diagnostic
+#### Summary
+Find the consensus between two strings, and then build a character table from those strings.
+
 #### Part One
 
 1. Find the consensus between a set of strings.
@@ -130,6 +141,11 @@ private class Tree {
 
 ```
 ### Day 4: Giant Squid
+
+#### Summary
+Find the winning and the losing bingo boards.
+
+#### Solution
 
 I'm not writing much here, except that the most effecient way to find each terminating round is through the use of a binary search.
 
@@ -257,8 +273,17 @@ public void solve_fast(ArrayList<Bingo> boards, ArrayList<Integer> draws) {
 
 ### Day 05: Hydrothermal Venture
 
+#### Summary
+Find the set of all intersections between a group of orthogonal/octogonal lines.
+
+#### Solution.
+
 The simple way to do this is simply to put all line segments into a hashmap (cell by cell), and mark any point that gets intersected in a hashset.
 The answer is simply the size of that hashset.
+
+The more complicated answer involves first finding the set of all colinear lines, isolating the overlapping portions, and then merging those overlapping portions which overlap.
+
+Once that's done, simply use any reasonable algorithm to check if/when lines intersect, and check them against the line segments you already have. To avoid needing to track significantly large numbers of points, you can break the solution space up into smaller chunks and divide/conquer it.
 
 ### Day 06: Lanternfish
 
