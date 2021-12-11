@@ -11,7 +11,7 @@ fi
 
 if [[ $userinput =~ ^([0123456789][0123456789])$ ]]   # checks that the input is within the desired range
 then
-    YEAR="2018"
+    YEAR="2019"
     echo $YEAR
     file="com/nbkelly/advent/Advent"$YEAR"_"$userinput".java"
     echo $file

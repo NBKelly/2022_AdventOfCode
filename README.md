@@ -142,6 +142,9 @@ private class Tree {
 }    
 
 ```
+
+
+
 ### Day 4: Giant Squid
 
 #### Summary
@@ -273,6 +276,8 @@ public void solve_fast(ArrayList<Bingo> boards, ArrayList<Integer> draws) {
 ```
 
 
+
+
 ### Day 05: Hydrothermal Venture
 
 #### Summary
@@ -287,8 +292,16 @@ The more complicated answer involves first finding the set of all colinear lines
 
 Once that's done, simply use any reasonable algorithm to check if/when lines intersect, and check them against the line segments you already have. To avoid needing to track significantly large numbers of points, you can break the solution space up into smaller chunks and divide/conquer it.
 
+
+
+
+
 ### Day 06: Lanternfish
 
+#### Summary
+Count the population of a group of ~~rabbits~~ fish over time, given an initial population state.
+
+#### Solution
 Don't count each fish individually, batch them instead. This is linear time, you just have to ensure you don't have your data overflow. A better solution may use BigIntegers.
 
 ```Java
@@ -319,6 +332,7 @@ for(int i = 0; i < 9; i++)
     sum += timers[i];
 DEBUGF(1, "PART TWO: "); println(sum);
 ```
+
 
 ### Day 07: The Treachery of Wales
 
@@ -352,9 +366,33 @@ It's plain to see that each pair of non-median numbers requires a span with a di
 #### Part Two
 First, recall the formula for a sum of n integers: ```1 + 2 + ... + n == n (n+1)```. If you want a better visual proof, look in the code, or write the series down twice, once backwards, and add the two together.
 
+```
+ 1   2   3  ... n-2  n-1  n   +
+ n  n-1 n-2 ...  3    2   1   =
+n+1 n+1 n+1 ... n+1  n+1 n+1 
+
+= n(n+1)
+```
+That's the formula for twice the sum - so the real sum is ```n(n+1)/2```.
+
 Then find the average of the set, and compute your distance from that number.
 
 ### Day 08: Seven Segment Search
+
+#### Summary
+Your seven segment displays are faulty. A seven segment display uses 7 lights to display the numbers 0-9, like so:
+
+```
+.1111.
+2....3
+2....3
+.4444.
+5....6
+5....6
+.7777.
+```
+
+Where each number represents one segment. Somehow, the segments have become scrambled. Given a list of segment combinations, each representing one displayed number, decode an output message.
 
 #### Part One
 The numbers 1, 4, 7 and 8 each have a unique number of segments required to produce them. (2, 4, 3, 7). Simply count the number of times the output (the four numbers on the right) contains these numbers.
@@ -376,6 +414,10 @@ To start with, we know four numbers for free already. Using that, the process I 
 
 
 ### Day 09: Smoke Basin
+
+#### Summary
+The cave is filling with smoke, which flows into every tile with a height less than 9. Find all local minima of the graph (points lower than all neighbors), and then find all basins (areas surrounded by 9's/boundaries) to determine the largest basins.
+
 #### Part One
 Simply select tiles which are surrounded by tiles with a bigger number.
 
@@ -383,6 +425,9 @@ Simply select tiles which are surrounded by tiles with a bigger number.
 Floor fill from all of the tiles found in Part One, selecting every tile which is not 9. Sort the areas, the select the tree largest and multiply them together.
 
 ### Day 10: Syntax Scoring
+
+#### Summary
+The navigation system has syntax errors. We need to identify lines with mismatched parentheses, and then complete lines with incomplete parentheses.
 
 Just use a stack. You know what a stack is, right?
 
@@ -394,6 +439,11 @@ Count whatever is left in the stack after your line is cleared.
 
 
 ### Day 11: Dumbo Octopus
+
+#### Summary
+We've encountered some octopi with glow in the dark. These octopi have two states: charging (energy 1-9) and discharging (energy 0). An octopus cannot gain energy while discharging, and charges all adjacent octopi while discharging. A discharge can cause a cascade of discharges. Between every state, the energy level of all octopuses increases by 1 - and those with energy >9 discharge (are set to 0).
+
+We need to measure the discharge rate of these octopi, and then find out when they sychronize.
 
 #### Part One
 For each iteration:

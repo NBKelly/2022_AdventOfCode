@@ -18,7 +18,7 @@ else
     #read userinput
 fi
 
-YEAR=2018
+YEAR=2019
 PRE="Advent"$YEAR"_"
 if [[ $userinput =~ ^[0123456789][0123456789]$ ]]   # checks that the input is within the desired range
 then
