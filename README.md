@@ -31,6 +31,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 08  | We made in into the cave (at the cheapest price possible for the crabs), by the width of a hair. We know there's an exit somewhere deeper, but the seven-segment displays in our submarine are faulty. Time to debug them!
 | Day 09  | The caves are actually lava tubes, and are filling with smoke. We need to model the smoke to find a safe way through.
 | Day 10  | Our submarine can't find us the best way out of the cave because the entire computer is fucked. Today, we check syntax for some reason.
+| Day 11  | We've encountered a cavern full of **glow in the dark** octopi. They flash in a fashion similar to fireflies (they sychronise), and we need to compute this pattern to navigate through the pattern without disturbing them.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -47,6 +48,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 08  | *O(N)*		    | *O(N)*	| Eric needs to take lessons in technical writing. This entire page is a mess. The first part of the problem is braindead easy, but figuring out what the fuck eric wants from you is a challenge. The second part is actually a fun puzzle, but it's still a challenge finding out what the fuck eric is asking you.
 | Day 09  | *O(N<sup>2</sup>)*	    | *O(N<sup>2</sup>)* | This problem was alright, but it's a little lame. The only possible difficulty you can have is reading the question wrong (which a lot of people did).
 | Day 10  | *O(N)*		    | *O(N)*		 | This problem should have been on day three or four. It's something completely trivial to do. It's also drastically overexplained, meaning you have to search for the important parts of the question (the numbers assigned to the digits).
+| Day 11  | *O(N)*		    | *O(N)*		 | *N = number of rounds*. This is a fun problem, and it produces some pretty graphics. There's no overexplaining, and no hidden information. 9/10, but only because part 2 was too easy and the image was too small.
 
 ## Solutions
 
@@ -366,6 +368,26 @@ Add opening parenthesis to a stack, pop when you see a closing parenthesis and c
 #### Part Two
 Count whatever is left in the stack after your line is cleared.
 
+
+### Day 11: Dumbo Octopus
+
+#### Part One
+For each iteration:
+* Maintain a set of complete (popped) nodes
+* Maintain a queue of active (popped) nodes
+* for each node in the space, if the energy is 9, add it to active
+* while active > 0
+* let current node = active.pollFirst();
+* get every neighbor: iterate each neighbor
+  * if they have value 9, add their neighbors to active and them to complete
+* add current node to complete : continue
+* set every node with value 9 to 0 - these are the popped nodes
+* iterate every other node
+
+Simply repeat 100x.
+
+#### Part Two
+Simply run until popped = matrix size.
 ## Visualizations
 
 Where I can, I will try to produce visualizations for the puzzles.
@@ -430,11 +452,15 @@ Finally a day where a visualization doesn't feel like a waste of time.
 <img src="/images/09_out.png" alt="spooky pools" width="700">
 
 
+### Day 11: Dumbo Octopus
 
+The puzzle:
 
+![puzzle](videos/day_11_output.webm)
 
+Some fun:
 
-
+![eric](output_eric_loop_fast.webm)
 
 
 
