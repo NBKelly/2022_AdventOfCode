@@ -37,7 +37,6 @@ public class Advent2021_12 extends Drafter {
     //generate output
     boolean generate_output = false;
 
-
     public boolean isSmall(String state) { return Character.isLowerCase(state.charAt(0)); }
     public boolean isEnd(String state) {   return state.equals("end");   }
     public boolean isStart(String state) { return state.equals("start"); }
