@@ -14,7 +14,7 @@ This is the set of all my 2021 Advent of Code solutions. (At some point later th
 All of the solutions are available in the ```com/nbkelly/advent``` folder, and can be run using the ```run.sh``` script, like so:
 
 1. Run with input file - ```./run.sh 01 input.txt```
-2. Run with optional args, such as debug mode - ```./run.sh 01 input.txt --debug```
+2. Run with optional args, such as debug mode and pictorial output (where supported) - ```./run.sh 01 input.txt -d [1-5] --out-file```
 
 ## Lore
 Here's a brief summary of the 2021 advent of code **deep** lore.
@@ -32,6 +32,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 09  | The caves are actually lava tubes, and are filling with smoke. We need to model the smoke to find a safe way through.
 | Day 10  | Our submarine can't find us the best way out of the cave because the entire computer is fucked. Today, we check syntax for some reason.
 | Day 11  | We've encountered a cavern full of **glow in the dark** octopi. They flash in a fashion similar to fireflies (they sychronise), and we need to compute this pattern to navigate through the pattern without disturbing them.
+| Day 12  | The pathfinding routines on the submarine are bad, so we have to manually find "the" path out - but the only way to do that is to find all paths out of the cave.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -49,6 +50,8 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 09  | *O(N<sup>2</sup>)*	    | *O(N<sup>2</sup>)* | This problem was alright, but it's a little lame. The only possible difficulty you can have is reading the question wrong (which a lot of people did).
 | Day 10  | *O(N)*		    | *O(N)*		 | This problem should have been on day three or four. It's something completely trivial to do. It's also drastically overexplained, meaning you have to search for the important parts of the question (the numbers assigned to the digits).
 | Day 11  | *O(N)*		    | *O(N)*		 | *N = number of rounds*. This is a fun problem, and it produces some pretty graphics. There's no overexplaining, and no hidden information. 9/10, but only because part 2 was too easy and the image was too small.
+| Day 12  | *O(N<sup>N-1</sup>)*    | *O(N<sup>N</sup>)* | *N = number of links*. This was neat. You can do it very quickly with a DFS, but for a larger set you would have to use dynamic programming. Given the restrictions of this puzzle (Big nodes cannot link to other big nodes), I think an n^2 solution may be possible, given that you first factor out every big node and then apply DP.
+
 
 ## Solutions
 
@@ -462,6 +465,101 @@ Simply repeat 100x.
 
 #### Part Two
 Simply run until popped = matrix size.
+
+
+### Day 12: Passage Pathfinding
+
+#### Summary
+Find *all* paths through a graph, where small nodes may only be visited once (or one small node may be visited exactly twice, for part two).
+
+I'm going to post a chunk of code here which should roughly illustrate the solution. It does a little more than the solution requires (it handles loops where there are two adjacent big nodes, for example), but is still lean enough to not be significantly obfuscated.
+
+```Java
+private class History {
+    /* big nodes visited since last small node */
+    TreeSet<String> sinceLastProgress = new TreeSet<String>();
+
+    /* set of all visited small nodes */
+    TreeSet<String> small_visited = new TreeSet<String>();
+
+    /* whatever small node has been revisted (if any) */
+    String revisited = null;
+
+    /* last visited state */
+    String last = null;
+
+    public History() {}
+
+    private History(String new_state, History last, boolean is_repeat) {
+        if(is_repeat)
+            revisited = new_state;
+        else
+            revisited = last.revisited;
+
+        /* keep all last small visited */
+        small_visited.addAll(last.small_visited);
+
+        /* if it's big, then copy sinceLastProgress */
+        if(isSmall(new_state))
+            small_visited.add(new_state);
+        else {
+            sinceLastProgress.addAll(last.sinceLastProgress);
+            sinceLastProgress.add(new_state);
+        }
+
+        this.last = new_state;
+    }
+
+    public History extend(String state, boolean allow_repeat) {
+        if(isSmall(state)) {
+            if(small_visited.contains(state)) {
+                /* if we can repeat, return a repeat */
+                if(allow_repeat && this.revisited == null
+                   && !isStart(state))
+                    return new History(state, this, true);
+                return null;
+            }
+
+            return new History(state, this, false);
+        }
+
+        /* see if we're stuck in a loop */
+        if(sinceLastProgress.contains(state))
+            return null;
+
+        return new History(state, this, false);
+    }
+}
+
+```
+
+Given this history definition, finding each part of the problem can be done like so:
+
+```Java
+LinkedList<History> active = new LinkedList<History>();
+active.add(new History().extend("start", allow_repeat));
+
+BigInteger res = BigInteger.ZERO;
+while(active.size() > 0) {
+    var current = active.pollFirst();
+
+    inner: for(var state : states.get(current.last)) {
+        if(isEnd(state)) {
+            res = res.add(BigInteger.ONE);
+            continue inner;
+        }
+
+        var next = current.extend(state, allow_repeat);
+
+        /* dfs stores the least in memory - we still need to visit every state */
+        if(next != null)
+            active.push(next);
+    }
+}
+
+return res;
+```
+
 ## Visualizations
 
 Where I can, I will try to produce visualizations for the puzzles.
