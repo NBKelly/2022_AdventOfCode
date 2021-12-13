@@ -17,6 +17,8 @@ import com.nbkelly.lib.Image; //visualizer lib
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.HashMap;
 
 /**
  * Extension of Drafter directed towards a general case.
@@ -36,6 +38,9 @@ public class Advent2021_12 extends Drafter {
     
     //generate output
     boolean generate_output = false;
+
+    //memoize output
+    boolean use_memo = false;
 
     public boolean isSmall(String state) { return Character.isLowerCase(state.charAt(0)); }
     public boolean isEnd(String state) {   return state.equals("end");   }
@@ -62,9 +67,16 @@ public class Advent2021_12 extends Drafter {
 	}
 	
         println(">Good Morning!");
-	
-        DEBUGF(1, "PART ONE: "); println(solve(states, false));
-        DEBUGF(1, "PART TWO: "); println(solve(states, true));
+
+	if(use_memo) {
+	    DEBUGF(1, "PART ONE (MEMO): "); println(solve_memo(states, false));
+	    DEBUGF(1, "PART TWO (MEMO): "); println("left as exercise to reader :)");
+	    //println(solve(states, true));
+	}
+	else {
+	    DEBUGF(1, "PART ONE: "); println(solve(states, false));
+	    DEBUGF(1, "PART TWO: "); println(solve(states, true));
+	}
         
         /* visualize output here */
         generate_output();
@@ -72,6 +84,80 @@ public class Advent2021_12 extends Drafter {
 	return DEBUG(1, t.split("Finished Processing"));
     }
 
+    private int memo_iter = 0;
+    private BigInteger from_memo(TreeMap<String, HashMap<TreeSet<String>, BigInteger>> memo,
+				 String from, TreeSet<String> forbid) {
+	if(memo.containsKey(from)) {
+	    var val = memo.get(from).get(forbid);	    
+	    if(val != null)
+		if(++memo_iter % 1000 == 0)
+		    DEBUGF(2, "ITER %d from memo VALUE=%s%n", memo_iter, val);
+	    return val;
+	}
+
+		
+	return null;
+    }
+
+    private void to_memo(TreeMap<String, HashMap<TreeSet<String>, BigInteger>> memo,
+			 String from, TreeSet<String> forbid, BigInteger value) {
+	/*if(value == null)
+	  value = BigInteger.ZERO;*/
+	
+	if(!memo.containsKey(from))
+	    memo.put(from, new HashMap<TreeSet<String>, BigInteger>());
+
+	memo.get(from).put(forbid, value);
+    }
+    
+    private BigInteger solve_memo(TreeMap<String, TreeSet<String>> states, boolean allow_repeat) {
+	//so roughly what our solution looks like will be
+	// find number of paths from X to end, not including [...]
+	//   to do that, find number of paths from (Xb) to end not including [...]b +
+	//                                         (Xa) to end not including [...]a ...
+	//   etc
+	//we can memoize some of these steps, I hope
+
+	//memo would have to be
+	// state -> map -> value
+	TreeMap<String, HashMap<TreeSet<String>, BigInteger>> memo = new TreeMap<>();
+	
+	return numPaths(states, "start", "end", new TreeSet<>(), memo);
+    }
+
+    private BigInteger numPaths(TreeMap<String, TreeSet<String>> states,
+				String from, String to, TreeSet<String> forbid,
+				TreeMap<String, HashMap<TreeSet<String>, BigInteger>> memo) {
+	if(from.equals(to))
+	    return BigInteger.ONE;
+
+	var _from = from_memo(memo, from, forbid);
+	if(_from != null)
+	    return _from;
+
+	BigInteger sum = BigInteger.ZERO;
+	
+	if(isSmall(from)) {
+	    //we have to add this to forbid
+	    TreeSet<String> next_forbid = new TreeSet<>(forbid);
+	    next_forbid.add(from);
+
+	    for(var next : states.get(from))
+		if(!forbid.contains(next))
+		    sum = sum.add(numPaths(states, next, to, next_forbid, memo));
+
+	    to_memo(memo, from, forbid, sum);
+	    return sum;
+	}
+
+	for(var next : states.get(from))
+	    if(!forbid.contains(next))
+		sum = sum.add(numPaths(states, next, to, forbid, memo));
+
+	to_memo(memo, from, forbid, sum);
+	return sum;
+    }
+    
     private BigInteger solve(TreeMap<String, TreeSet<String>> states, boolean allow_repeat) {
 	LinkedList<History> active = new LinkedList<History>();
 	active.add(new History().extend("start", allow_repeat));
@@ -190,8 +276,11 @@ public class Advent2021_12 extends Drafter {
         BooleanCommand vc = new BooleanCommand("Visualize Output",
         				       "The visualized output for this program", 
         				       false, "--out-file", "--output-file", "--out-image");
-        
-        return new Command[]{fc, vc};
+
+	BooleanCommand memo = new BooleanCommand("Memoize Solver",
+						 "Use the memoized solver for this program",
+						 false, "--use-memo", "--memo");
+        return new Command[]{fc, vc, memo};
         
         
     }
@@ -205,6 +294,7 @@ public class Advent2021_12 extends Drafter {
         setSource(((FileCommand)userCommands[0]).getValue());
         
         generate_output = ((BooleanCommand)userCommands[1]).matched();
+	use_memo = ((BooleanCommand)userCommands[2]).matched();
 	return 0;
     }
 
