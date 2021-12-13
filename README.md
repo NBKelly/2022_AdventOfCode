@@ -33,6 +33,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 10  | Our submarine can't find us the best way out of the cave because the entire computer is fucked. Today, we check syntax for some reason.
 | Day 11  | We've encountered a cavern full of **glow in the dark** octopi. They flash in a fashion similar to fireflies (they sychronise), and we need to compute this pattern to navigate through the pattern without disturbing them.
 | Day 12  | The pathfinding routines on the submarine are bad, so we have to manually find "the" path out - but the only way to do that is to find all paths out of the cave.
+| Day 13  | We want to thermally image some more volcanic vents, but the thermal camera has not been activated! In order to activate it, we need the activation code. In order to find that, we need to fold a piece of transparent paper a bunch of times to create the code.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -51,7 +52,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 10  | *O(N)*		    | *O(N)*		 | This problem should have been on day three or four. It's something completely trivial to do. It's also drastically overexplained, meaning you have to search for the important parts of the question (the numbers assigned to the digits).
 | Day 11  | *O(N)*		    | *O(N)*		 | *N = number of rounds*. This is a fun problem, and it produces some pretty graphics. There's no overexplaining, and no hidden information. 9/10, but only because part 2 was too easy and the image was too small.
 | Day 12  | *O(N<sup>N-1</sup>)*    | *O(N<sup>N</sup>)* | *N = number of links*. This was neat. You can do it very quickly with a DFS, but for a larger set you would have to use dynamic programming. Given the restrictions of this puzzle (Big nodes cannot link to other big nodes), I think an n^2 solution may be possible, given that you first factor out every big node and then apply DP.
-
+| Day 13  | *O(N.K)*		    | *O(N.K)*		 | *Number of folds, number of points* This was fun, but still quite easy. 2021 is the most "inclusive" year yet. The good news is you have a program which can generate images based on any arbitrary fold set, which is neat.
 
 ## Solutions
 
@@ -560,6 +561,62 @@ while(active.size() > 0) {
 return res;
 ```
 
+### Day 13: Transparent Origami
+
+#### Summary
+We have a transparent piece of paper which needs to be folded several times so that the points line up to make an image.
+
+#### Part One
+
+Don't use an array. Use a set. Put all points in a set, then:
+
+```Java
+public HashSet<IntPair> foldX(HashSet<IntPair> set, int x) {
+    HashSet<IntPair> res = new HashSet<IntPair>();
+
+    for(var pair : set) {
+        if(pair.X < x)
+            res.add(pair);
+        else {
+            var diff = pair.X - x;
+            res.add(new IntPair(x - diff, pair.Y));
+        }
+    }
+
+    return res;
+}
+
+public HashSet<IntPair> foldY(HashSet<IntPair> set, int y) {
+    HashSet<IntPair> res = new HashSet<IntPair>();
+
+    for(var pair : set) {
+        if(pair.Y < y)
+            res.add(pair);
+        else {
+            var diff = pair.Y - y;
+            res.add(new IntPair(pair.X, y - diff));
+        }
+    }
+
+    return res;
+}
+```
+
+### Part Two
+
+All you need to do is be proficient in reading block-text.<sup>Is that a U or a V?<sup>fuck you eric</sup></sup>
+
+```
+.........................................
+.█..█.█..█.█..█...██..██...██....██.████.
+.█..█.█.█..█..█....█.█..█.█..█....█....█.
+.████.██...█..█....█.█....█..█....█...█..
+.█..█.█.█..█..█....█.█.██.████....█..█...
+.█..█.█.█..█..█.█..█.█..█.█..█.█..█.█....
+.█..█.█..█..██...██...███.█..█..██..████.
+.........................................
+```
+
 ## Visualizations
 
 Where I can, I will try to produce visualizations for the puzzles.
@@ -732,3 +789,7 @@ If a round finishes without a valid move being taken, the combat is over, and yo
 
 #### Part Two
 Just perform a binary search. It will take at most 6-7 runs to find the optimal answer.
+
+### 2021_51
+
+This is just a generator that takes as input ascii art, and gives as output puzzles for day 13 2021.
