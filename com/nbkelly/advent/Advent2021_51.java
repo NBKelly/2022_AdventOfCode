@@ -64,12 +64,13 @@ public class Advent2021_51 extends Drafter {
 
 	LinkedList<String> instructions = new LinkedList<String>();
 
-	for(int i = 0; i < 41; i++) {
+	int bias = 12;
+	for(int i = 0; i < 250; i++) {
 	    DEBUG("Fold number " + i);
 	    if(rand.nextInt(2) == 1)
-		instructions.add(unfold_y(map));
+		instructions.add(unfold_y(map, bias));
 	    else
-		instructions.add(unfold_x(map));
+		instructions.add(unfold_x(map, bias));
 	}
 	
 	
@@ -80,6 +81,8 @@ public class Advent2021_51 extends Drafter {
 
 	while(instructions.size() > 0)
 	    println(instructions.pollLast());
+
+	DEBUGF(2, "MAX BOUNDS: %s%n", new IntPair(max_x(map), max_y(map)));
 	
         /* visualize output here */
         generate_output();
@@ -119,11 +122,12 @@ public class Advent2021_51 extends Drafter {
     }
 
     int rand_fac = 9;
-    public String unfold_x(HashSet<IntPair> map) {
+    public String unfold_x(HashSet<IntPair> map, int bias) {
 	var max_x = max_x(map) + 1;
+	var select = 1;
+	for(int i = 0; i < bias; i++)
+	    select = Math.max(rand.nextInt(max_x), select);
 	
-	var select = rand.nextInt(max_x);
-
 	var new_pairs = new HashSet<IntPair>();
 	var remove = new HashSet<IntPair>();
 
@@ -147,10 +151,12 @@ public class Advent2021_51 extends Drafter {
 	return "fold along x=" + max_x;
     }
     
-    public String unfold_y(HashSet<IntPair> map) {
+    public String unfold_y(HashSet<IntPair> map, int bias) {
 	var max_y = max_y(map) + 1;
 	
-	var select = rand.nextInt(max_y);
+	var select = 1;//rand.nextInt(max_y);
+	for(int i = 0; i < bias; i++)
+	    select = Math.max(rand.nextInt(max_y), select);
 
 	/* find the distance between select and y_max + 1 */
 	//int diff = max_y + 1 - select;

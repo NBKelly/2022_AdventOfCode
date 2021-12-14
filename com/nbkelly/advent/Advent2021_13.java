@@ -65,7 +65,7 @@ public class Advent2021_13 extends Drafter {
 		    first = false;
 		}
 	    }
-	    else if (sub[0].equals("x")) {
+	    else {// if (sub[0].equals("x")) {
 		points = foldX(points, Integer.parseInt(sub[1]));
 		if(first) {
 		    ans = points.size();

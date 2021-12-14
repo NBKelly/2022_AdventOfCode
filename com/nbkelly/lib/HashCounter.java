@@ -2,6 +2,7 @@ package com.nbkelly.lib;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * A map that counts values
@@ -9,10 +10,10 @@ import java.util.HashSet;
  * @version     1.3
  * @since       1.3
  */
-public class HashCounter<T> {
-    HashMap<T, Integer> counter = new HashMap<T, Integer>();
+public class HashCounter<T> implements Iterable<T> {
+    HashMap<T, Long> counter = new HashMap<T, Long>();
 
-    private int total_count = 0;
+    private long total_count = 0;
 
     /**
      * Add a value to the counter, or increment it's count if it already exists
@@ -20,12 +21,26 @@ public class HashCounter<T> {
      * @since 1.3
      */
     public void add(T value) {
-	Integer count = counter.get(value);
+	var count = counter.get(value);
 	if(count == null)
-	    count = 0;
-	counter.put(value, count+1);
+	    count = 0l;
+	counter.put(value, count+1l);
 	total_count++;
     }
+
+    /**
+     * Add a value to the counter, or increment it's count if it already exists
+     * @param value value to add
+     * @since 22.12
+     */
+    public void add(T value, long count) {
+	var new_count = counter.get(value);
+	if(new_count == null)
+	    new_count = 0l;
+	counter.put(value, new_count+count);
+	total_count++;
+    }
+
 
     /**
      * Decremet a value on the counter
@@ -33,14 +48,14 @@ public class HashCounter<T> {
      * @since 1.4
      */
     public boolean sub(T value) {
-	Integer count = counter.get(value);
+	var count = counter.get(value);
 	if(count == null)
 	    return false;
 	
-	if(count - 1 == 0)
+	if(count - 1l == 0l)
 	    counter.remove(value);
 	else
-	    counter.put(value, count-1);
+	    counter.put(value, count-1l);
 	total_count--;
 
 	return false;
@@ -60,12 +75,12 @@ public class HashCounter<T> {
      * @return Sum Count of all elements in the counter.
      * @since 1.3
      */
-    public int count() {
+    public Long count() {
 	return total_count;
     }
 
-    public HashMap<T, Integer> toHashMap() {
-	return new HashMap<T, Integer>(counter);
+    public HashMap<T, Long> toHashMap() {
+	return new HashMap<T, Long>(counter);
     }
     
     /**
@@ -73,12 +88,16 @@ public class HashCounter<T> {
      * @return count of one element.
      * @since 1.3
      */
-    public int count(T value) {
-	Integer res = counter.get(value);
+    public Long count(T value) {
+	Long res = counter.get(value);
 
-	return res != null ? res : 0;
+	return res != null ? res : 0l;
     }
 
+    public String toString() {
+	return counter.toString();
+    }
+    
     /**
      * Returns maximum count from this collection
      * @return maximum count from this collection
@@ -86,10 +105,10 @@ public class HashCounter<T> {
      */
     public T max() {
 	T res = null;
-	int max = 0;
+	long max = 0;
 	for(var entry : counter.entrySet()) {
 	    T key = entry.getKey();
-	    Integer value = entry.getValue();
+	    var value = entry.getValue();
 
 	    if(value > max) {
 		res = key;
@@ -101,16 +120,45 @@ public class HashCounter<T> {
     }
 
     /**
+     * Returns minimum count from this collection
+     * @return minimum count from this collection
+     * @since 22.12
+     */
+    public T min() {
+	T res = null;
+	Long min = null;
+	for(var entry : counter.entrySet()) {
+	    T key = entry.getKey();
+	    var value = entry.getValue();
+
+	    if(min == null) {
+		res = key;
+		min = value;
+	    }
+	    else if(value < min) {
+		res = key;
+		min = value;
+	    }
+	}
+
+	return res;
+    }
+
+    public Iterator<T> iterator() { return counter.keySet().iterator(); }
+    //public void forEach(Consumer<? super T> action) { return counter.forEach(action); }
+    //public Iterator<T> spliterator()iterator() { return counter.keySet().iterator(); }
+    
+    /**
      * Returns the set of elements with the maximum count from this collection
      * @return the set of elements with the maximum count from this collection
      * @since 1.4
      */
     public HashSet<T> maxSet() {
 	HashSet<T> res = new HashSet<T>();
-	int max = 0;
+	Long max = 0l;
 	for(var entry : counter.entrySet()) {
 	    T key = entry.getKey();
-	    Integer value = entry.getValue();
+	    var value = entry.getValue();
 
 	    if(value > max) {
 		res = new HashSet<T>();
