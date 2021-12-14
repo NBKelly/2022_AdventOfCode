@@ -34,6 +34,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 11  | We've encountered a cavern full of **glow in the dark** octopi. They flash in a fashion similar to fireflies (they sychronise), and we need to compute this pattern to navigate through the pattern without disturbing them.
 | Day 12  | The pathfinding routines on the submarine are bad, so we have to manually find "the" path out - but the only way to do that is to find all paths out of the cave.
 | Day 13  | We want to thermally image some more volcanic vents, but the thermal camera has not been activated! In order to activate it, we need the activation code. In order to find that, we need to fold a piece of transparent paper a bunch of times to create the code.
+| Day 14  | The pressure is too high for the submarine, so we need to produce some polymer reinforcements. Like everything in this submarine, we have to do it manually.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -53,6 +54,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 11  | *O(N)*		    | *O(N)*		 | *N = number of rounds*. This is a fun problem, and it produces some pretty graphics. There's no overexplaining, and no hidden information. 9/10, but only because part 2 was too easy and the image was too small.
 | Day 12  | *O(N<sup>N-1</sup>)*    | *O(N<sup>N</sup>)* | *N = number of links*. This was neat. You can do it very quickly with a DFS, but for a larger set you would have to use dynamic programming. Given the restrictions of this puzzle (Big nodes cannot link to other big nodes), I think an n^2 solution may be possible, given that you first factor out every big node and then apply DP.
 | Day 13  | *O(N.K)*		    | *O(N.K)*		 | *Number of folds, number of points* This was fun, but still quite easy. 2021 is the most "inclusive" year yet. The good news is you have a program which can generate images based on any arbitrary fold set, which is neat.
+| Day 14  | *O(N.K)*		    | *O(N.K)*		 | *Number of rules, number of iterations* This day was a little boring. The solution is obvious, and genuinely the hardest part of this is counting the most/least common letter. Fuck you eric.
 
 ## Solutions
 
@@ -602,7 +604,7 @@ public HashSet<IntPair> foldY(HashSet<IntPair> set, int y) {
 }
 ```
 
-### Part Two
+#### Part Two
 
 All you need to do is be proficient in reading block-text.<sup>Is that a U or a V?<sup>fuck you eric</sup></sup>
 
@@ -616,6 +618,29 @@ All you need to do is be proficient in reading block-text.<sup>Is that a U or a 
 .█..█.█..█..██...██...███.█..█..██..████.
 .........................................
 ```
+
+###
+
+#### Summary
+Recursively expand a string based on a set of rules, which define how each pair of characters should expand. Then, count the most/least common characters.
+
+#### Part One
+You can do part one the bad way (actually use string replacement), but you'll regret it quite quickly.
+
+The 'smart' way:
+* Create a counter which stores <Pair,Integer>
+* Insert every pair from the input string into this counter
+* Run your input through expand(counter, rules) 10 times
+* Count the occurances of the first letter of each pair, plus the last letter of the input
+
+Expand:
+* create a new_counter
+* for each pair XY in the counter, see if a rule V matches it
+* if so, add to new count (XV, count) and (VY, count)
+* otherwise add to new count (XY, count)
+
+#### Part Two
+Just run it 30 more times.
 
 ## Visualizations
 
