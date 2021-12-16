@@ -36,6 +36,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 13  | We want to thermally image some more volcanic vents, but the thermal camera has not been activated! In order to activate it, we need the activation code. In order to find that, we need to fold a piece of transparent paper a bunch of times to create the code.
 | Day 14  | The pressure is too high for the submarine, so we need to produce some polymer reinforcements. Like everything in this submarine, we have to do it manually.
 | Day 15  | We're almost at the cave exit, but found that the narrow area we're in is covered in some sort of sea bugs. We don't want hurt them, so we need to plot the path that has us interact with the smallest amount of them.
+| Day 16  | We made it to open water (at last - did we ever even use the thermal camera?) - now we have to manually decode a radio transmission from the elves (in *Fourier Uncoded Chiral Kinematic-Yaw Orthograph Unresolution*  format).
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -57,6 +58,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 13  | *O(N.K)*		    | *O(N.K)*		 | *Number of folds, number of points* This was fun, but still quite easy. 2021 is the most "inclusive" year yet. The good news is you have a program which can generate images based on any arbitrary fold set, which is neat.
 | Day 14  | *O(N.K)*		    | *O(N.K)*		 | *Number of rules, number of iterations* This day was a little boring. The solution is obvious, and genuinely the hardest part of this is counting the most/least common letter. Fuck you eric.
 | Day 15  | *O(N<sup>2</sup>)*	    | *O(N<sup>2</sup>)* | There's no good heuristic you can use, because cost dominates distance. Eric gave an extremely shit description of how the cave extends, so a lot of people wasted time trying to figure out just what the fuck he was saying. This puzzle sucks ass compared to 2018 day 15, which had pathfinding, battling dudes, turns, and everything else. No soul.
+| Day 16  | *O(N)*		    | *O(N)*		 | This problem was easy, reading it was a fucking nightmare.
 
 ## Solutions
 
@@ -709,8 +711,39 @@ public Character modulate(Character c, int mod) {
 }
 ```
 
+### Day 16: Packet Decoder
+
+#### Summary
+Decode a packet, and find the summ of all version headers, and the resultant value of the operation.
+
+The basic format of a packet:
+
+```
++-----+-----+-----
+| VVV | TTT | ?
++-----+-----+-----
+```
+
+* V = *VERSION* - protocol version
+* T = *TYPE ID* - the typeID field of the packet, used to define packet behaviour.
 
 
+*LITERAL TYPE*
+```
+TYPE = 4 : 100
++-----+-----+-------++ ------+
+| VVV | 100 | IAAAA ?? IAAAA |
++-----+-----+-------++-------+
+```
+
+The payload of a *LITERAL* packet is of arbitrary length, devided into 5 packet segments. The first bit of each packet, *INDICATED*, defines whether this is the final segment. The next four bits of the packet *AAAA* are in order segments of the payload (a number or value).
+
+* If *INDICATOR* is 1, there are more packets as part of the payload. (non-terminal).
+* if *INDICATOR* is 0, the payload terminates with this packet. (terminal).
+
+<!---
+start vis
+--->
 
 
 
