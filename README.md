@@ -741,6 +741,54 @@ The payload of a **LITERAL** packet is of arbitrary length, devided into 5 packe
 * If **INDICATOR** is 1, there are more packets as part of the payload. (non-terminal).
 * if **INDICATOR** is 0, the payload terminates with this packet. (terminal).
 
+**OPERATOR TYPE**
+```
++-----+-----+---+-----
+| VVV |!100 | I | ?
++-----+-----+---+-----
+```
+An **OPERATOR** has a **TYPE ID** that is not 4/100. It has a single **INDICATOR** bit, that defines it as a **TYPE A** or **TYPE B** operator.
+
+**TYPE A OPERATOR**
+```
++-----+-----+---+-----------------+--------
+| VVV |!100 | 0 | LLLLLLLLLLLLLLL | ?????
++-----+-----+---+-----------------+--------
+```
+
+A **TYPE A OPERATOR** has an **INDICATOR** of 0, and has a **LENGTH** field that is 15 bits long, and defines **the total length in bits of the contained packets**, represented by **??**.
+
+**TYPE B OPERATOR**
+```
++-----+-----+---+-------------+--------
+| VVV |!100 | 1 | LLLLLLLLLLL | ?????
++-----+-----+---+-------------+--------
+```
+
+A **TYPE B OPERATOR** has an **INDICATOR** of 1, and has a **LENGTH** field that is 11 bits long, and defines **the number of sub-packets contained in this packet**, represented by **??**.
+
+**TYPE DEFINITIONS**
+
+```
++---+-----+------+----------------------------------------------------+
+| 0 | 000 | SUM  | Sum of all contains packets		              |
+| 1 | 001 | PROD | Product of all contained packets		      |
+| 2 | 010 | MIN  | Minimum value from contained packets		      |
+| 3 | 011 | MAX	 | Maximum value from contained packets		      |
+| 4 | 100 | LIT	 | A literal number/value			      |
+| 5 | 101 | GT	 | Is the first packet greater than the second (1, 0) |
+| 6 | 110 | LT	 | Is the first packet smaller than the second (1, 0) |
+| 7 | 111 | EQ	 | Is the first packet the same as the second (1, 0)  |
++---+-----+------+----------------------------------------------------+
+```
+
+#### Part One
+Decode all the packets. Count the version numbers of each packet.
+
+#### Part Two
+Compute the value of the packet.
+
+
 <!---
 start vis
 --->
