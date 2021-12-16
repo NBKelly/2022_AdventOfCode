@@ -62,6 +62,9 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 
 ## Solutions
 
+###  Table of Solutions
+1. [Day 01](#Day_01:_Sonar_Sweep)
+
 ### Day 01: Sonar Sweep
 #### Summary
 Count the number of times a number is greater than the last number.
@@ -736,10 +739,10 @@ TYPE = 4 : 100
 +-----+-----+-------++-------+
 ```
 
-The payload of a **LITERAL** packet is of arbitrary length, devided into 5 packet segments. The first bit of each packet, **INDICATOR**, defines whether this is the final segment. The next four bits of the packet **AAAA** are in order segments of the payload (a number or value).
+The payload of a **LITERAL** packet is of arbitrary length, divided into 5 bit blocks. The first bit of each block, **INDICATOR**, defines whether this is the final (terminal) segment. The next four bits of the block, **AAAA**, are in order segments of the payload (a number or value).
 
-* If **INDICATOR** is 1, there are more packets as part of the payload. (non-terminal).
-* if **INDICATOR** is 0, the payload terminates with this packet. (terminal).
+* If **INDICATOR** is 1, there are more blocks as part of the payload. (non-terminal).
+* if **INDICATOR** is 0, the payload terminates with this block. (terminal).
 
 **OPERATOR TYPE**
 ```
@@ -756,7 +759,7 @@ An **OPERATOR** has a **TYPE ID** that is not 4/100. It has a single **INDICATOR
 +-----+-----+---+-----------------+--------
 ```
 
-A **TYPE A OPERATOR** has an **INDICATOR** of 0, and has a **LENGTH** field that is 15 bits long, and defines **the total length in bits of the contained packets**, represented by **??**.
+A **TYPE A OPERATOR** has an **INDICATOR** of 0, and has a **LENGTH** field that is 15 bits long, and defines **the total LENGTH in bits of the contained subpackets**, represented by **??**.
 
 **TYPE B OPERATOR**
 ```
@@ -765,7 +768,7 @@ A **TYPE A OPERATOR** has an **INDICATOR** of 0, and has a **LENGTH** field that
 +-----+-----+---+-------------+--------
 ```
 
-A **TYPE B OPERATOR** has an **INDICATOR** of 1, and has a **LENGTH** field that is 11 bits long, and defines **the number of sub-packets contained in this packet**, represented by **??**.
+A **TYPE B OPERATOR** has an **INDICATOR** of 1, and has a **LENGTH** field that is 11 bits long, and defines **the COUNT of sub-packets contained in this packet**, represented by **??**.
 
 **TYPE DEFINITIONS**
 
