@@ -241,7 +241,7 @@ public final class Util {
 
 	    
 	    for(int j = 0; j < monitor.length; j++)
-		res.get(monitor[j]).add(hc.count(monitor[j]));
+		res.get(monitor[j]).add((int)((long)(hc.count(monitor[j]))));
 	}
 
 	return res;
