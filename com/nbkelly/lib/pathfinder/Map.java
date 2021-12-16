@@ -40,6 +40,26 @@ public class Map {
 	return token != null && pathable.apply(token);	
     }
 
+    public boolean pathable(int x, int y,
+			    Function<Character, Boolean> pathable,
+			    Function<IntPair, Character> get) {
+	var token = get.apply(new IntPair(x, y));
+	return token != null && pathable.apply(token);	
+    }
+
+    private HashSet<IntPair> pathable(List<IntPair> candidates,
+				      Function<Character, Boolean> pathable,
+				      Function<IntPair, Character> get) {
+	HashSet<IntPair> res = new HashSet<>();
+	for(IntPair pair : candidates) {
+	    if(pathable(pair.X, pair.Y, pathable, get))
+		res.add(pair);
+	}
+
+	return res;
+    }
+
+    
     private HashSet<IntPair> pathable(List<IntPair> candidates,
 				      Function<Character, Boolean> pathable) {
 	HashSet<IntPair> res = new HashSet<>();
@@ -70,15 +90,81 @@ public class Map {
 				   pathable,
 				   neighbors);
     }
+
+    public Integer cost_orthogonal(int sx, int sy, int dx, int dy,
+				   Function<Character, Boolean> pathable,
+				   Function<IntPair, List<IntPair>> neighbors,
+				   Function<Character, Integer> cost) {
+	return cost_orthogonal(sx, sy, dx, dy,
+			       pathable,
+			       neighbors,
+			       cost,
+			       x -> get(x.X, x.Y));
+    }
+	
+				   
+    
+    public Integer cost_orthogonal(int sx, int sy, int dx, int dy,
+				   Function<Character, Boolean> pathable,
+				   Function<IntPair, List<IntPair>> neighbors,
+				   Function<Character, Integer> cost,
+				   Function<IntPair, Character> get) {
+	if(sx == dx
+	   && sy == dy)
+	    return 0;
+	if(!pathable.apply(get.apply(new IntPair(sx, sy)))
+	   || !pathable.apply(get.apply(new IntPair(dx, dy))))
+	    return null;
+
+ 	IntPair destination = new IntPair(dx, dy);
+	    
+	TreeSet<Cost> metrics = new TreeSet<>();
+	metrics.add(new Cost(0, new IntPair(sx, sy), destination, 0));
+
+	HashMap<IntPair, Integer> bestScore = new HashMap<IntPair, Integer>();
+
+	while(metrics.size() > 0) {
+	    var metric = metrics.pollFirst();
+	    var last_best = bestScore.get(metric.location);
+	    if(last_best != null && last_best <= metric.cost)
+		    continue;
+	    
+	    bestScore.put(metric.location, metric.cost);
+
+	    if(metric.location.equals(destination))
+		return metric.cost;
+
+	    var pathable_neighbors = pathable(neighbors.apply(metric.location), pathable, get);
+	    
+	    for(var neighbor : pathable_neighbors) {
+		var extra_cost = cost.apply(get.apply(neighbor));//neighbor.X, neighbor.Y));
+		metrics.add(new Cost(metric.moves+1, neighbor, destination,
+				     extra_cost + metric.cost));
+	    }
+	}
+	
+	return null;	
+    }
+	
+    public Integer distance_orthogonal(int sx, int sy, int dx, int dy,
+				       Function<Character, Boolean> pathable,
+				       Function<IntPair, List<IntPair>> neighbors) {
+	return distance_orthogonal(sx, sy, dx, dy,
+				   pathable,
+				   neighbors,
+				   x -> get(x.X, x.Y));
+    }
     
     //diagonal dist is considered as 2
     public Integer distance_orthogonal(int sx, int sy, int dx, int dy,
 				       Function<Character, Boolean> pathable,
-				       Function<IntPair, List<IntPair>> neighbors) {
+				       Function<IntPair, List<IntPair>> neighbors,
+				       Function<IntPair, Character> get) {
  	if(sx == dx
 	   && sy == dy)
 	    return 0;
-	if(!pathable.apply(get(sx, sy)) || !pathable.apply(get(dx, dy)))
+	if(!pathable.apply(get.apply(new IntPair(sx, sy))) ||
+	   !pathable.apply(get.apply(new IntPair(dx, dy))))
 	    return null;
 
 
@@ -184,6 +270,36 @@ public class Map {
 	    return String.format("%d | %s | %d", moves, location.toString(), score);
 	}
     }    
+
+    private class Cost implements Comparable<Cost> {
+	int moves;
+	IntPair location;
+	int cost;
+	long dist;
+	long score;
+	
+	public Cost(int moves, IntPair location, IntPair destination, int cost) {
+	    this.cost = cost;
+	    this.moves = moves;
+	    this.location = location;
+	    this.dist = Math.round(_dist(location.X, location.Y,
+					 destination.X, destination.Y, false));
+	    this.score = cost + 1*dist;
+	}
+
+	public int compareTo(Cost m) {
+	    return Util.compareTo(score, m.score,
+				  cost, m.cost,
+				  dist, m.dist,
+				  moves, m.moves,				  
+				  location.X, m.location.X,
+				  location.Y, m.location.Y);
+	}
+
+	public String toString() {
+	    return String.format("%d | %s | %d", moves, location.toString(), cost);
+	}
+    }
     
     private class Metric implements Comparable<Metric> {
 	int moves;

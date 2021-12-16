@@ -35,6 +35,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 12  | The pathfinding routines on the submarine are bad, so we have to manually find "the" path out - but the only way to do that is to find all paths out of the cave.
 | Day 13  | We want to thermally image some more volcanic vents, but the thermal camera has not been activated! In order to activate it, we need the activation code. In order to find that, we need to fold a piece of transparent paper a bunch of times to create the code.
 | Day 14  | The pressure is too high for the submarine, so we need to produce some polymer reinforcements. Like everything in this submarine, we have to do it manually.
+| Day 15  | We're almost at the cave exit, but found that the narrow area we're in is covered in some sort of sea bugs. We don't want hurt them, so we need to plot the path that has us interact with the smallest amount of them.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -55,6 +56,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 12  | *O(N<sup>N-1</sup>)*    | *O(N<sup>N</sup>)* | *N = number of links*. This was neat. You can do it very quickly with a DFS, but for a larger set you would have to use dynamic programming. Given the restrictions of this puzzle (Big nodes cannot link to other big nodes), I think an n^2 solution may be possible, given that you first factor out every big node and then apply DP.
 | Day 13  | *O(N.K)*		    | *O(N.K)*		 | *Number of folds, number of points* This was fun, but still quite easy. 2021 is the most "inclusive" year yet. The good news is you have a program which can generate images based on any arbitrary fold set, which is neat.
 | Day 14  | *O(N.K)*		    | *O(N.K)*		 | *Number of rules, number of iterations* This day was a little boring. The solution is obvious, and genuinely the hardest part of this is counting the most/least common letter. Fuck you eric.
+| Day 15  | *O(N<sup>2</sup>)*	    | *O(N<sup>2</sup>)* | There's no good heuristic you can use, because cost dominates distance. Eric gave an extremely shit description of how the cave extends, so a lot of people wasted time trying to figure out just what the fuck he was saying. This puzzle sucks ass compared to 2018 day 15, which had pathfinding, battling dudes, turns, and everything else. No soul.
 
 ## Solutions
 
@@ -641,6 +643,76 @@ Expand:
 
 #### Part Two
 Just run it 30 more times.
+
+### Day 15
+
+#### Summary
+Find a path from point A to B with minimum cost.
+
+#### Part One
+Define functions to get neighbors, index a point on the grid, and check if a point is pathable.
+
+Then perform a search from point A to B using the pathfinding algorithm of your choice.
+
+```Java
+var p1_cost = map.cost_orthogonal(sx, sy, fx, fy,
+				  c -> Character.isDigit(c),
+				  x -> Map.OrthogonalNeighbors(x),
+				  x -> (x - '0'),
+				  x -> get_char(lines, x.X, x.Y, 0));	
+```
+
+#### Part Two
+The space you're searching is bigger. My technique for indexing it:
+
+```
+var p2_cost = map.cost_orthogonal(sx, sy, fx, fy,
+				  c -> Character.isDigit(c),
+				  x -> Map.OrthogonalNeighbors(x),
+				  x -> (x - '0'),
+				  x -> get_char(lines, x.X, x.Y, 4));
+	
+```
+
+with get_char defined as:
+
+```Java
+public Character get_char(ArrayList<String> lines, int x, int y,
+			      int rot_lim) {	
+    if(x < 0 || y < 0)
+        return null;
+	
+    //calculate displacement
+    var rot_x =  x / lines.get(0).length();
+    var rot_y =  y / lines.size();
+
+    if(rot_x > rot_lim || rot_y > rot_lim)
+        return null;	
+	
+    if(rot_x == 0 && rot_y == 0)
+        return lines.get(y).charAt(x);	
+	
+    var index_x = x % lines.get(0).length();
+    var index_y = y % lines.size();
+
+    return modulate(lines.get(index_y).charAt(index_x), rot_x + rot_y);
+}
+    
+public Character modulate(Character c, int mod) {
+    if(c == null)
+        return null;
+    var ch = c + mod;
+    while(ch > '9')
+        ch = (char)((int)ch - 9);
+
+    return (char)ch;
+}
+```
+
+
+
+
+
 
 ## Visualizations
 
