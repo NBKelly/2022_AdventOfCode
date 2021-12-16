@@ -724,11 +724,11 @@ The basic format of a packet:
 +-----+-----+-----
 ```
 
-* V = *VERSION* - protocol version
-* T = *TYPE ID* - the typeID field of the packet, used to define packet behaviour.
+* V = **VERSION** - protocol version
+* T = **TYPE ID** - the typeID field of the packet, used to define packet behaviour.
 
 
-*LITERAL TYPE*
+**LITERAL TYPE**
 ```
 TYPE = 4 : 100
 +-----+-----+-------++ ------+
@@ -736,10 +736,10 @@ TYPE = 4 : 100
 +-----+-----+-------++-------+
 ```
 
-The payload of a *LITERAL* packet is of arbitrary length, devided into 5 packet segments. The first bit of each packet, *INDICATED*, defines whether this is the final segment. The next four bits of the packet *AAAA* are in order segments of the payload (a number or value).
+The payload of a **LITERAL** packet is of arbitrary length, devided into 5 packet segments. The first bit of each packet, **INDICATOR**, defines whether this is the final segment. The next four bits of the packet **AAAA** are in order segments of the payload (a number or value).
 
-* If *INDICATOR* is 1, there are more packets as part of the payload. (non-terminal).
-* if *INDICATOR* is 0, the payload terminates with this packet. (terminal).
+* If **INDICATOR** is 1, there are more packets as part of the payload. (non-terminal).
+* if **INDICATOR** is 0, the payload terminates with this packet. (terminal).
 
 <!---
 start vis
