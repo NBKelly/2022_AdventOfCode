@@ -63,7 +63,12 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 ## Solutions
 
 ###  Table of Solutions
-1. [Day 01](#Day_01:_Sonar_Sweep)
+1. [Day 01](#Day-01-Sonar-Sweep)
+2. [Day 02](#Day-02-Dive)
+3. [Day 03](#Day-03-Binary-Diagnostic)
+4. [Day 04](#Day-04-Giant-Squid)
+5. [Day 05](#Day-05-Hydrothermal-Venture)
+16. [Day 16](#Day-16-Packet-Decoder)
 
 ### Day 01: Sonar Sweep
 #### Summary
