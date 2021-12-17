@@ -60,6 +60,11 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 15  | *O(N<sup>2</sup>)*	    | *O(N<sup>2</sup>)* | There's no good heuristic you can use, because cost dominates distance. Eric gave an extremely shit description of how the cave extends, so a lot of people wasted time trying to figure out just what the fuck he was saying. This puzzle sucks ass compared to 2018 day 15, which had pathfinding, battling dudes, turns, and everything else. No soul.
 | Day 16  | *O(N)*		    | *O(N)*		 | This problem was easy, reading it was a fucking nightmare.
 
+
+
+
+
+
 ## Solutions
 
 ###  Table of Solutions
@@ -68,7 +73,32 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 3. [Day 03](#Day-03-Binary-Diagnostic)
 4. [Day 04](#Day-04-Giant-Squid)
 5. [Day 05](#Day-05-Hydrothermal-Venture)
+6. [Day 06](#Day-06-Lanternfish)
+7. [Day 07](#Day-07-The-Treachery-of-Whales)
+8. [Day 08](#Day-08-Seven-Segment-Search)
+9. [Day 09](#Day-09-Smoke-Basin)
+10. [Day 10](#Day-10-Syntax-Scoring)
+11. [Day 10](#Day-11-Dumbo-Octopus)
+12. [Day 10](#Day-12-Passage-Pathing)
+13. [Day 10](#Day-13-Transparent-Origami)
+14. [Day 10](#Day-14-Extended-Polymerization)
+15. [Day 10](#Day-15-Chiton)
 16. [Day 16](#Day-16-Packet-Decoder)
+17. [Day 10](#Day-17-)
+18. [Day 10](#Day-18-)
+19. [Day 10](#Day-19-)
+20. [Day 10](#Day-20-)
+21. [Day 10](#Day-21-)
+22. [Day 10](#Day-22-)
+23. [Day 10](#Day-23-)
+24. [Day 10](#Day-24-)
+25. [Day 10](#Day-25-)
+
+
+
+
+
+
 
 ### Day 01: Sonar Sweep
 #### Summary
