@@ -382,7 +382,7 @@ DEBUGF(1, "PART TWO: "); println(sum);
 ```
 
 
-### Day 07: The Treachery of Wales
+### Day 07: The Treachery of Whales
 
 #### Summary
 Find the median point and average points of a set of numbers.
@@ -512,7 +512,7 @@ Simply repeat 100x.
 Simply run until popped = matrix size.
 
 
-### Day 12: Passage Pathfinding
+### Day 12: Passage Pathing
 
 #### Summary
 Find *all* paths through a graph, where small nodes may only be visited once (or one small node may be visited exactly twice, for part two).
@@ -661,7 +661,7 @@ All you need to do is be proficient in reading block-text.<sup>Is that a U or a 
 .........................................
 ```
 
-###
+### Day 14: Extended Polymerization
 
 #### Summary
 Recursively expand a string based on a set of rules, which define how each pair of characters should expand. Then, count the most/least common characters.
@@ -684,7 +684,7 @@ Expand:
 #### Part Two
 Just run it 30 more times.
 
-### Day 15
+### Day 15: Chiton
 
 #### Summary
 Find a path from point A to B with minimum cost.
