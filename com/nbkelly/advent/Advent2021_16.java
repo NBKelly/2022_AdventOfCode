@@ -80,7 +80,8 @@ public class Advent2021_16 extends Drafter {
 
 
 	var parsed_ans = parse(conv, map, 0, 0);	
-	        
+	DEBUG(2, "");
+	
 	int sum_ver = 0;
 	for(var v : versions)
 	    sum_ver += toInt(v);
@@ -104,13 +105,15 @@ public class Advent2021_16 extends Drafter {
 	var type = typeID(s, start + 3);
 	switch(type) {
 	case "100":
-	    DEBUGF(2, "PARSE SELECTS LITERAL AT INDEX = %d DEPTH %d%n", start, depth);	    
+	    DEBUGF(3, "PARSE SELECTS LITERAL AT INDEX = %d DEPTH %d%n", start, depth);	    
 	    var pair = literal(s, map, start, depth+1);
 	    index = pair.Y;
-	    //println(pair.X);
+
+	    DEBUGF(2, "%s ", pair.X);
+	    
 	    return pair;
 	default:
-	    DEBUGF(2, "PARSE SELECTS OPERATOR AT INDEX = %d DEPTH %d%n", start, depth);
+	    DEBUGF(3, "PARSE SELECTS OPERATOR AT INDEX = %d DEPTH %d%n", start, depth);
 	    var pair2 = operator(s, map, index, depth+1);
 	    index = pair2.Y;
 	    //println(pair2.X);
@@ -132,7 +135,7 @@ public class Advent2021_16 extends Drafter {
 	
 	versions.add(version);
 	
-	DEBUGF(2, "OPERATOR AT INDEX %d DEPTH %d - VER %s TYPE %s MODE %s%n",
+	DEBUGF(3, "OPERATOR AT INDEX %d DEPTH %d - VER %s TYPE %s MODE %s%n",
 	       start, depth, version, type, mode);	
 
 	String len = "";
@@ -147,7 +150,27 @@ public class Advent2021_16 extends Drafter {
 			
 	int decoded_len = toInt(len);
 	int start_index = index;
-	DEBUG(2, "OPERATOR LEN (INT): " + decoded_len);
+
+
+	DEBUG(3, "OPERATOR LEN (INT): " + decoded_len);
+	/* debug output */
+	if(_DEBUG_LEVEL >= 2) {
+	    /* select the symbol to use */
+	    var token = "?";
+
+	    switch(type) {
+	    case "000": token = "+";   break;
+	    case "001": token = "*";   break;
+	    case "010": token = "MIN"; break;
+	    case "011": token = "MAX"; break;
+	    case "100": token = "LIT"; break;
+	    case "101": token = "<";   break;
+	    case "110": token = ">";   break;
+	    case "111": token = "==";  break;
+	    }
+
+	    DEBUGF(2, "( %s ", token);
+	}
 
 	ArrayList<BigInteger> subvalues = new ArrayList<>();
 	
@@ -165,6 +188,8 @@ public class Advent2021_16 extends Drafter {
 		index = pair.Y;
 		subvalues.add(pair.X);
 	    }
+
+	DEBUGF(2, ")");
 	
 	switch(type) {
 	case "000": return new Pair<BigInteger, Integer>(sum(subvalues), index);	   
@@ -176,6 +201,8 @@ public class Advent2021_16 extends Drafter {
 	case "111": return new Pair<BigInteger, Integer>(eq(subvalues), index);
 	}
 
+	
+	
 	return new Pair<BigInteger, Integer>(null, index);
     }
 
@@ -257,7 +284,7 @@ public class Advent2021_16 extends Drafter {
 	}
 
 	/* get the actual value of the literal */
-	DEBUGF(2, "LITERAL WITH VALUE %s STARTING AT %d DEPTH %d%n",
+	DEBUGF(3, "LITERAL WITH VALUE %s STARTING AT %d DEPTH %d%n",
 	       new  BigInteger(current, 2), depth, start);
 	
 	return new Pair<BigInteger, Integer>(new BigInteger(current, 2), index);
