@@ -833,7 +833,7 @@ Compute the value of the packet.
 
 #### Summary
 
-Find the highest value a projectile can have on a trajectory that hits a box, and find the total number of trajectories that hit a box.
+Find the highest value a projectile can have on a trajectory that hits a box, and find the total number of trajectories that hit a box. I'll redo this one in a non-shit way after christmas I guess.
 
 #### Part One
 brute force it. The inputs and problem are so garbage that it's genuinely not worth doing it right. The continual subpar and lazy puzzles are really sapping my will to bother with AOC this year. Eric has really phoned it in.
