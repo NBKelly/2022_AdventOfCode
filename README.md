@@ -861,6 +861,11 @@ An few examples would be:
 [[[1,[2,[3,4]]],[5,6]],7]
 ```
 
+Because depth is important, this one labels depth:
+```
+[0,[1,[2,[3,[4,4]]]]]
+```
+
 In order to sum two snailfish numbers, the following steps are taken:
 
 ```
@@ -872,8 +877,9 @@ But how is a snailfish number reduced?
 
 The following steps are taken:
 * start:
-* If possible, explode the leftmost pair with depth > 4. GOTO start.
-* If possible, split the leftmost number with value > 9. GOTO start.
+* If possible, explode the leftmost pair with depth == 4, then GOTO start.
+* If possible, split the leftmost number with value > 9, then GOTO start.
+* end
 
 So what do the reduce and split operations look like?
 
@@ -893,9 +899,14 @@ To split a pair:
 
 ```
 split([13,2])  == [[6,7],2]
+split([3,[26,[12,5]]]) == [3,[[13,13],[12,5]]]
 ```
 
-Knowing this, simply sum all of the pairs in the input in order.
+### Part 1
+
+Sum all of the pairs in the input in order, then find the magnitude.
+
+Magnitude(pair) = 3.**left** + 2.**right**. Solve it recursively.
 
 ### Part 2
 Find the maximum value for the sum of all pairs of numbers, (A,B), or (B,A).
