@@ -37,6 +37,8 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 14  | The pressure is too high for the submarine, so we need to produce some polymer reinforcements. Like everything in this submarine, we have to do it manually.
 | Day 15  | We're almost at the cave exit, but found that the narrow area we're in is covered in some sort of sea bugs. We don't want hurt them, so we need to plot the path that has us interact with the smallest amount of them.
 | Day 16  | We made it to open water (at last - did we ever even use the thermal camera?) - now we have to manually decode a radio transmission from the elves (in *Fourier Uncoded Chiral Kinematic-Yaw Orthograph Unresolution*  format).
+| Day 17  | The elf message was worthless. We need to shoot a probe into an ocean trench.
+
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -59,7 +61,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 14  | *O(N.K)*		    | *O(N.K)*		 | *Number of rules, number of iterations* This day was a little boring. The solution is obvious, and genuinely the hardest part of this is counting the most/least common letter. Fuck you eric.
 | Day 15  | *O(N<sup>2</sup>)*	    | *O(N<sup>2</sup>)* | There's no good heuristic you can use, because cost dominates distance. Eric gave an extremely shit description of how the cave extends, so a lot of people wasted time trying to figure out just what the fuck he was saying. This puzzle sucks ass compared to 2018 day 15, which had pathfinding, battling dudes, turns, and everything else. No soul.
 | Day 16  | *O(N)*		    | *O(N)*		 | This problem was easy, reading it was a fucking nightmare.
-
+| Day 17  | I Don't Care	    | I Don't Care	 | This problem is really barely even worth doing. The inputs are so easy that the optimal strategy is brute force. The bounds are easy to see, and a brute force solution should finish in less than a second. The second optimal strategy is a partially correct solution, which should also finish in barely a second, and will be correct for every input eric gives. Part one is literally a one-liner, which is only correct in the specific circumstance eric gives.
 
 
 
@@ -84,7 +86,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 14. [Day 14: Extended Polymerization](#Day-14-Extended-Polymerization)
 15. [Day 15: Chiton](#Day-15-Chiton)
 16. [Day 16: Packet Decoder](#Day-16-Packet-Decoder)
-17. [Day 17](#Day-17-)
+17. [Day 17: Trick Shot](#Day-17-Trick-Shot)
 18. [Day 18](#Day-18-)
 19. [Day 19](#Day-19-)
 20. [Day 20](#Day-20-)
@@ -825,6 +827,19 @@ Decode all the packets. Count the version numbers of each packet.
 
 #### Part Two
 Compute the value of the packet.
+
+
+### Day 17: Trick Shot
+
+#### Summary
+
+Find the highest value a projectile can have on a trajectory that hits a box, and find the total number of trajectories that hit a box.
+
+#### Part One
+brute force it. The inputs and problem are so garbage that it's genuinely not worth doing it right. The continual subpar and lazy puzzles are really sapping my will to bother with AOC this year. Eric has really phoned it in.
+
+#### Part Two
+Brute force it. Eric gives you zero reason not to.
 
 
 <!---
