@@ -38,7 +38,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 15  | We're almost at the cave exit, but found that the narrow area we're in is covered in some sort of sea bugs. We don't want hurt them, so we need to plot the path that has us interact with the smallest amount of them.
 | Day 16  | We made it to open water (at last - did we ever even use the thermal camera?) - now we have to manually decode a radio transmission from the elves (in *Fourier Uncoded Chiral Kinematic-Yaw Orthograph Unresolution*  format).
 | Day 17  | The elf message was worthless. We need to shoot a probe into an ocean trench.
-
+| Day 18  | Some snailfish (in the trench) claim to have seen the keys, but will only tell us which direction they went if we solve their math homework. (hint: direction = down)
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -62,9 +62,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 15  | *O(N<sup>2</sup>)*	    | *O(N<sup>2</sup>)* | There's no good heuristic you can use, because cost dominates distance. Eric gave an extremely shit description of how the cave extends, so a lot of people wasted time trying to figure out just what the fuck he was saying. This puzzle sucks ass compared to 2018 day 15, which had pathfinding, battling dudes, turns, and everything else. No soul.
 | Day 16  | *O(N)*		    | *O(N)*		 | This problem was easy, reading it was a fucking nightmare.
 | Day 17  | I Don't Care	    | I Don't Care	 | This problem is really barely even worth doing. The inputs are so easy that the optimal strategy is brute force. The bounds are easy to see, and a brute force solution should finish in less than a second. The second optimal strategy is a partially correct solution, which should also finish in barely a second, and will be correct for every input eric gives. Part one is literally a one-liner, which is only correct in the specific circumstance eric gives.
-
-
-
+| Day 18  | *O(N.K)*		    | *O((N.K)<sup>2</sup>)* | N = line count, k = reduction complexity. This problem was actually quite fun, even if the instructions were garbage. At least it was difficult.
 
 
 ## Solutions
@@ -87,7 +85,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 15. [Day 15: Chiton](#Day-15-Chiton)
 16. [Day 16: Packet Decoder](#Day-16-Packet-Decoder)
 17. [Day 17: Trick Shot](#Day-17-Trick-Shot)
-18. [Day 18](#Day-18-)
+18. [Day 18: Snailfish](#Day-18-Snailfish)
 19. [Day 19](#Day-19-)
 20. [Day 20](#Day-20-)
 21. [Day 21](#Day-21-)
@@ -841,6 +839,69 @@ brute force it. The inputs and problem are so garbage that it's genuinely not wo
 #### Part Two
 Brute force it. Eric gives you zero reason not to.
 
+
+### Day 18: Snailfish
+
+Find the sum of a series of **snailfish numbers**, and then find the pair of **snailfish numbers** that produce the highest sum from the series.
+
+#### Part One
+
+A snailfish number is a ~~tree~~ string of numbers, that can be defined as:
+```
+literal   := (0|1|2|3|4|5|6|7|8|9)+
+unit      := pair|literal
+pair      := [unit,unit]
+snailfish := pair
+```
+
+An few examples would be:
+```
+[1,1]
+[[1,2],3]
+[[[1,[2,[3,4]]],[5,6]],7]
+```
+
+In order to sum two snailfish numbers, the following steps are taken:
+
+```
+pre-reduction_sum := [left,right]
+sum = reduce(pre_reduction_sum)
+```
+
+But how is a snailfish number reduced?
+
+The following steps are taken:
+* start:
+* If possible, explode the leftmost pair with depth > 4. GOTO start.
+* If possible, split the leftmost number with value > 9. GOTO start.
+
+So what do the reduce and split operations look like?
+
+To reduce a pair:
+* Note the two values of the pair (**left**, **right**)
+* Replace the pair with the literal 0
+* Find the rightmost number that precedes the pair (if it exists), and add **left** to it.
+* Find the leftmost number that follows the pair (if it exists), and add **right** to it.
+
+```
+reduce([1,[2,[3,[4,[5,6]]]]])   == [1,[2,[3,[9,0]]]]
+reduce([1,[2,[3,[4,[5,6]]]],7]) == [1,[2,[3,[9,0]]],13]
+```
+
+To split a pair:
+* Replace the value X with the pair ```[X/2, X/2 + (X%2)]```.
+
+```
+split([13,2])  == [[6,7],2]
+```
+
+Knowing this, simply sum all of the pairs in the input in order.
+
+### Part 2
+Find the maximum value for the sum of all pairs of numbers, (A,B), or (B,A).
+Note that addition is not commutative.
+
+This part of the question is really a joke.
 
 <!---
 start vis
