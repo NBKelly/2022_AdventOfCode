@@ -842,9 +842,9 @@ Brute force it. Eric gives you zero reason not to.
 
 ### Day 18: Snailfish
 
-Find the sum of a series of **snailfish numbers**, and then find the pair of **snailfish numbers** that produce the highest sum from the series.
+#### Summary
 
-#### Part One
+Find the sum of a series of **snailfish numbers**, and then find the pair of **snailfish numbers** that produce the highest sum from the series.
 
 A snailfish number is a ~~tree~~ string of numbers, that can be defined as:
 ```
@@ -902,13 +902,13 @@ split([13,2])  == [[6,7],2]
 split([3,[26,[12,5]]]) == [3,[[13,13],[12,5]]]
 ```
 
-### Part 1
+### Part One
 
 Sum all of the pairs in the input in order, then find the magnitude.
 
 Magnitude(pair) = 3.**left** + 2.**right**. Solve it recursively.
 
-### Part 2
+### Part Two
 Find the maximum value for the sum of all pairs of numbers, (A,B), or (B,A).
 Note that addition is not commutative.
 

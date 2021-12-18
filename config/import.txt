@@ -1,6 +1,17 @@
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.TreeSet;
+import java.util.TreeMap;
 
 /* my imported libs */
 import com.nbkelly.lib.Util;
 import com.nbkelly.drafter.BooleanCommand; //visualize cmd
 import com.nbkelly.lib.Image; //visualizer lib
+
+import com.nbkelly.lib.IntPair;
+import com.nbkelly.lib.pathfinder.Map;
+import com.nbkelly.lib.Pair;
+
+import java.math.BigInteger;
+

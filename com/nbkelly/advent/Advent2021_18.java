@@ -16,6 +16,7 @@ import java.util.TreeMap;
 /* my imported libs */
 import com.nbkelly.lib.Util;
 import com.nbkelly.drafter.BooleanCommand; //visualize cmd
+import com.nbkelly.drafter.IntCommand;
 import com.nbkelly.lib.Image; //visualizer lib
 
 import com.nbkelly.lib.IntPair;
@@ -46,13 +47,12 @@ public class Advent2021_18 extends Drafter {
     public String add(String left, String right) {
 	return String.format("[%s,%s]",left,right);
     }
+
+    int MAX_DEPTH = 4;
     
     /* solve problem here */
     @Override public int solveProblem() throws Exception {
 	Timer t = makeTimer();
-
-        /* code injected from file */
-        //var ints = Util.toIntList(lines);
 
 	var sum = lines.get(0);
 
@@ -132,13 +132,23 @@ public class Advent2021_18 extends Drafter {
 			new BigInteger("2").multiply(new BigInteger(get_number(number,end+1)))
 			);
     }
-    
+
     public String reduce(String number) {
+	while(true) {
+	    var res = reduce_worker(number);
+	    if(res.equals(number))
+		return res;
+	    else
+		number = res;
+	}
+    }
+    
+    public String reduce_worker(String number) {
 	/* see if a pair is nested inside four numbers */
 	int depth = 0;
 	for(int i = 0; i < number.length(); i++) {
-	    if(number.charAt(i) == '[' && depth == 4)
-		return reduce(explode(number, i));
+	    if(number.charAt(i) == '[' && depth == MAX_DEPTH)
+		return explode(number, i);
 	    else if(number.charAt(i) == '[')
 		depth++;
 	    else if (number.charAt(i) == ']')
@@ -150,7 +160,7 @@ public class Advent2021_18 extends Drafter {
 	    if(Character.isDigit(number.charAt(i))) {
 		var num = get_number(number, i);
 		if(Integer.parseInt(num) > 9)
-		    return reduce(split(number, i, num));
+		    return split(number, i, num);
 	    }
 	}
 
@@ -310,8 +320,14 @@ public class Advent2021_18 extends Drafter {
         BooleanCommand vc = new BooleanCommand("Visualize Output",
         				       "The visualized output for this program", 
         				       false, "--out-file", "--output-file", "--out-image");
-        
-        return new Command[]{fc, vc};
+
+	/* max depth */
+	IntCommand ic = new IntCommand("Max Depth",
+				       "Set the max depth to other than four",
+				       1, 100, false, 4, "--max-depth");
+				       
+	
+        return new Command[]{fc, vc, ic};
         
         
     }
@@ -325,6 +341,9 @@ public class Advent2021_18 extends Drafter {
         setSource(((FileCommand)userCommands[0]).getValue());
         
         generate_output = ((BooleanCommand)userCommands[1]).matched();
+
+	MAX_DEPTH = ((IntCommand)userCommands[2]).getValue();
+	
 	return 0;
     }
 
