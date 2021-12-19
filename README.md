@@ -39,6 +39,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 16  | We made it to open water (at last - did we ever even use the thermal camera?) - now we have to manually decode a radio transmission from the elves (in *Fourier Uncoded Chiral Kinematic-Yaw Orthograph Unresolution*  format).
 | Day 17  | The elf message was worthless. We need to shoot a probe into an ocean trench.
 | Day 18  | Some snailfish (in the trench) claim to have seen the keys, but will only tell us which direction they went if we solve their math homework. (hint: direction = down)
+| Day 19  | We never got told what the snailfish said about the keys. As our probe (from day 17) drifted, it unleashed a bunch of beacons and scanners. They all have their own distinct geodata, and we need to collate this to determine the actual space measured.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -63,7 +64,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 16  | *O(N)*		    | *O(N)*		 | This problem was easy, reading it was a fucking nightmare.
 | Day 17  | I Don't Care	    | I Don't Care	 | This problem is really barely even worth doing. The inputs are so easy that the optimal strategy is brute force. The bounds are easy to see, and a brute force solution should finish in less than a second. The second optimal strategy is a partially correct solution, which should also finish in barely a second, and will be correct for every input eric gives. Part one is literally a one-liner, which is only correct in the specific circumstance eric gives.
 | Day 18  | *O(N.K)*		    | *O((N.K)<sup>2</sup>)* | N = line count, k = reduction complexity. This problem was actually quite fun, even if the instructions were garbage. At least it was difficult.
-
+| Day 19  | *O(N^3 + K^3)*	    | *O(N^3 + K^3)*	     | N = scanner count, K = beacon count. This was actually a very fun puzzle, but I will admit that 90% of the difficulty came from collating a set of rotations that worked, and knowing which units to displace when making comparisons. Once you can compare two regions, you've solved the puzzle. There is likely a better solution, but I wont put in the effort to find it (just yet).
 
 ## Solutions
 
@@ -86,7 +87,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 16. [Day 16: Packet Decoder](#Day-16-Packet-Decoder)
 17. [Day 17: Trick Shot](#Day-17-Trick-Shot)
 18. [Day 18: Snailfish](#Day-18-Snailfish)
-19. [Day 19](#Day-19-)
+19. [Day 19: Beacon Scanner](#Day-19-Beacon-Scanner)
 20. [Day 20](#Day-20-)
 21. [Day 21](#Day-21-)
 22. [Day 22](#Day-22-)
@@ -902,17 +903,54 @@ split([13,2])  == [[6,7],2]
 split([3,[26,[12,5]]]) == [3,[[13,13],[12,5]]]
 ```
 
-### Part One
+#### Part One
 
 Sum all of the pairs in the input in order, then find the magnitude.
 
 Magnitude(pair) = 3.**left** + 2.**right**. Solve it recursively.
 
-### Part Two
+#### Part Two
 Find the maximum value for the sum of all pairs of numbers, (A,B), or (B,A).
 Note that addition is not commutative.
 
 This part of the question is really a joke.
+
+### Day 19: Beacon Scanner
+
+#### Summary
+We have a collection of scanners, each of which has a collection of beacons they can see.
+The scanners do not have a consistent orientation, but instead have their axis shuffled according to
+all the rotational symettries of a cube.
+
+Assemble the information to find (one) the number of beacons that actually exist and (two) the maximum manhattan distance between each beacon;
+
+#### Part One
+Two find out if two scanners in given orientations overlap, perform the follwing routine:
+
+* pick a point from left
+* pick a point from right
+* find the displacement that transforms right into left
+* apply it to all points on right
+
+you now have a displaced AND oriented right.
+
+* for each point in left
+* for each point in right
+* if the points match, add to the tally of matches
+* if the tally of matches meets or exceeds 12, then these spaces are congruent
+
+You can combine the spaces, remove the original two spaces,
+and then add this to the set of spaces to consider.
+
+Rinse and repeat until only one space exists.
+
+#### Part Two
+To do this, we need to track the origins of each space.
+When you create a space, you give it origin zero,
+and when you rotate or displace a space, you rotate/displace it's origin.
+When you combine spaces, combine the set of origins,
+and the final space will have all origins relative to eachother.
+Simply pick the largest manhattan distance from that set.
 
 <!---
 start vis

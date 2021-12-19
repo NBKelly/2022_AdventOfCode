@@ -64,6 +64,8 @@ public class Advent2021_18 extends Drafter {
 
 	    /* then reduce */
 	    sum = reduce(sum);
+
+	    DEBUGF(2, "line %d of %d - sum: %s...%n", i, lines.size(), sum.substring(0, Math.min(75, sum.length())));
 	}
 
 	
