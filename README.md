@@ -1075,7 +1075,7 @@ The puzzle:
 
 Some fun:
 
-![eric](output_eric_loop_fast.webm)
+![eric](videos/output_eric_loop_fast.webm)
 
 ### Day 13: Transparent Origami
 
@@ -1224,6 +1224,13 @@ data/13_reward_03.txt
 .█████..........███..█.................████████████████...............................█..██████████████.......█████.██...████████████████████████████████████████████████████████████.
 ......................................................................................................................................................................................
 ```
+
+
+### Day 19: Beacon Scanner
+
+Scanners are 12x12, beacons are 6x6. Z has been mapped to increment both X and Y at 1:4.
+
+![projection](images/19_map.png)
 
 ## Bonus
 
