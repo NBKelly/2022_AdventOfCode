@@ -352,10 +352,102 @@ public class Advent2021_19 extends Drafter {
     public void generate_output(HashSet<Point> beacons, HashSet<Point> origins) throws Exception {
 	if(!generate_output)
 	    return;
-    	
+	
 	println(">generating output");
-    
-	/* output goes here */
+		
+	/* find min_x, min_y, min_z,
+	   max_x, max_y, max_z */
+	int min_x = 99999;
+	int min_y = 99999;
+	int min_z = 99999;
+	int max_x = -99999;
+	int max_y = -99999;
+	int max_z = -99999;
+
+	for(var point : beacons) {
+	    if(point.x < min_x)
+		min_x = point.x;
+	    if(point.y < min_y)
+		min_y = point.y;
+	    if(point.z < min_z)
+		min_z = point.z;
+	    if(point.x > max_x)
+		max_x = point.x;
+	    if(point.y > max_y)
+		max_y = point.y;
+	    if(point.z > max_z)
+		max_z = point.z;
+	}
+
+	for(var point : origins) {
+	    if(point.x < min_x)
+		min_x = point.x;
+	    if(point.y < min_y)
+		min_y = point.y;
+	    if(point.z < min_z)
+		min_z = point.z;
+	    if(point.x > max_x)
+		max_x = point.x;
+	    if(point.y > max_y)
+		max_y = point.y;
+	    if(point.z > max_z)
+		max_z = point.z;
+	}
+
+	printf(">Range: (%d,%d,%d) -> (%d,%d,%d)%n",
+	       min_x, min_y, min_z,
+	       max_x, max_y, max_z);
+
+	int scale = 4;
+
+	int width = (max_x-min_x)/scale;
+	int height = (max_y-min_y)/scale;
+
+	var z_thresh_1 = (max_z-min_z);
+	var z_thresh_2 = z_thresh_1/2;
+	var z_thresh_3 = z_thresh_2/2;
+	var z_thresh_4 = z_thresh_2 + z_thresh_3;
+	
+	Image i = new Image(width+250, height+250);
+
+	for(var point : beacons) {
+	    var z = 1 + (point.z - min_z) / (3*scale);
+	    var x = z + (point.x - min_x) / (scale);
+	    var y = z + (point.y - min_y) / (scale);
+
+	    var y2 = y + z;
+	    var x2 = x + z;
+
+	    var z_check = (point.z - min_z);
+	    if(z_check < z_thresh_3)
+		i.rect(Image.H7, x, y, 6, 6);
+	    else if(z_check < z_thresh_2)
+		i.rect(Image.H5, x, y, 6, 6);
+	    else if(z_check < z_thresh_4)
+		i.rect(Image.H3, x, y, 6, 6);
+	    else
+		i.rect(Image.H1, x, y, 6, 6);
+	}
+
+	for(var point : origins) {
+	    var z = 1 + (point.z - min_z) / (3*scale);
+	    var x = z + (point.x - min_x) / (scale);
+	    var y = z + (point.y - min_y) / (scale);
+
+	    var y2 = y + z;
+	    var x2 = x + z;
+
+	    var z_check = (point.z - min_z);
+	    i.rect(Image.H11, x, y, 12, 12);
+	    /*else if(z_check < z_thresh_2)
+		i.rect(Image.H5, x, y, 6, 6);
+	    else if(z_check < z_thresh_4)
+		i.rect(Image.H3, x, y, 6, 6);
+	    else
+	    i.rect(Image.H1, x, y, 6, 6);*/
+	}
+
+	i.savePNG("out1.png");
     }
 
     /* set commands */
