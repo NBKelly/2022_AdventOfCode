@@ -283,7 +283,6 @@ public class Advent2021_19 extends Drafter {
         println(">Good Morning!");
 
 	//sample: scanner 0 sees scanner 1 */	
-	//Collections.shuffle(unsolved);
 	solved.add(unsolved.pollFirst());
 
 	DEBUG(1, t.split("Input parsed"));

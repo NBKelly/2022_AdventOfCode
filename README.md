@@ -40,6 +40,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 17  | The elf message was worthless. We need to shoot a probe into an ocean trench.
 | Day 18  | Some snailfish (in the trench) claim to have seen the keys, but will only tell us which direction they went if we solve their math homework. (hint: direction = down)
 | Day 19  | We never got told what the snailfish said about the keys. As our probe (from day 17) drifted, it unleashed a bunch of beacons and scanners. They all have their own distinct geodata, and we need to collate this to determine the actual space measured.
+| Day 20  | Now that the scanners are functional, we can try and decode the images they're producing. ZOOM! ENHANCE! FUCK YOU!
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -64,7 +65,8 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 16  | *O(N)*		    | *O(N)*		 | This problem was easy, reading it was a fucking nightmare.
 | Day 17  | I Don't Care	    | I Don't Care	 | This problem is really barely even worth doing. The inputs are so easy that the optimal strategy is brute force. The bounds are easy to see, and a brute force solution should finish in less than a second. The second optimal strategy is a partially correct solution, which should also finish in barely a second, and will be correct for every input eric gives. Part one is literally a one-liner, which is only correct in the specific circumstance eric gives.
 | Day 18  | *O(N.K)*		    | *O((N.K)<sup>2</sup>)* | N = line count, k = reduction complexity. This problem was actually quite fun, even if the instructions were garbage. At least it was difficult.
-| Day 19  | *O(N^3 + K^3)*	    | *O(N^3 + K^3)*	     | N = scanner count, K = beacon count. This was actually a very fun puzzle, but I will admit that 90% of the difficulty came from collating a set of rotations that worked, and knowing which units to displace when making comparisons. Once you can compare two regions, you've solved the puzzle. There is likely a better solution, but I wont put in the effort to find it (just yet).
+| Day 19  | *O(N<sup>2</sup>.K<sup>2</sup> + K<sup>3</sup>)*	    | *O(N<sup>2</sup>.K<sup>2</sup> + K<sup>3</sup>)*      | N = scanner count, K = beacon count. This was actually a very fun puzzle, but I will admit that 90% of the difficulty came from collating a set of rotations that worked, and knowing which units to displace when making comparisons. Once you can compare two regions, you've solved the puzzle. There's a much more clever solution that just jamming sets together though, and that was very fun to figure out.
+| Day 20  | *O((N+k)<sup>2</sup>.K)     | *O((N+k)<sup>2</sup>.K)*  | k = expansion factor, N = input size (active tiles), K = number of iterations. This puzzle was extremely easy, but it was intentionally and maliciously presented as a trick question. Cool I guess.
 
 ## Solutions
 
@@ -88,7 +90,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 17. [Day 17: Trick Shot](#Day-17-Trick-Shot)
 18. [Day 18: Snailfish](#Day-18-Snailfish)
 19. [Day 19: Beacon Scanner](#Day-19-Beacon-Scanner)
-20. [Day 20](#Day-20-)
+20. [Day 20: Trench Map](#Day-20-Trench-Map)
 21. [Day 21](#Day-21-)
 22. [Day 22](#Day-22-)
 23. [Day 23](#Day-23-)
@@ -944,6 +946,24 @@ and then add this to the set of spaces to consider.
 
 Rinse and repeat until only one space exists.
 
+**But there's a smarter way**
+* First, for each scanner, compute the set of *manhattan triangles* for that scanner
+  * A manhattan triangle is a point composed of the edge lengths of a triangle, where the edge lengths are calculated using manhattan distance
+* Divide the set of scanners into one solved scanner and a set of unsolved scanners
+
+Then, while there are unsolved scanners, at each step:
+* pick an unsolved scanner
+* iterate through all of the solved scanners, and perform the following:
+  * Compare the triangles for the two scanners. 12choose3 is 220, so there should be an overlap of 200-220 unique triangles.
+  * If there is not an adequate number of overlaps, then these two scanners cannot overlap
+  * otherwise, it's time to try orientations. To do this:
+    * Rotate the unsolved scanner
+    * Count all of the possible displacements between each point in each scanner.
+    * If any displacement occurs 12+ times, then this is solved - these sets overlap in this orientation
+    * Add the transformed scanner to solved, remove the original one from unsolved
+
+Once all of the scanners are solved, you can combine them all in one step.
+
 #### Part Two
 To do this, we need to track the origins of each space.
 When you create a space, you give it origin zero,
@@ -951,6 +971,31 @@ and when you rotate or displace a space, you rotate/displace it's origin.
 When you combine spaces, combine the set of origins,
 and the final space will have all origins relative to eachother.
 Simply pick the largest manhattan distance from that set.
+
+This works for both the simple (slow) and smart (fast) method outlined above.
+
+### Day 20: Trench Map
+
+#### Summary
+Given an image enhancement algorithm (rules for your cellular automata),
+and an image, produce an enhanced version of your image.
+
+There's an extremely malicious trick that Eric pulled with this one. The sample he gives can be solved in a nominal case simply by implementing the rules. The inputs all have rules which force the infinite space to toggle at each iteration step. The only way to figure this out is to manually inspect your input.
+
+If you know the trick, it's 10 seconds of time to program around it.
+
+Part 2 is also a joke.
+
+#### Part One
+Your rules are 512 pixels. To toggle a point, compute a binary number from the surrounding area just as eric says to do, and then find that index in your rules. That's all well and good.
+
+**but my input turns all empty blocks into filled blocks**
+
+to get around this, you need to on every second iteration, consider all blocks outside the defined boundaries of your image to be filled.
+
+#### Part Two
+Run the same things 50 times.
+
 
 <!---
 start vis
