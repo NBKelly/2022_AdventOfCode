@@ -41,8 +41,241 @@ public class Advent2021_19 extends Drafter {
      *  post-processing can be performed with actOnCommands()
      *  the rest of your work should be based around the solveProblem() function
      */
+    /* params injected from file */
+    ArrayList<String> lines;
+    
+    //generate output
+    boolean generate_output = false;
 
-	//sample: scanner 0 sees scanner 1 */	
+    class Scanner {
+	HashSet<Point> origins = new HashSet<Point>();
+	String id = null;
+	private HashSet<Point> triangles = null;	
+
+	HashSet<Point> points = new HashSet<Point>();
+
+	public synchronized HashSet<Point> triangles() {
+	    if(triangles == null) {
+		triangles = new HashSet<>();
+
+		ArrayList<Point> li = new ArrayList<Point>(points);
+		for(int x = 0; x < li.size(); x++)
+		    for(int y = x+1; y < li.size(); y++)
+			for(int z = y+1; z < li.size(); z++) {
+			    var p1 = li.get(x);
+			    var p2 = li.get(y);
+			    var p3 = li.get(z);
+
+			    var d1 = p1.manhattan(p2);
+			    var d2 = p1.manhattan(p3);
+			    var d3 = p2.manhattan(p3);
+
+			    triangles.add(sorted(d1, d2, d3));
+			}
+	    }
+
+	    return new HashSet<Point>(triangles);
+	}	
+	
+	public Scanner (String id) {
+	    this.id = id;
+	    origins.add(new Point(0, 0, 0));
+	}	
+	
+	public void add(Point p) {
+	    points.add(p);
+	    triangles = null;
+	}
+
+	public Scanner rotated(int orient) {
+	    Scanner rot = new Scanner("rot " + orient + " " + id);
+	    for(var point : points)		
+		rot.add(point.getSystem(orient));
+
+	    /* rotate all origins */
+	    for(var point : origins)
+		rot.origins.add(point.getSystem(orient));
+
+	    rot.triangles = triangles;
+	    
+	    return rot;
+	}
+
+	public Scanner displaced(Point p) {
+	    Scanner disp = new Scanner("disp " + p + " " + id);
+	    for(var point : points)
+		disp.add(point.displace(p));
+
+	    for(var origin : origins)
+		disp.origins.add(origin.displace(p));
+
+	    disp.triangles = triangles;
+	    
+	    return disp;
+	}
+    }
+
+    public Point sorted(int x, int y, int z) {
+	ArrayList<Integer> li = new ArrayList<Integer>();
+
+	li.add(x);
+	li.add(y);
+	li.add(z);
+	Collections.sort(li);
+
+	return new Point(li.get(0), li.get(1), li.get(2));
+    }
+    
+    private class Point implements Comparable<Point> {
+	int x;
+	int y;
+	int z;
+	
+	public int compareTo(Point p) {
+	    return Util.compareTo(x, p.x,
+				  y, p.y,
+				  z, p.z);
+	}
+	
+	public Integer manhattan(Point p) {
+	    return
+		Math.abs(x-p.x) +
+		Math.abs(y-p.y) +
+		Math.abs(z-p.z);
+	}
+
+	public Point(int x, int y, int z) {
+	    this.x = x;
+	    this.y = y;
+	    this.z = z;
+	}
+
+	public Point difference(Point p) {
+	    return new Point(x - p.x, y - p.y, z - p.z);
+	}
+
+	public Point displace(Point p) {
+	    return displace(p.x, p.y, p.z);
+	}
+	
+	public Point displace(int x, int y, int z) {
+	    return new Point(this.x - x, this.y - y, this.z - z);
+	}
+
+	public String toString() {
+	    return String.format("%d,%d,%d", x, y, z);
+	}
+
+	public Integer manhattan() {
+	    return
+		Math.abs(x) +
+		Math.abs(y) +
+		Math.abs(z) ;
+	}
+
+	public boolean equals(Point p) {
+	    return p.x == x
+		&& p.y == y
+		&& p.z == z;
+	}
+	
+	public Point getSystem(int i) {
+	    switch(i) {
+	    case 0: return new Point(x,y,z);
+	    case 1: return new Point(-x,-y,z);
+	    case 2: return new Point(-x,y,-z);
+	    case 3: return new Point(x,-y,-z);
+
+	    case 4: return new Point(-x,z,y);
+	    case 5: return new Point(x,-z,y);
+	    case 6: return new Point(x,z,-y);
+	    case 7: return new Point(-x,-z,-y);
+
+	    case 8: return new Point(-y,x,z);
+	    case 9: return new Point(y,-x,z);
+	    case 10: return new Point(y,x,-z);
+	    case 11: return new Point(-y,-x,-z);
+	    
+	    case 12: return new Point(y,z,x);
+	    case 13: return new Point(-y,-z,x);
+	    case 14: return new Point(-y,z,-x);
+	    case 15: return new Point(y,-z,-x);
+		
+	    case 16: return new Point(z,x,y);
+	    case 17: return new Point(-z,-x,y);
+	    case 18: return new Point(-z,x,-y);
+	    case 19: return new Point(z,-x,-y);
+		
+	    case 20: return new Point(-z,y,x);
+	    case 21: return new Point(z,-y,x);
+	    case 22: return new Point(z,y,-x);
+	    case 23: return new Point(-z,-y,-x);
+	    }	
+	    
+	    return null;
+	}
+
+	public boolean equals(Object o) {
+	    if(o instanceof Point)
+		return equals((Point)o);
+	    return false;
+	}
+	
+	@Override public int hashCode() {
+	    return (1000*1000*x) + (1000*y) + (z);
+	}
+    }
+
+    private LinkedList<Scanner> readScanners(ArrayList<String> lines) {
+	LinkedList<Scanner> scanners = new LinkedList<>();
+
+	Scanner ct = null;
+	
+	for(var line : lines) {
+	    if(line.length() == 0) {
+		ct = null;
+	    }
+	    else if(line.startsWith("---")) {
+		/* get the specific scanner */
+		ct = new Scanner(line);
+		scanners.add(ct);
+		DEBUGF(2, "added scanner %s%n", ct.id);
+	    }
+	    else {
+		var split = line.split(",");
+		var point = new Point(Integer.parseInt(split[0]),
+				      Integer.parseInt(split[1]),
+				      Integer.parseInt(split[2]));
+		DEBUGF(3, "  with point %s%n", point);
+		ct.add(point);
+	    }
+	}
+
+	return scanners;
+    }
+
+    public Scanner matchingBasis(int basis, Scanner unsolved_cloud, Scanner left) {
+	var rotated = unsolved_cloud.rotated(basis);
+
+	HashCounter<Point> points = new HashCounter<Point>();
+			    
+	for(var leftpoint : left.points)
+	    for(var rightpoint : rotated.points)
+		points.add(rightpoint.difference(leftpoint));
+	
+	var max = points.max();
+	if(points.count(max) >= 12)
+	    return rotated.displaced(max);
+
+	return null;	
+    }
+    
+    /* solve problem here */
+    @Override public int solveProblem() throws Exception {
+	Timer t = makeTimer();
+
+	var unsolved = readScanners(lines);
+	LinkedList<Scanner> solved = new LinkedList<Scanner>();
 	solved.add(unsolved.pollFirst());
 
 	DEBUG(1, t.split("Input parsed"));
@@ -80,16 +313,16 @@ public class Advent2021_19 extends Drafter {
 			}
 		    }
 		});
-
+	    
 	    unsolved.removeAll(remove);
 	    solved.addAll(add);
 	    
 	    DEBUGF(2, "iteration %d solved %d unsolved %d%n", iteration++,
 		   solved.size(), unsolved.size());
 	}
-
+ 
 	DEBUG(1, t.split("Space mapped"));
-	
+    
 	/* assemble the solution */
 	HashSet<Point> beacons = new HashSet<Point>();
 	HashSet<Point> origins = new HashSet<Point>();
@@ -109,19 +342,20 @@ public class Advent2021_19 extends Drafter {
 	DEBUGF(1, "PART TWO: "); println(max_dist);
         
         /* visualize output here */
-        generate_output();
+        generate_output(beacons, origins);
 					 
 	return DEBUG(1, t.total());
     }
+
     
     /* code injected from file */
-    public void generate_output() throws Exception {
-    	if(!generate_output)
-    	    return;
+    public void generate_output(HashSet<Point> beacons, HashSet<Point> origins) throws Exception {
+	if(!generate_output)
+	    return;
     	
-    	println(">generating output");
+	println(">generating output");
     
-    	/* output goes here */
+	/* output goes here */
     }
 
     /* set commands */
@@ -131,16 +365,16 @@ public class Advent2021_19 extends Drafter {
 	_PAGE_OPTIONAL = false; //page does not show up as a user input command
 	_PAGE_ENABLED = false;  //page is set to disabled by default
 	
-        /* code injected from file */
-        FileCommand fc = new FileCommand("Input File", "The input file for this program",
-        	       	     		 true, "--input-file", "--file");
+	/* code injected from file */
+	FileCommand fc = new FileCommand("Input File", "The input file for this program",
+					 true, "--input-file", "--file");
         
-        /* visualizer */
-        BooleanCommand vc = new BooleanCommand("Visualize Output",
-        				       "The visualized output for this program", 
-        				       false, "--out-file", "--output-file", "--out-image");
+	/* visualizer */
+	BooleanCommand vc = new BooleanCommand("Visualize Output",
+					       "The visualized output for this program", 
+					       false, "--out-file", "--output-file", "--out-image");
         
-        return new Command[]{fc, vc};
+	return new Command[]{fc, vc};
         
         
     }
@@ -149,11 +383,11 @@ public class Advent2021_19 extends Drafter {
     @Override public int actOnCommands(Command[] userCommands) throws Exception {
 	//do whatever you want based on the commands you have given
 	//at this stage, they should all be resolved
-        /* code injected from file */
-        lines = readFileLines(((FileCommand)userCommands[0]).getValue());
-        setSource(((FileCommand)userCommands[0]).getValue());
+	/* code injected from file */
+	lines = readFileLines(((FileCommand)userCommands[0]).getValue());
+	setSource(((FileCommand)userCommands[0]).getValue());
         
-        generate_output = ((BooleanCommand)userCommands[1]).matched();
+	generate_output = ((BooleanCommand)userCommands[1]).matched();
 	return 0;
     }
 
@@ -161,6 +395,6 @@ public class Advent2021_19 extends Drafter {
      * Creates and runs an instance of your class - do not modify
      */
     public static void main(String[] argv) {
-        new Advent2021_19().run(argv);
+	new Advent2021_19().run(argv);
     }
 }
