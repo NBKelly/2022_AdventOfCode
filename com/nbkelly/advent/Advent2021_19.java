@@ -259,15 +259,40 @@ public class Advent2021_19 extends Drafter {
 
 	HashCounter<Point> points = new HashCounter<Point>();
 			    
-	for(var leftpoint : left.points)
-	    for(var rightpoint : rotated.points)
+	outer: for(var leftpoint : left.points)
+	    for(var rightpoint : rotated.points) {
 		points.add(rightpoint.difference(leftpoint));
+	    }
 	
 	var max = points.max();
 	if(points.count(max) >= 12)
 	    return rotated.displaced(max);
 
 	return null;	
+    }
+
+    public Scanner alignment(Scanner left, Scanner unsolved_cloud) {
+	var triangles_unsolved = unsolved_cloud.triangles();
+	var triangles_left = left.triangles();
+	triangles_left.retainAll(triangles_unsolved);
+
+	if(triangles_left.size() < 200)
+	    return null;
+				
+	/* this is guaranteed to be valid in at least one orientation */
+	/* note that 12 choose 3 is 220 */
+	
+	var aligned = IntStream.range(0, 24)
+	    .parallel()
+	    .mapToObj(basis -> matchingBasis(basis, unsolved_cloud, left))
+	    .filter(x -> x != null)
+	    .findAny()
+	    .orElse(null);
+				
+	if(aligned != null)
+	    return ((Scanner)aligned);
+
+	return null;
     }
     
     /* solve problem here */
@@ -286,31 +311,16 @@ public class Advent2021_19 extends Drafter {
 	    final var remove = new ConcurrentLinkedQueue<Scanner>();
 	    final var add = new ConcurrentLinkedQueue<Scanner>();
 
-	    unsolved.parallelStream().forEach(unsolved_cloud -> {
-		    var triangles_unsolved = unsolved_cloud.triangles();
-		    outer: for(var left : solved) {
-			//compare the triangles for left and right
-			var triangles_left = left.triangles();
-			triangles_left.retainAll(triangles_unsolved);
+	    unsolved.parallelStream().forEach(unsolved_cloud -> {		    
+		    var alignment = solved.parallelStream()
+			.map(left -> alignment(left, unsolved_cloud))
+			.filter(x -> x != null)
+			.findAny()
+			.orElse(null);
 
-			if(triangles_left.size() < 200)
-			    continue;
-
-			/* this is guaranteed to be a valid matching in at least one orientation */
-			/* note that 12 choose 3 is 220 */
-
-			var aligned = IntStream.range(0, 24)
-			    .parallel()
-			    .mapToObj(basis -> matchingBasis(basis, unsolved_cloud, left))
-			    .filter(x -> x != null)
-			    .findAny()
-			    .orElse(null);
-			
-			if(aligned != null) {
-			    add.add((Scanner)aligned);
-			    remove.add(unsolved_cloud);
-			    break outer;
-			}
+		    if(alignment != null) {
+			add.add((Scanner)alignment);
+			remove.add(unsolved_cloud);
 		    }
 		});
 	    

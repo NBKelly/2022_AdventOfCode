@@ -14,7 +14,7 @@ public class HashCounter<T> implements Iterable<T> {
     HashMap<T, Long> counter = new HashMap<T, Long>();
 
     private long total_count = 0;
-
+    private long highest = 0;
     /**
      * Add a value to the counter, or increment it's count if it already exists
      * @param value value to add
@@ -24,6 +24,10 @@ public class HashCounter<T> implements Iterable<T> {
 	var count = counter.get(value);
 	if(count == null)
 	    count = 0l;
+
+	if(count+1 > highest)
+	    highest = count+1;
+	
 	counter.put(value, count+1l);
 	total_count++;
     }
@@ -37,6 +41,10 @@ public class HashCounter<T> implements Iterable<T> {
 	var new_count = counter.get(value);
 	if(new_count == null)
 	    new_count = 0l;
+
+	if(new_count+count > highest)
+	    highest = new_count+count;
+	
 	counter.put(value, new_count+count);
 	total_count++;
     }
@@ -79,6 +87,15 @@ public class HashCounter<T> implements Iterable<T> {
 	return total_count;
     }
 
+    /**
+     * Returns the highest value recorded in this hashcounter
+     * @return the highest value recorded in this hashcounter
+     * @since 21.12
+     */
+    public Long highest() {
+	return highest;
+    }
+    
     public HashMap<T, Long> toHashMap() {
 	return new HashMap<T, Long>(counter);
     }

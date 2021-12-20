@@ -964,6 +964,115 @@ Then, while there are unsolved scanners, at each step:
 
 Once all of the scanners are solved, you can combine them all in one step.
 
+
+The (import parts of the) code is roughly presented here:
+
+```Java
+/**
+ * Determine if an unsolved cloud, transformed with a givin basis,
+ * has a valid overlap with cloud left. 
+ * @return the oriented displaced overlapping version of unsolved_cloud, or null
+ */
+public Scanner matchingBasis(int basis, Scanner unsolved_cloud, Scanner left) {
+    var rotated = unsolved_cloud.rotated(basis);
+
+    HashCounter<Point> points = new HashCounter<Point>();
+			    
+    outer: for(var leftpoint : left.points)
+        for(var rightpoint : rotated.points) {
+            points.add(rightpoint.difference(leftpoint));
+        }
+	
+    var best = points.max();
+    if(points.count(best) >= 12)
+        return rotated.displaced(best);
+
+    return null;	
+}
+```
+
+Note that there is a potential argument to checking early (without fully processing all points). In my opinion, this is wrong - this only helps when we have found a valid matching. A majority of the computation time will be spent where we have **not** found a valid matching (there are 24 basis to check, after all, where only one will be valid).
+
+matchingBasis is a function we only run when we are certain that the scanner **left** can see the scanner **right** (but we're not certain in which basis). We can make this assertion with the following code:
+
+```Java
+/**
+ * Given two scanners, determine if they can overlap. If they can overlap, then find the basis
+ * in which they overlap.
+ * @return An alignment of unsolved_cloud that overlaps, or null if none exists
+ */
+public Scanner alignment(Scanner left, Scanner unsolved_cloud) {
+    var triangles_unsolved = unsolved_cloud.triangles();
+    var triangles_left = left.triangles();
+    triangles_left.retainAll(triangles_unsolved);
+
+    if(triangles_left.size() < 200)
+        return null;
+				
+    /* this is guaranteed to be valid in at least one orientation */
+    /* note that 12 choose 3 is 220 */
+	
+    var aligned = IntStream.range(0, 24)
+        .parallel()
+        .mapToObj(basis -> matchingBasis(basis, unsolved_cloud, left))
+        .filter(x -> x != null)
+        .findAny()
+        .orElse(null);
+				
+    if(aligned != null)
+        return ((Scanner)aligned);
+
+    return null;
+}
+```
+
+By comparing matching triangles beforehand, we can determine very effeciently if the two point clouds
+have a valid overlap. It is worth noting that since 12 points must overlap for the clouds to overlap,
+then the triangles produced from these overlapping points will count to 12choose3. There is a
+chance some of these will be identical, so a good target to aim for is 200.
+
+It is theoretically possible to game an input where all of the triangles for some pairs of
+scanners are identically sized, which could cause this approach to not generate correct output.
+Therefore, this approach is **not complete**, even if it **is correct**.
+
+```Java
+while(unsolved.size() > 0) {
+    final var remove = new ConcurrentLinkedQueue<Scanner>();
+    final var add = new ConcurrentLinkedQueue<Scanner>();
+
+    unsolved.parallelStream().forEach(unsolved_cloud -> {		    
+        var alignment = solved.parallelStream()
+                              .map(left -> alignment(left, unsolved_cloud))
+                              .filter(x -> x != null)
+                              .findAny()
+                              .orElse(null);
+
+        if(alignment != null) {
+            add.add((Scanner)alignment);
+            remove.add(unsolved_cloud);
+        }
+    });
+	    
+    unsolved.removeAll(remove);
+    solved.addAll(add);
+}
+
+```
+
+The end result of running this is you have all of your spaces oriented and aligned with respect to a single space (typically the first scanner in your set).
+
+There may be more room for a speedup by effeciently guessing which scanner from the original set can see the most other scanners, but I'm uncertain if the cost is worth it.
+
+To get the answer out:
+
+```Java
+HashSet<IntPair> beacons = new HashSet<IntPair>();
+for(var scanner : solved) {
+    beacons.addAll(scanner.points);
+
+var p1_ans = beacons.size();
+```
+
 #### Part Two
 To do this, we need to track the origins of each space.
 When you create a space, you give it origin zero,
@@ -973,6 +1082,18 @@ and the final space will have all origins relative to eachother.
 Simply pick the largest manhattan distance from that set.
 
 This works for both the simple (slow) and smart (fast) method outlined above.
+
+```Java
+for(var scanner : solved) {
+    origins.addAll(scanner.origins);
+
+int max_dist = 0;
+for(var left :origins)
+    for(var right : origins)
+        max_dist = Math.max(max_dist, left.manhattan(right));
+
+var p1_ans = max_dist;
+```
 
 ### Day 20: Trench Map
 
