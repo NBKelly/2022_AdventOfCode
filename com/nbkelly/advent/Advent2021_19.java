@@ -10,13 +10,12 @@ import com.nbkelly.drafter.Timer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.HashMap;
-import java.util.TreeSet;
-import java.util.TreeMap;
 
 /* my imported libs */
 import com.nbkelly.lib.Util;
 import com.nbkelly.drafter.BooleanCommand; //visualize cmd
 import com.nbkelly.lib.Image; //visualizer lib
+import com.nbkelly.lib.HashCounter;
 
 import com.nbkelly.lib.IntPair;
 import com.nbkelly.lib.pathfinder.Map;
@@ -25,6 +24,10 @@ import com.nbkelly.lib.Pair;
 import java.math.BigInteger;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import java.util.stream.IntStream;
 
 /**
  * Extension of Drafter directed towards a general case.
@@ -46,23 +49,43 @@ public class Advent2021_19 extends Drafter {
     boolean generate_output = false;
 
     class Scanner {
-	TreeSet<Point> origins = new TreeSet<Point>((left, right) ->
-						    Util.compareTo(left.x, right.x,
-								   left.y, right.y,
-								   left.z, right.z));
-	
+	HashSet<Point> origins = new HashSet<Point>();
 	String id = null;
+	private HashSet<Point> triangles = null;	
+
+	HashSet<Point> points = new HashSet<Point>();
+
+	public synchronized HashSet<Point> triangles() {
+	    if(triangles == null) {
+		triangles = new HashSet<>();
+
+		ArrayList<Point> li = new ArrayList<Point>(points);
+		for(int x = 0; x < li.size(); x++)
+		    for(int y = x+1; y < li.size(); y++)
+			for(int z = y+1; z < li.size(); z++) {
+			    var p1 = li.get(x);
+			    var p2 = li.get(y);
+			    var p3 = li.get(z);
+
+			    var d1 = p1.manhattan(p2);
+			    var d2 = p1.manhattan(p3);
+			    var d3 = p2.manhattan(p3);
+
+			    triangles.add(sorted(d1, d2, d3));
+			}
+	    }
+
+	    return new HashSet<Point>(triangles);
+	}	
+	
 	public Scanner (String id) {
 	    this.id = id;
 	    origins.add(new Point(0, 0, 0));
-	}
+	}	
 	
-	TreeSet<Point> points = new TreeSet<Point>((left, right) ->
-						   Util.compareTo(left.x, right.x,
-								  left.y, right.y,
-								  left.z, right.z));
 	public void add(Point p) {
 	    points.add(p);
+	    triangles = null;
 	}
 
 	public Scanner rotated(int orient) {
@@ -73,6 +96,8 @@ public class Advent2021_19 extends Drafter {
 	    /* rotate all origins */
 	    for(var point : origins)
 		rot.origins.add(point.getSystem(orient));
+
+	    rot.triangles = triangles;
 	    
 	    return rot;
 	}
@@ -84,15 +109,34 @@ public class Advent2021_19 extends Drafter {
 
 	    for(var origin : origins)
 		disp.origins.add(origin.displace(p));
+
+	    disp.triangles = triangles;
 	    
 	    return disp;
 	}
     }
 
-    private class Point {
+    public Point sorted(int x, int y, int z) {
+	ArrayList<Integer> li = new ArrayList<Integer>();
+
+	li.add(x);
+	li.add(y);
+	li.add(z);
+	Collections.sort(li);
+
+	return new Point(li.get(0), li.get(1), li.get(2));
+    }
+    
+    private class Point implements Comparable<Point> {
 	int x;
 	int y;
 	int z;
+	
+	public int compareTo(Point p) {
+	    return Util.compareTo(x, p.x,
+				  y, p.y,
+				  z, p.z);
+	}
 	
 	public Integer manhattan(Point p) {
 	    return
@@ -138,43 +182,53 @@ public class Advent2021_19 extends Drafter {
 	
 	public Point getSystem(int i) {
 	    switch(i) {
-	    case 0: return new Point(x, y, z);
-	    case 1: return new Point(x, -y, -z);
-	    case 2: return new Point(x, -z, y);
-	    case 3: return new Point(x, -z, -y);
+	    case 0: return new Point(x,y,z);
+	    case 1: return new Point(-x,-y,z);
+	    case 2: return new Point(-x,y,-z);
+	    case 3: return new Point(x,-y,-z);
 
-	    case 4: return new Point(y, x, -z);
-	    case 5: return new Point(y, z, x);
-	    case 6: return new Point(y, -x, z);
-	    case 7: return new Point(y, -z, -x);
+	    case 4: return new Point(-x,z,y);
+	    case 5: return new Point(x,-z,y);
+	    case 6: return new Point(x,z,-y);
+	    case 7: return new Point(-x,-z,-y);
 
-	    case 8: return new Point(z, x, y);
-	    case 9: return new Point(z, x, -y);
-	    case 10: return new Point(z, y, -x);
-	    case 11: return new Point(z, -y, x);
-
-	    case 12: return new Point(-x, y, -z);
-	    case 13: return new Point(-x, z, y);
-	    case 14: return new Point(-x, z, -y);
-	    case 15: return new Point(-x, -y, z);
-
-	    case 16: return new Point(-y, x, z);
-	    case 17: return new Point(-y, z, -x);
-	    case 18: return new Point(-y, -x, -z);
-	    case 19: return new Point(-y, -z, x);
-
-	    case 20: return new Point(-z, y, x);
-	    case 21: return new Point(-z, -x, y);
-	    case 22: return new Point(-z, -x, -y);
-	    case 23: return new Point(-z, -y, -x);
-	    }
-
+	    case 8: return new Point(-y,x,z);
+	    case 9: return new Point(y,-x,z);
+	    case 10: return new Point(y,x,-z);
+	    case 11: return new Point(-y,-x,-z);
+	    
+	    case 12: return new Point(y,z,x);
+	    case 13: return new Point(-y,-z,x);
+	    case 14: return new Point(-y,z,-x);
+	    case 15: return new Point(y,-z,-x);
+		
+	    case 16: return new Point(z,x,y);
+	    case 17: return new Point(-z,-x,y);
+	    case 18: return new Point(-z,x,-y);
+	    case 19: return new Point(z,-x,-y);
+		
+	    case 20: return new Point(-z,y,x);
+	    case 21: return new Point(z,-y,x);
+	    case 22: return new Point(z,y,-x);
+	    case 23: return new Point(-z,-y,-x);
+	    }	
+	    
 	    return null;
+	}
+
+	public boolean equals(Object o) {
+	    if(o instanceof Point)
+		return equals((Point)o);
+	    return false;
+	}
+	
+	@Override public int hashCode() {
+	    return (1000*1000*x) + (1000*y) + (z);
 	}
     }
 
-    private ArrayList<Scanner> readScanners(ArrayList<String> lines) {
-	ArrayList<Scanner> scanners = new ArrayList<>();
+    private LinkedList<Scanner> readScanners(ArrayList<String> lines) {
+	LinkedList<Scanner> scanners = new LinkedList<>();
 
 	Scanner ct = null;
 	
@@ -200,6 +254,22 @@ public class Advent2021_19 extends Drafter {
 
 	return scanners;
     }
+
+    public Scanner matchingBasis(int basis, Scanner unsolved_cloud, Scanner left) {
+	var rotated = unsolved_cloud.rotated(basis);
+
+	HashCounter<Point> points = new HashCounter<Point>();
+			    
+	for(var leftpoint : left.points)
+	    for(var rightpoint : rotated.points)
+		points.add(rightpoint.difference(leftpoint));
+	
+	var max = points.max();
+	if(points.count(max) >= 12)
+	    return rotated.displaced(max);
+
+	return null;	
+    }
     
     /* solve problem here */
     @Override public int solveProblem() throws Exception {
@@ -207,89 +277,84 @@ public class Advent2021_19 extends Drafter {
 
         /* code injected from file */
         //var ints = Util.toIntList(lines);
-	ArrayList<Scanner> scanners = readScanners(lines);
-		
+	var unsolved = readScanners(lines);
+	LinkedList<Scanner> solved = new LinkedList<Scanner>();
+	
         println(">Good Morning!");
 
-	while(scanners.size() > 1) {
-	    /* pick a scanner - see how it lines up */
-	    outer: for(var from: scanners)
-		/* for every other scanner, see if we can find an alignment that overlaps */
-		for(var to : scanners) {
-		    if(from == to)
-			continue;
+	//sample: scanner 0 sees scanner 1 */	
+	//Collections.shuffle(unsolved);
+	solved.add(unsolved.pollFirst());
 
-		    /* this will need to be computed for each orientation */
-		    for(int orient = 0; orient < 24; orient++) {
-			var oriented_scanner = to.rotated(orient);
+	DEBUG(1, t.split("Input parsed"));
+	
+	int iteration = 1;
+
+	while(unsolved.size() > 0) {
+	    final var remove = new ConcurrentLinkedQueue<Scanner>();
+	    final var add = new ConcurrentLinkedQueue<Scanner>();
+
+	    unsolved.parallelStream().forEach(unsolved_cloud -> {
+		    var triangles_unsolved = unsolved_cloud.triangles();
+		    outer: for(var left : solved) {
+			//compare the triangles for left and right
+			var triangles_left = left.triangles();
+			triangles_left.retainAll(triangles_unsolved);
+
+			if(triangles_left.size() < 200)
+			    continue;
+
+			/* this is guaranteed to be a valid matching in at least one orientation */
+			/* note that 12 choose 3 is 220 */
+
+			var aligned = IntStream.range(0, 24)
+			    //.parallel()
+			    .mapToObj(basis -> matchingBasis(basis, unsolved_cloud, left))
+			    .filter(x -> x != null)
+			    .findAny()
+			    .orElse(null);
 			
-			/* for each point in this scanner, choose a point in the other scanner */
-			/* note that this time complexity is NOG^2, so fuck you for the final one */
-			//there needs to be 12 overlaps, so only n-11 origins need to be checked
-			for(var origin_point : from.points) {
-			    var search = new ArrayList<>(oriented_scanner.points)
-				.subList(0, oriented_scanner.points.size() - 11);
-			    for(var destination_point : search) {
-				/* get the distance to displace */
-				var diff = destination_point.difference(origin_point);
-				var displaced = oriented_scanner.displaced(diff);
-				
-				/* now do a pointwise comparison to see if we can make it work */
-				int matches = 0;		    
-				for(var left : from.points)
-				    for(var right: displaced.points) {
-					if(left.equals(right))
-					    matches++;
-					if(matches == 12)
-					    break;
-				    }
-				
-				
-				if(matches >= 12) {
-				    scanners.remove(from);
-				    scanners.remove(to);
-				    Scanner newScanner =
-					new Scanner(String.format("new scanner(%s, %s)",
-								  from.id,
-								  to.id));
-
-				    newScanner.points.addAll(displaced.points);
-				    newScanner.points.addAll(from.points);
-				    newScanner.origins.addAll(displaced.origins);
-				    newScanner.origins.addAll(from.origins);
-				    scanners.add(newScanner);
-
-				    /* find the difference between these two points */
-				    break outer;
-				}
-			    }
+			if(aligned != null) {
+			    add.add((Scanner)aligned);
+			    remove.add(unsolved_cloud);
+			    break outer;
 			}
 		    }
-		}
+		});
 
-	    /* size of final one */
-	    DEBUG(2, "remaining sets: " + scanners.size());
+	    unsolved.removeAll(remove);
+	    solved.addAll(add);
+	    
+	    DEBUGF(2, "iteration %d solved %d unsolved %d%n", iteration++,
+		   solved.size(), unsolved.size());
+	}
+
+	DEBUG(1, t.split("Space mapped"));
+	
+	/* assemble the solution */
+	HashSet<Point> beacons = new HashSet<Point>();
+	HashSet<Point> origins = new HashSet<Point>();
+
+	
+	for(var scanner : solved) {
+	    beacons.addAll(scanner.points);
+	    origins.addAll(scanner.origins);
 	}
 	
-	var last = scanners.get(0);
 	int max_dist = 0;
-	var origins = last.origins;
-	for(var left : origins)
-	    for(var right : origins) {
-		var dist = left.manhattan(right);
-		max_dist = Math.max(dist, max_dist);		
-	    }
+	for(var left :origins)
+	    for(var right : origins)
+		max_dist = Math.max(max_dist, left.manhattan(right));
 	
-	DEBUGF(1, "PART ONE: "); println(scanners.get(0).points.size());
-	DEBUGF(1, "PART TWO: "); println(max_dist);//todo
+	DEBUGF(1, "PART ONE: "); println(beacons.size());
+	DEBUGF(1, "PART TWO: "); println(max_dist);
         
         /* visualize output here */
         generate_output();
-
 					 
-	return DEBUG(1, t.split("Finished Processing"));
+	return DEBUG(1, t.total());
     }
-        
+    
     /* code injected from file */
     public void generate_output() throws Exception {
     	if(!generate_output)
