@@ -41,6 +41,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 18  | Some snailfish (in the trench) claim to have seen the keys, but will only tell us which direction they went if we solve their math homework. (hint: direction = down)
 | Day 19  | We never got told what the snailfish said about the keys. As our probe (from day 17) drifted, it unleashed a bunch of beacons and scanners. They all have their own distinct geodata, and we need to collate this to determine the actual space measured.
 | Day 20  | Now that the scanners are functional, we can try and decode the images they're producing. ZOOM! ENHANCE! FUCK YOU!
+| Day 21  | Eric was too lazy to write a coherent plot (he *only* had four months), so we're playing board games with the computer.
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -67,6 +68,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 18  | *O(N.K)*		    | *O((N.K)<sup>2</sup>)* | N = line count, k = reduction complexity. This problem was actually quite fun, even if the instructions were garbage. At least it was difficult.
 | Day 19  | *O(N<sup>2</sup>.K<sup>2</sup> + K<sup>3</sup>)*	    | *O(N<sup>2</sup>.K<sup>2</sup> + K<sup>3</sup>)*      | N = scanner count, K = beacon count. This was actually a very fun puzzle, but I will admit that 90% of the difficulty came from collating a set of rotations that worked, and knowing which units to displace when making comparisons. Once you can compare two regions, you've solved the puzzle. There's a much more clever solution that just jamming sets together though, and that was very fun to figure out.
 | Day 20  | *O((N+k)<sup>2</sup>.K)     | *O((N+k)<sup>2</sup>.K)*  | k = expansion factor, N = input size (active tiles), K = number of iterations. This puzzle was extremely easy, but it was intentionally and maliciously presented as a trick question. Cool I guess.
+| Da 21	  | *O(S/D)*			| *O(S<sup>2</sup>/D)*	    | D = di size, S = max score. This was easy, a week 2 puzzle at most. It's the simplest form of "do you know how to do dynamic programming" imaginable. If you're in python, it's literally a one liner. Otherwise you need to write a function to hash the step for each iteration.
 
 ## Solutions
 
@@ -91,7 +93,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 18. [Day 18: Snailfish](#Day-18-Snailfish)
 19. [Day 19: Beacon Scanner](#Day-19-Beacon-Scanner)
 20. [Day 20: Trench Map](#Day-20-Trench-Map)
-21. [Day 21](#Day-21-)
+21. [Day 21: Dirac Dice](#Day-21-Dirac-Dice)
 22. [Day 22](#Day-22-)
 23. [Day 23](#Day-23-)
 24. [Day 24](#Day-24-)
@@ -1117,7 +1119,20 @@ to get around this, you need to on every second iteration, consider all blocks o
 #### Part Two
 Run the same things 50 times.
 
+### Day 21: Dirac Dice
 
+#### Summary
+Play a simple board game. At each step, you roll, move that many steps (on the circular board), then count your place - add the place to the score.
+
+#### Part One
+Ten places, the die is a d100 that increments by 1 each time (starting at 1), and each roll is 3d100, until a player reaches 1000 points.
+
+There's not much to add, you know exactly how to do this purely from erics description, let alone the little bit of data I gave above.
+
+#### Part Two
+The dice is  3d3, the max score is 21, and instead of iterating, instead count every possible result and sum the number of games each player could win.
+
+Basically, do you understand how to do basic memoziation.
 <!---
 start vis
 --->
