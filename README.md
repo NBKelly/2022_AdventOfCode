@@ -42,6 +42,8 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 19  | We never got told what the snailfish said about the keys. As our probe (from day 17) drifted, it unleashed a bunch of beacons and scanners. They all have their own distinct geodata, and we need to collate this to determine the actual space measured.
 | Day 20  | Now that the scanners are functional, we can try and decode the images they're producing. ZOOM! ENHANCE! FUCK YOU!
 | Day 21  | Eric was too lazy to write a coherent plot (he *only* had four months), so we're playing board games with the computer.
+| Day 22  | The engine stalled, so we have to jump-start it. I'm sure those keys are somewhere.
+
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -68,7 +70,9 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 18  | *O(N.K)*		    | *O((N.K)<sup>2</sup>)* | N = line count, k = reduction complexity. This problem was actually quite fun, even if the instructions were garbage. At least it was difficult.
 | Day 19  | *O(N<sup>2</sup>.K<sup>2</sup> + K<sup>3</sup>)*	    | *O(N<sup>2</sup>.K<sup>2</sup> + K<sup>3</sup>)*      | N = scanner count, K = beacon count. This was actually a very fun puzzle, but I will admit that 90% of the difficulty came from collating a set of rotations that worked, and knowing which units to displace when making comparisons. Once you can compare two regions, you've solved the puzzle. There's a much more clever solution that just jamming sets together though, and that was very fun to figure out.
 | Day 20  | *O((N+k)<sup>2</sup>.K)     | *O((N+k)<sup>2</sup>.K)*  | k = expansion factor, N = input size (active tiles), K = number of iterations. This puzzle was extremely easy, but it was intentionally and maliciously presented as a trick question. Cool I guess.
-| Da 21	  | *O(S/D)*			| *O(S<sup>2</sup>/D)*	    | D = di size, S = max score. This was easy, a week 2 puzzle at most. It's the simplest form of "do you know how to do dynamic programming" imaginable. If you're in python, it's literally a one liner. Otherwise you need to write a function to hash the step for each iteration.
+| Day 21	  | *O(S/D)*			| *O(S<sup>2</sup>/D)*	    | D = di size, S = max score. This was easy, a week 2 puzzle at most. It's the simplest form of "do you know how to do dynamic programming" imaginable. If you're in python, it's literally a one liner. Otherwise you need to write a function to hash the step for each iteration.
+| Day 22	  | *O(K.log<sub>2</sub>KO)*	|*O(K.log<sub>2</sub>K.O)*   | K = cube count, O = average number of overlaps. This can be generalized in several ways, and some of those ways will be good/bad for various situations (and different dimensions).
+
 
 ## Solutions
 
@@ -94,7 +98,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 19. [Day 19: Beacon Scanner](#Day-19-Beacon-Scanner)
 20. [Day 20: Trench Map](#Day-20-Trench-Map)
 21. [Day 21: Dirac Dice](#Day-21-Dirac-Dice)
-22. [Day 22](#Day-22-)
+22. [Day 22: Reactor Reboot](#Day-22-Reactor-Reboot)
 23. [Day 23](#Day-23-)
 24. [Day 24](#Day-24-)
 25. [Day 25](#Day-25-)
@@ -1132,7 +1136,55 @@ There's not much to add, you know exactly how to do this purely from erics descr
 #### Part Two
 The dice is  3d3, the max score is 21, and instead of iterating, instead count every possible result and sum the number of games each player could win.
 
-Basically, do you understand how to do basic memoziation.
+Basically, "*do you understand how to do basic memoziation*".
+
+### Day 22: Reactor Reboot
+
+#### Summary
+This is finally a question that feels like it's in the right place. The math isn't hard, it just looks hard before you do it. Find the set of spaces which are included in the input, simply as that.
+
+#### Part One
+You can do it with a hashset until you do p2, then you can come back and fix it.
+
+#### Part Two
+Whoops, you don't have access to 15.5 petabytes of RAM. Looks like you'll need to compute the intersections of all the cubes!
+
+Given the points are sorted (pretending we only have one axis), then:
+```
+if(blocking.x2 < target.x1 || target.x2 < target.x1)
+    return [target]; //no overlap
+```
+
+It's trivial to see how that could be scaled up in dimension. Then:
+
+```
+var ret = [];
+if(target.x1 < blocking.x1)
+    ret += [target.x1, blocking.x1-1];
+
+if(target.x2 > blocking.x2)
+    ret += [blocking.x2+1, target.x2];
+```
+
+That's all well and good for 1d, but what happens when we scale up? The first dimension we choose will include part of the overlapping portions in the second (and third) dimensions, if they exist.
+
+```
+var ret = [];
+/* complete */
+if(target.x1 < blocking.x1)
+    ret += [target.x1, blocking.x1-1,
+    	    target.y1, target.y2];
+
+/* restrained in x */
+if(target.y1 < blocking.y1)
+    ret += [max(target.x1, blocking.x1), min(target.x2, blocking.x2),
+    	    target.y1, blocking.y1 - 1];
+```
+
+This can be generalized up to any number of dimensions.
+
+Then, to do p1 properly, simply constrain every box to the cube -50,50. **WA LA**.
+
 <!---
 start vis
 --->
