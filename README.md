@@ -1187,6 +1187,54 @@ Then, to do p1 properly, simply constrain every box to the cube -50,50. **WA LA*
 
 ### Day 23: Amphipod
 
+#### Summary
+Eric fucked up the description for this one quite a bit, by being much too obtuse. A very large number of people significantly misunderstood or misinterpreted the movement rules. Here's the problem slightly rephrased.
+
+```
+Find the minimum cost to move all of the units in your starting input into ordered buckets.
+
+The input looks like:
+#############
+#...........#
+###B#C#B#D###
+  #A#D#C#A#
+  #########
+  
+The target result looks like:
+#############
+#...........#
+###A#B#C#D###
+  #A#B#C#D#
+  #########
+  
+A unit may not move into a bucket unless it lives in that bucket and the only units in that bucket also live in that bucket.
+
+Once a unit leaves a bucket, it cannot make another move unless it is moving into a bucket.
+
+Units may not move through eachother.
+
+A unit may not stop outside a bucket.
+
+The means that the valid waiting zones are as follows (marked with 0):
+#############
+#00.0.0.0.00#
+###.#.#.#.###
+  #.#.#.#.#
+  #########
+
+The costs for each movement are designated by token:
+A: 1
+B: 10
+C: 100
+D: 1000
+```
+
+With that out of the way, the problem suddenly seems a bit more simple. Note that because of the restrictions, a unit may not make more than two moves in total.
+
+#### Part One
+
+#### Part Two
+
 TODO
 
 
