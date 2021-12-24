@@ -102,7 +102,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 21. [Day 21: Dirac Dice](#Day-21-Dirac-Dice)
 22. [Day 22: Reactor Reboot](#Day-22-Reactor-Reboot)
 23. [Day 23: Amphipod](#Day-23-Amphipod)
-24. [Day 24: Arithmetic Logic Unit](#Day-24-Arithmetic Logic Unit)
+24. [Day 24: Arithmetic-Logic-Unit](#Day-24-Arithmetic Logic Unit)
 25. [Day 25](#Day-25-)
 
 
@@ -1272,6 +1272,7 @@ public String decode(ArrayList<String> segment, int index, LinkedList<String> st
     
     return res;
 }
+```
 
 Run this on every segment in sequence, and you'll have a list of rules like so:
 
