@@ -53,8 +53,6 @@ public class Advent2021_24 extends Drafter {
         /* code injected from file */
         //var ints = Util.toIntList(lines);
         
-        println(">Good Morning!");
-
 	var segments = segment(lines, "inp w");
 
 	LinkedList<String> stack = new LinkedList<String>();
@@ -69,8 +67,6 @@ public class Advent2021_24 extends Drafter {
 	for(var s : stack)
 	    DEBUG(2, s);
 
-	println();
-	
 	DEBUGF(1, "PART ONE: "); println(generate_key(stack, true));
         DEBUGF(1, "PART TWO: "); println(generate_key(stack, false));
         
@@ -80,8 +76,10 @@ public class Advent2021_24 extends Drafter {
 	return DEBUG(1, t.split("Finished Processing"));
     }    
     
-    public String generate_key(LinkedList<String> rules, boolean max) {
-	var out = new StringBuilder("XXXXXXXXXXXXXX");
+    public String generate_key(LinkedList<String> rules, boolean max) {	
+	var out = new StringBuilder("");
+	for(var rule : rules)
+	    out.append("XX");
 
 	for(var rule : rules) {
 	    var split = rule.split("i|\\+|=");
