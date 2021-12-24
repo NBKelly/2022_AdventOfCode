@@ -44,6 +44,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 21  | Eric was too lazy to write a coherent plot (he *only* had four months), so we're playing board games with the computer.
 | Day 22  | The engine stalled, so we have to jump-start it. I'm sure those keys are somewhere.
 | Day 23  | A group of amphipods have noticed our *[sic]"fancy German submarine"*, and demand we play "towers of Hanoi" with their "friends from another burrow".
+| Day 24  | The ALU's are short-circuiting, so we have to build a new one. Building it is easy, but we also have to compute the model number of the Submarine!
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -73,6 +74,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 21	  | *O(S/D)*			| *O(S<sup>2</sup>/D)*	    | D = di size, S = max score. This was easy, a week 2 puzzle at most. It's the simplest form of "do you know how to do dynamic programming" imaginable. If you're in python, it's literally a one liner. Otherwise you need to write a function to hash the step for each iteration.
 | Day 22	  | *O(K.log<sub>2</sub>KO)*	|*O(K.log<sub>2</sub>K.O)*   | K = cube count, O = average number of overlaps. This can be generalized in several ways, and some of those ways will be good/bad for various situations (and different dimensions).
 | Day 23	  | TODO			| TODO			     | TODO
+| Day 24	  | *O(N)*			| *O(N)*		     | N because I have to read through the input. The actual solution can be computer to allow you to generate keys in O(1) time. This was genuinely a fun puzzle. It could have benefited from the input naturally being broken up, but that's just personal taste.
 
 ## Solutions
 
@@ -100,7 +102,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 21. [Day 21: Dirac Dice](#Day-21-Dirac-Dice)
 22. [Day 22: Reactor Reboot](#Day-22-Reactor-Reboot)
 23. [Day 23: Amphipod](#Day-23-Amphipod)
-24. [Day 24](#Day-24-)
+24. [Day 24: Arithmetic Logic Unit](#Day-24-Arithmetic Logic Unit)
 25. [Day 25](#Day-25-)
 
 
@@ -1237,6 +1239,98 @@ With that out of the way, the problem suddenly seems a bit more simple. Note tha
 
 TODO
 
+### Day 24: Arithmetic Logic Unit
+
+#### Summary
+Given a program as input, determine the largest and smallest 14 digit numbers (containing no 0's) which produce the desired output (z = 0).
+
+If you investigate the program, you can determine that how it (wants to) work is that each segment is either a push or a pop operation, and that an input will be pushed with an offset (k), and an output will be popped if the input + it's offset(j) is equal to the last stack item.
+
+The problem can then be reduced to spotting exactly three values in each chunk, like so:
+
+```Java
+public String decode(ArrayList<String> segment, int index, LinkedList<String> stack) {
+    var push = segment.get(4).equals("div z 1");
+
+    if(push) {
+        var token = segment.get(15).substring(6);
+
+        var res = String.format("PUSH INPUT %d OFFSET %s", index, token);
+        stack.push(String.format("i%d+%s", index,token));
+        return res;
+    }
+
+    /* pop */
+    var old = stack.pop();
+
+    var offset = segment.get(5).substring(7);
+
+    var res = String.format("POP INPUT %d OFFSET %s", index, offset);
+
+    /* also add a rule to the stack */
+    stack.add(String.format("%s=i%d+%s", old, index, offset));
+    
+    return res;
+}
+
+Run this on every segment in sequence, and you'll have a list of rules like so:
+
+```
+i3+14=i4+8
+i2+4=i5+10
+i6+1=i7+3
+i8+3=i9+4
+i10+5=i11+5
+i1+16=i12+8
+i0+15=i13+11
+```
+
+This is enough to solve the puzzle by hand. To actually generate output, see:
+
+#### Part One (And Part Two)
+Using each rule as input:
+
+```Java
+public String generate_key(LinkedList<String> rules, boolean max) {
+    var out = new StringBuilder("XXXXXXXXXXXXXX");
+
+    for(var rule : rules) {
+        var split = rule.split("i|\\+|=");
+
+        var  left_index = Integer.parseInt(split[1]);
+        var right_index = Integer.parseInt(split[4]);
+
+        var left_offset = Integer.parseInt(split[2]);
+        var right_offset= Integer.parseInt(split[5]);
+
+        var offset_min = Math.min(left_offset, right_offset);
+        left_offset -= offset_min;
+        right_offset -= offset_min;
+
+        if(max) {
+            if(left_offset > 0) {
+                out = out.replace(left_index, left_index+1, (9-left_offset) + "");
+                out = out.replace(right_index, right_index+1, 9+"");
+            }
+            else {
+                out = out.replace(left_index, left_index+1, 9+"");
+                out = out.replace(right_index, right_index+1, (9-right_offset) + "");
+            }
+        }
+        else {
+            if(left_offset > 0) {
+                out = out.replace(left_index, left_index+1, 1 + "");
+                out = out.replace(right_index, right_index+1, (1+left_offset)+"");
+            }
+            else {
+                out = out.replace(left_index, left_index+1, (1+right_offset)+"");
+                out = out.replace(right_index, right_index+1, 1+"");
+            }
+        }
+    }
+    return out.toString();
+}
+```
 
 <!---
 start vis
