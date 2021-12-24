@@ -20,6 +20,14 @@ public class Map {
 		return entry.getKey();
 	return null;
     }
+
+    public TreeSet<IntPair> findAll(Character c) {
+	TreeSet<IntPair> res = new TreeSet<IntPair>();
+	for(var entry : map.entrySet())
+	    if(entry.getValue().equals(c))
+		res.add(entry.getKey());
+	return res;
+    }
     
     private IntPair key(int x, int y) {
 	return new IntPair(x, y);

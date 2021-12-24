@@ -43,7 +43,7 @@ Here's a brief summary of the 2021 advent of code **deep** lore.
 | Day 20  | Now that the scanners are functional, we can try and decode the images they're producing. ZOOM! ENHANCE! FUCK YOU!
 | Day 21  | Eric was too lazy to write a coherent plot (he *only* had four months), so we're playing board games with the computer.
 | Day 22  | The engine stalled, so we have to jump-start it. I'm sure those keys are somewhere.
-
+| Day 23  | A group of amphipods have noticed our *[sic]"fancy German submarine"*, and demand we play "towers of Hanoi" with their "friends from another burrow".
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
@@ -72,7 +72,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 20  | *O((N+k)<sup>2</sup>.K)     | *O((N+k)<sup>2</sup>.K)*  | k = expansion factor, N = input size (active tiles), K = number of iterations. This puzzle was extremely easy, but it was intentionally and maliciously presented as a trick question. Cool I guess.
 | Day 21	  | *O(S/D)*			| *O(S<sup>2</sup>/D)*	    | D = di size, S = max score. This was easy, a week 2 puzzle at most. It's the simplest form of "do you know how to do dynamic programming" imaginable. If you're in python, it's literally a one liner. Otherwise you need to write a function to hash the step for each iteration.
 | Day 22	  | *O(K.log<sub>2</sub>KO)*	|*O(K.log<sub>2</sub>K.O)*   | K = cube count, O = average number of overlaps. This can be generalized in several ways, and some of those ways will be good/bad for various situations (and different dimensions).
-
+| Day 23	  | TODO			| TODO			     | TODO
 
 ## Solutions
 
@@ -99,7 +99,7 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 20. [Day 20: Trench Map](#Day-20-Trench-Map)
 21. [Day 21: Dirac Dice](#Day-21-Dirac-Dice)
 22. [Day 22: Reactor Reboot](#Day-22-Reactor-Reboot)
-23. [Day 23](#Day-23-)
+23. [Day 23: Amphipod](#Day-23-Amphipod)
 24. [Day 24](#Day-24-)
 25. [Day 25](#Day-25-)
 
@@ -1184,6 +1184,11 @@ if(target.y1 < blocking.y1)
 This can be generalized up to any number of dimensions.
 
 Then, to do p1 properly, simply constrain every box to the cube -50,50. **WA LA**.
+
+### Day 23: Amphipod
+
+TODO
+
 
 <!---
 start vis
