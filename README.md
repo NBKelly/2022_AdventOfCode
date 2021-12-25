@@ -1664,6 +1664,17 @@ If a round finishes without a valid move being taken, the combat is over, and yo
 #### Part Two
 Just perform a binary search. It will take at most 6-7 runs to find the optimal answer.
 
-### 2021_51
+### 2021_51: Origami generator
 
 This is just a generator that takes as input ascii art, and gives as output puzzles for day 13 2021.
+
+
+### 2021_54: ALU generator
+
+This is a generator which makes arbitrary length inputs for the ALU puzzle, day 24 2021.
+Whatever input you give is the number of times we push to the stack, so to generate a puzzle which requires 100 digits, you would use:
+```
+./run.sh 24 [any file] --stack 50
+```
+
+Note that this means every output must be an even length.

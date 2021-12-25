@@ -100,10 +100,18 @@ public class Advent2021_23 extends Drafter {
 	target_map.findAll('B').stream().forEach(pair -> targets.add(new Token(pair, 'B', 10)));
 	target_map.findAll('C').stream().forEach(pair -> targets.add(new Token(pair, 'C', 100)));
 	target_map.findAll('D').stream().forEach(pair -> targets.add(new Token(pair, 'D', 1000)));
+
+	/* find the minimum y in targets, in order to determine heuristic targets */
+	int min_y = targets.stream().map(y -> y.location.Y)
+	    .reduce(0, (x, y) -> Math.max(x, y));
+
+	println("MIN_Y: "  + min_y);
+	var heuristic_targets = new TreeSet<>(targets.stream().filter(x -> x.location.Y == min_y)
+					      .collect(Collectors.toList()));
 	
 	if(!use_memo)
 	    return find_solution_bfs(new State(state_tokens, 0), targets, out_locations,
-				     map, target_map);
+				     map, target_map, heuristic_targets);
 
 	return find_solution_memo(new State(state_tokens, 0), targets, out_locations,
 				  map, target_map, new HashMap<>(), 0);
@@ -268,17 +276,19 @@ public class Advent2021_23 extends Drafter {
 	
 	
 	cost.put(starting_state, shortest);
-	//println("dist found: " + shortest);
+	
 	
 	return shortest;
     }
     
     public Integer find_solution_bfs(State starting_state, TreeSet<Token> targets,
 				 TreeSet<IntPair> out_locations, Map map,
-				 Map target_map) {
+				     Map target_map, TreeSet<Token> heuristic) {
 	TreeSet<State> current = new TreeSet<State>();
 	HashMap<State, Integer> best = new HashMap<State, Integer>();
 
+	//starting_state.set_heuristic(heuristic, 2, 6);
+	
 	current.add(starting_state);
 	int iteration = 0;
 	while(current.size() > 0) {
@@ -301,13 +311,19 @@ public class Advent2021_23 extends Drafter {
 	    /* check if solved */
 	    if(active_state.solved(targets))
 		return active_state.energy_cost;
-
-	    var out_movements = move_out(active_state, out_locations, map);
+	    
 	    var in_movements = move_in(active_state, map, target_map);
-
-	    /* add new */
-	    current.addAll(out_movements);
-	    current.addAll(in_movements);
+	    if(in_movements.size() == 0) {
+		var out_movements = move_out(active_state, out_locations, map);
+		//for(var s : out_movements)
+		//    s.set_heuristic(heuristic, 2, 6);
+		current.addAll(out_movements);
+	    }
+	    else {/* add new */
+		//for(var s : in_movements)
+		//    s.set_heuristic(heuristic, 2, 6);
+		current.addAll(in_movements);
+	    }
 	}
 
 	return -1;
@@ -344,9 +360,13 @@ public class Advent2021_23 extends Drafter {
 	/* id ensures every state is unique for comparison, but still sortable */
 	int id = ++__ID;
 
+	
 	int energy_cost;
 	TreeSet<Token> tokens = new TreeSet<Token>();
-
+	TreeSet<Token> heuristic = null;
+	int cost_weight = 1;
+	int heuristic_weight = 1;
+	
 	public boolean solved(TreeSet<Token> targets) {
 	    int matched = 0;
 	    outer: for(var rhs : targets) {
@@ -365,8 +385,36 @@ public class Advent2021_23 extends Drafter {
 	    this.tokens.addAll(tokens);
 	    this.energy_cost = energy;
 	}
+
+	public void set_heuristic(TreeSet<Token> heuristic, int cost_weight, int heuristic_weight) {
+	    this.heuristic = heuristic;
+	    this.cost_weight = cost_weight;
+	    this.heuristic_weight = heuristic_weight;
+	}
+
+	int score() {
+	    if(heuristic == null)
+		return energy_cost;
+	    else {
+		int heuristic_score = 0;
+		for(var s : tokens) {
+		    /* filter the heuristic states to ones that match */
+		    var target = heuristic.stream().filter(t -> t.icon == s.icon)
+			.findFirst().orElse(null);
+
+		    if(target != null) {
+			/* up, accross, down * weight */
+			heuristic_score += (((target.location.Y + s.location.Y - 2)
+					     + (Math.abs(target.location.X - s.location.X)))
+					    * s.weight);
+		    }		    
+		}
+
+		return (energy_cost*cost_weight) + (heuristic_score*heuristic_weight);
+	    }
+	}
 	
-	public int compareTo(State s) { return Util.compareTo(energy_cost, s.energy_cost,id, s.id); }
+	public int compareTo(State s) { return Util.compareTo(score(), s.score(), id, s.id); }
 	@Override public int hashCode() { return tokens.hashCode(); }
 	public boolean equals(Object o) { return (o instanceof State) ? equals((State)o) : false; }
 	public boolean equals(State s) { return tokens.equals(s.tokens); }

@@ -205,15 +205,15 @@ public class Advent2021_24 extends Drafter {
 	return state;
     }
 
-    private Integer getValue(State s, String id) {
+    private Long getValue(State s, String id) {
 	var val = s.get(id);
 	if(val == null)
-	    return Integer.parseInt(id);
+	    return Long.parseLong(id);
 	return val;
     }
 
     class State {	
-	public State(int w, int x, int y, int z) {
+	public State(long w, long x, long y, long z) {
 	    this.w = w;
 	    this.x = x;
 	    this.y = y;
@@ -224,7 +224,7 @@ public class Advent2021_24 extends Drafter {
 	    return new State(w, x, y, z);
 	}
 
-	public Integer get(String c) {
+	public Long get(String c) {
 	    switch(c) {
 	    case "w": return w;
 	    case "x": return x;
@@ -235,7 +235,7 @@ public class Advent2021_24 extends Drafter {
 	    return null;
 	}
 
-	public void set(String c, int val) {
+	public void set(String c, long val) {
 	    switch(c) {
 	    case "w": w = val; return;
 	    case "x": x = val; return;
@@ -244,10 +244,10 @@ public class Advent2021_24 extends Drafter {
 	    }
 	}
 	
-	int w;
-	int x;
-	int y;
-	int z;
+	long w;
+	long x;
+	long y;
+	long z;
 
 	public String toString() {
 	    return w + " " + x + " " + y + " " + z;
