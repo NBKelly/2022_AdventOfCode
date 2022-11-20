@@ -18,7 +18,7 @@ else
     #read userinput
 fi
 
-PRE="Advent2021_"
+PRE="Advent2022_"
 if [[ $userinput =~ ^[0123456789][0123456789]$ ]]   # checks that the input is within the desired range
 then
     javac com/nbkelly/advent/$PRE$userinput.java

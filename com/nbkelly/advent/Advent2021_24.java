@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 import java.math.BigInteger;
 
+import java.util.Random;
 
 /**
  * Extension of Drafter directed towards a general case.
@@ -45,6 +46,7 @@ public class Advent2021_24 extends Drafter {
     
     //generate output
     boolean generate_output = false;
+    boolean random_mode = false;
     
     /* solve problem here */
     @Override public int solveProblem() throws Exception {
@@ -52,29 +54,61 @@ public class Advent2021_24 extends Drafter {
 
         /* code injected from file */
         //var ints = Util.toIntList(lines);
-        
-	var segments = segment(lines, "inp w");
 
-	LinkedList<String> stack = new LinkedList<String>();
-	
-	int index = 0;
-	for(var segment : segments)
-	    DEBUG(2, decode(segment, index++, stack));
+	if(!random_mode) {
+	    var segments = segment(lines, "inp w");
+	    
+	    LinkedList<String> stack = new LinkedList<String>();
+	    
+	    int index = 0;
+	    for(var segment : segments)
+		DEBUG(2, decode(segment, index++, stack));
+	    
+	    DEBUG(2, "===============");
+	    DEBUG(2, "     RULES     ");
+	    
+	    for(var s : stack)
+		DEBUG(2, s);
+	    
+	    DEBUGF(1, "PART ONE: "); println(generate_key(stack, true));
+	    DEBUGF(1, "PART TWO: "); println(generate_key(stack, false));
+	    
+	    /* visualize output here */
+	    generate_output();	   	    
+	}
+	else {
+	    int iteration = 0;
+	    int size = 14;
+	    while(true) {
+		var key = rand_key(size);
 
-	DEBUG(2, "===============");
-	DEBUG(2, "     RULES     ");
-	
-	for(var s : stack)
-	    DEBUG(2, s);
+		if(iteration++ % 10000 == 0)
+		    println("iteration: " + iteration);
 
-	DEBUGF(1, "PART ONE: "); println(generate_key(stack, true));
-        DEBUGF(1, "PART TWO: "); println(generate_key(stack, false));
-        
-        /* visualize output here */
-        generate_output();
-	
+		if(check_res(key, lines)) {
+		    println("matched: " + key);
+		    break;
+		}
+	    }
+	}
+
 	return DEBUG(1, t.split("Finished Processing"));
-    }    
+    }
+
+    Random rand = new Random();
+
+    private boolean check_res(String s, ArrayList<String> program) {
+	var res = run(s, new State(0, 0, 0, 0), program);
+
+	return res.z == 0l;
+    }
+    
+    public String rand_key(int size) {
+	StringBuilder res = new StringBuilder();
+	for(int i = 0; i < size; i++)
+	    res.append("" + (char)('1' + rand.nextInt(9)));
+	return res.toString();
+    }
     
     public String generate_key(LinkedList<String> rules, boolean max) {	
 	var out = new StringBuilder("");
@@ -281,8 +315,12 @@ public class Advent2021_24 extends Drafter {
         BooleanCommand vc = new BooleanCommand("Visualize Output",
         				       "The visualized output for this program", 
         				       false, "--out-file", "--output-file", "--out-image");
-        
-        return new Command[]{fc, vc};
+
+	BooleanCommand rand_mode = new BooleanCommand("Random Mode",
+						      "Randomly generate keys until one works, then adjust from there",
+						      false, "--rand-mode", "--random", "--random-mode");
+	
+        return new Command[]{fc, vc, rand_mode};
         
         
     }
@@ -296,6 +334,8 @@ public class Advent2021_24 extends Drafter {
         setSource(((FileCommand)userCommands[0]).getValue());
         
         generate_output = ((BooleanCommand)userCommands[1]).matched();
+	random_mode = ((BooleanCommand)userCommands[2]).matched();
+	
 	return 0;
     }
 
