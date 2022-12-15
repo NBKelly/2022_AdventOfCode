@@ -5,6 +5,7 @@ import com.nbkelly.drafter.Drafter;
 import com.nbkelly.drafter.Command;
 import com.nbkelly.drafter.FileCommand;
 import com.nbkelly.drafter.Timer;
+import com.nbkelly.lib.Util;
 
 /* imports from file */
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class Advent2022_14 extends Drafter {
         /* code injected from file */
         //var ints = Util.toIntList(lines);
 
-	DEBUGF(1, "PART ONE: "); //todo
+	DEBUG("PARSING...");
 	HashMap<IntPair,Character> tokens = new HashMap<>();
 
 	Integer lowest = 0;
@@ -81,9 +82,11 @@ public class Advent2022_14 extends Drafter {
 
 	println("lowest: " + lowest);
 
+	DEBUG(t.split("Part One - begins"));
+
 	//simulate the falling sand
 	//the sand always spawns at position 500, 0
-	IntPair spawn = new IntPair(500, 0);
+	/*IntPair spawn = new IntPair(500, 0);
 	int settled = 0;
 	outer: while(true) {
 	    var location = spawn;
@@ -127,11 +130,67 @@ public class Advent2022_14 extends Drafter {
 	}
 
 
-	println(settled);
+	println(settled);*/
+	//sand always spawns at 500,0
+	//y is down
+
+	IntPair spawnPoint = new IntPair(500, 0);
+	int tokenStart = tokens.size();
+
+	Sand current = new Sand(null, spawnPoint);
+
+	while(current != null) {
+	    current = current.newmove(tokens, lowest+2);
+	    if(current.location.Y > lowest)
+		break;
+	}
+
+	DEBUGF(1, "PART ONE: ");
+	println(tokens.size() - tokenStart);
+	DEBUG(t.split("part one ends"));
+	DEBUG(t.split("part two begins"));
+
+	while(current != null)
+	    current = current.newmove(tokens, lowest+2);
+
+	/*HashMap<Character, Character> key = new HashMap<>();
+	key.put('#', '#');
+	key.put('O', 'O');
+
+
+	for(var line : Util.compose(tokens, key, ' ', true))
+	println(line);*/
+
+	DEBUGF(1, "PART TWO: ");
+	println(tokens.size() - tokenStart);
         /* visualize output here */
         generate_output();
 
 	return DEBUG(1, t.split("Finished Processing"));
+    }
+
+    public class Sand {
+	IntPair location;
+	Sand last;
+
+	public Sand(Sand last, IntPair location) {
+	    this.last = last;
+	    this.location = location;
+	}
+
+	@Override public int hashCode() {
+	    return location.hashCode();
+	}
+
+	public Sand newmove(HashMap<IntPair, Character> set, int floor) {
+	    var move = move(location, set, floor);
+	    //println("move: " + move);
+	    if(move != null)
+		return new Sand(this, move);
+	    //there's no more move here - fill this block, return last
+	    set.put(location, 'O');
+	    return last;
+	}
     }
 
     private IntPair move(IntPair location, HashMap<IntPair, Character> set, int floor) {

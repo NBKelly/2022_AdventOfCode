@@ -20,7 +20,7 @@ then
 	then	    
 	    echo $file
 	    ../21_Drafter/drafter.sh -n Advent2022_$userinput -p com.nbkelly.advent -l com/nbkelly/advent -ap com.nbkelly.drafter -ad com/nbkelly/drafter --overwrite-aux -d 0 --insert-params config/params.txt --insert-commands config/commands.txt --additional-imports config/import.txt --insert-in-post config/post.txt --insert-in-solution config/insert.txt --insert-block config/block.txt
-
+	    sed -i 's/[[:space:]]*$//' "com/nbkelly/advent/Advent2022_$userinput.java"
 #	    ../21_Drafter/simple.sh --classname com.nbkelly.advent.Advent$userinput --auxiliary-package-name com.nbkelly.drafter 
 	    emacs -nw $file
 	else
