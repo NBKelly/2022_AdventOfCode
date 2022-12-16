@@ -73,7 +73,7 @@ public class Advent2022_15 extends Drafter {
 	for(var s : sensors) {
 	    left = Math.min(left, s.location.X);
 	    right = Math.max(right, s.location.X);
-	    off = Math.max(off, s.myManhattan());
+	    off = Math.max(off, s.size());
 	}
 
 	int y = practice ? 10 : 2000000;
@@ -83,7 +83,7 @@ public class Advent2022_15 extends Drafter {
 		if(s.closestBeacon.equals(new IntPair(x, y)))
 		    continue outer;
 	    for(var s : sensors) {
-		if(manhattan(new IntPair(x, y), s.location) <= s.myManhattan()) {
+		if(manhattan(new IntPair(x, y), s.location) <= s.size()) {
 		    hits++;
 		    continue outer;
 		}
@@ -123,7 +123,7 @@ public class Advent2022_15 extends Drafter {
 	for(var sensor : sensors) {
 	    var dy = Math.abs(y - sensor.location.Y);
 	    //println(dy);
-	    var flex = sensor.myManhattan() - dy;
+	    var flex = sensor.size() - dy;
 	    //println(flex);
 	    if(flex < 0)
 		continue;
@@ -189,7 +189,7 @@ public class Advent2022_15 extends Drafter {
 	IntPair location;
 	IntPair closestBeacon;
 
-	public int myManhattan() {
+	public int size() {
 	    return manhattan(location, closestBeacon);
 	}
 
