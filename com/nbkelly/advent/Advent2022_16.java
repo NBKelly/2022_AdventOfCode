@@ -21,6 +21,7 @@ import com.nbkelly.drafter.BooleanCommand; //visualize cmd
 import com.nbkelly.lib.Image; //visualizer lib
 
 import com.nbkelly.lib.IntPair;
+import com.nbkelly.lib.Pair;
 import com.nbkelly.lib.pathfinder.Map;
 import com.nbkelly.lib.Pair;
 
@@ -80,12 +81,13 @@ public class Advent2022_16 extends Drafter {
 		var right = relevantNodes.get(j);
 		var dist = dist(left, right, nodes);
 		realNodes.get(left).targets.put(right, dist);
-		realNodes.get(right).targets.put(left, dist);
+		if(!left.equals("AA"))
+		    realNodes.get(right).targets.put(left, dist);
 	    }
 	}
 
         DEBUGF(1, "\nPART ONE: ");
-	println(bestPath(0, new TreeSet<String>(realNodes.keySet()), realNodes));
+	println(bestPath(0, new TreeSet<String>(realNodes.keySet()), realNodes).X);
 
         DEBUGF(1, "PART TWO: ");
 	println(bestPath2(4, realNodes));
@@ -106,50 +108,38 @@ public class Advent2022_16 extends Drafter {
 
 	int bestPressure = 0;
 	HashMap<Metric,Integer> best = new HashMap<>();
+	Metric bestMetric = null;
 
 	while(prio.size() > 0) {
 	    var ct = prio.pollFirst();
+	    var metric = ct.metric();
+	    if(bestPressure < ct.score) {
+		bestPressure = ct.score;
+		bestMetric = metric;
+	    }
 
-	    bestPressure = Math.max(bestPressure, ct.score);
 	    if(ct.time >= 30)
 		continue;
 
-	    var metric = ct.metric();
 	    var bestScore = best.get(metric);
 	    if(bestScore == null || bestScore <= ct.score)
 		best.put(metric, ct.score);
 	    else continue;
 
-	    if(ct.time >= 30)
-		continue;
-
 	    /* additionally, if possible, disable the flow here */
-	    var timeleft = ct.timeLeft();
-	    var location = ct.location;
 	    var node = nodes.get(ct.location);
 
-	    //visit each adjacent link
 	    for(var target : node.targets.keySet()) {
-		//if there is only one target
-		if(ct.active.contains(target))
+		if(ct.active(target))
 		    continue;
 
-		var dist = node.targets.get(target) + 1;
+		var dist = node.dist(target) + 1;
 
-		if(dist + ct.time >= 30)
-		    continue;
-
-		//try moving there
-		State next = new State(ct, ct.time + dist, ct.score);
-		next.location = target;
-
-		timeleft = next.timeLeft();
-		int rate = nodes.get(target).rate;
-
-		next.score += (timeleft * rate);
-		next.active.add(target);
-
-		prio.add(next);
+		if(dist + ct.time < 30) {
+		    int rate = nodes.get(target).rate;
+		    State next = new State(ct, target, ct.time + dist, ct.score, rate);
+		    prio.add(next);
+		}
 	    }
 	}
 
@@ -159,30 +149,86 @@ public class Advent2022_16 extends Drafter {
 	int it = 0;
 	int hit = 0;
 	int miss = 0;
+
+	/* do all permutations of the primary set */
+	var usedNodes = new TreeSet<>(nodes.keySet());
+	var main_perms = perms(usedNodes, bestMetric.active);
+	for(var p : main_perms)
+	    bestPartial.put(p, bestPressure);
+	bestPartial.put(usedNodes, bestPressure);
+
+	/* run through all other permutations */
 	for(var set : best.entrySet()) {
-	    if(it++ % 1000 == 0)
-		DEBUG("it " + it + " of " + best.size() + "(" + hit + "/" + miss + ")");
 	    //get the set of allowed states
+	    var active = set.getKey().active;
+
+	    //add to the memo, if possible
+	    if(!bestPartial.containsKey(active))
+		bestPartial.put(active, set.getValue());
+
 	    var allowed = new TreeSet<String>(nodes.keySet());
-	    allowed.removeAll(set.getKey().active);
+	    allowed.removeAll(active);
 
 	    //memoize based on the treeset
 	    if(!bestPartial.containsKey(allowed)) {
-		bestPartial.put(allowed, bestPath(4, allowed, nodes));
+		var partial = bestPath(4, allowed, nodes);
+		var score = partial.X;
+
+		//additionally, if the set of states returned is not the full set of states, then we can add memos for all perms
+		if(partial.Y != null) {
+		    var resultant = partial.Y.active;
+		    if(resultant.size() != allowed.size()) {
+			var perms = perms(allowed, resultant);
+			for(var p : perms)
+			    bestPartial.put(p, score);
+		    }
+		}
+
+		bestPartial.put(allowed, score);
 		miss++;
 	    }
 	    else
 		hit++;
 
 	    bestcombined = Math.max(bestPartial.get(allowed)+ set.getValue(), bestcombined);
-
 	}
 
 	return bestcombined;
     }
 
-    private Integer bestPath(int startTime, TreeSet<String> allowedStates,
-			     HashMap<String, Node> nodes) {
+    private ArrayList<TreeSet<String>> perms(TreeSet<String> full, TreeSet<String> partial) {
+	var diff = new TreeSet<>(full);
+	diff.removeAll(partial);
+
+	var perms = perms(diff);
+
+	for(var s : perms)
+	    s.addAll(partial);
+
+	perms.add(partial);
+
+	return perms;
+    }
+
+    private ArrayList<TreeSet<String>> perms(TreeSet<String> set) {
+	var asList = new ArrayList<String>(set);
+	var res = new ArrayList<TreeSet<String>>();
+	int max = 1 << set.size();
+
+	for(int i = 0; i < max; i++) {
+	    TreeSet<String> subset = new TreeSet<String>();
+	    for(int j = 0; j < set.size(); j++)
+		if(((i >> j) & 1) == 1)
+		    subset.add(asList.get(j));
+	    res.add(subset);
+	}
+
+	return res;
+    }
+
+    private Pair<Integer, Metric>
+	bestPath(int startTime, TreeSet<String> allowedStates,
+		 HashMap<String, Node> nodes) {
 	State start = new State();
 	start.time = startTime;
 
@@ -193,11 +239,14 @@ public class Advent2022_16 extends Drafter {
 	int iteration = 0;
 
 	HashMap<Metric,Integer> best = new HashMap<>();
-
+	Metric bestMetric = null;
 	while(prio.size() > 0) {
 	    var ct = prio.pollFirst();
 
-	    bestPressure = Math.max(bestPressure, ct.score);
+	    if(ct.score > bestPressure) {
+		bestPressure = ct.score;
+		bestMetric = ct.metric();
+	    }
 	    if(ct.time >= 29)
 		continue;
 
@@ -207,45 +256,35 @@ public class Advent2022_16 extends Drafter {
 		best.put(metric, ct.score);
 	    else continue;
 
-	    /* additionally, if possible, disable the flow here */
-	    var timeleft = ct.timeLeft();
-	    var location = ct.location;
 	    var node = nodes.get(ct.location);
 
-	    //visit each adjacent link
 	    for(var target : node.targets.keySet()) {
-		if(!allowedStates.contains(target))
-		    continue;
-		//if there is only one target
-		if(ct.active.contains(target))
+		if(!allowedStates.contains(target) || ct.active(target) || target.equals("AA"))
 		    continue;
 
-		var dist = node.targets.get(target) + 1;
+		var dist = node.dist(target) + 1;
 
 		if(dist + ct.time >= 30)
 		    continue;
 
 		//try moving there
-		State next = new State(ct, ct.time + dist, ct.score);
-		next.location = target;
-
-		timeleft = next.timeLeft();
 		int rate = nodes.get(target).rate;
-
-		next.score += (timeleft * rate);
-		next.active.add(target);
-
+		State next = new State(ct, target, ct.time + dist, ct.score, rate);
 		prio.add(next);
 	    }
 	}
 
-	return bestPressure;
+	return new Pair<Integer, Metric>(bestPressure, bestMetric);
     }
 
     private class Node {
 	String name;
 	int rate;
 	TreeMap<String, Integer> targets = new TreeMap<>();
+
+	public int dist(String target) {
+	    return targets.get(target);
+	}
 
 	public Node(String name, int rate) {
 	    this.name = name;
@@ -283,28 +322,6 @@ public class Advent2022_16 extends Drafter {
 	}
     }
 
-    /*private void crawl(Node n, HashMap<String, Node> nodes) {
-	if(n.rate == 0) {
-	    if(n.targets.size() == 2) {
-		println("factoring out node " + n.name);
-		//get the things that lead to me
-		var left = n.targets.firstEntry().getKey();
-		var right = n.targets.firstEntry().getKey();
-		var leftnode = nodes.get(left);
-		var rightnode = nodes.get(right);
-		int dist = leftnode.targets.get(n.name) +
-		    rightnode.targets.get(n.name);
-
-		//see if there's a current link between, if any
-		var cdist = leftnode.targets.get(right);
-		if(cdist != null && cdist <= dist)
-		    return;
-		leftnode.targets.put(right, dist);
-		rightnode.targets.put(left, dist);
-	    }
-	}
-	}*/
-
     private class Metric implements Comparable<Metric>{
 	String location;
 	TreeSet<String> active;
@@ -321,21 +338,23 @@ public class Advent2022_16 extends Drafter {
 	public Metric metric() {
 	    var metric = new Metric();
 	    metric.location = location;
-	    metric.active = new TreeSet(active);
+	    metric.active = new TreeSet<>(active);
 	    metric.time = time;
 	    return metric;
 	}
 
-	public State(State last, int time, int score) {
-	    this.location = last.location;
-	    this.active = new TreeSet(last.active);
+	public State(State last, String target, int time, int score, int rate) {
+	    this.location = target;
+	    this.active = new TreeSet<>(last.active);
 	    this.time = time;
 	    this.score = score;
+	    this.active.add(target);
+	    addScore(rate);
 	}
 
 	public State() {
 	    location = "AA";
-	    active = new TreeSet();
+	    active = new TreeSet<>();
 	    time = 0;
 	    score = 0;
 	}
@@ -344,6 +363,18 @@ public class Advent2022_16 extends Drafter {
 	TreeSet<String> active = new TreeSet<>();
 	Integer score;
 	Integer time;
+
+	public void addScore(int rate) {
+	    this.score += (timeLeft() * rate);
+	}
+
+	public boolean active(String token) {
+	    return active.contains(token);
+	}
+
+	int timeLeft(int end) {
+	    return end - time;
+	}
 
 	int timeLeft() {
 	    return 30 - time;
