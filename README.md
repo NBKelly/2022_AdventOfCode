@@ -51,6 +51,8 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 02  | O(N) | O(N) | You can just make a 3x3 lookup table for both sides on paper and hardcode it - and you should, it's the best solution |
 | Day 03  | O(N log N) | O(N log N) | Just use sets and retain functions. |
 | Day 04  | O(1) | O(1) | Calculating if two intervals intersect or engulf is super easy. |
+| Day 05  | O(k) | O(k) | K = size of stack manipulated. Just pop n times from a deque, or take n from a dequeue. Nothing more to it than that.
+
 ## Solutions
 
 I'm only writing out the ones that were worthwhile.
