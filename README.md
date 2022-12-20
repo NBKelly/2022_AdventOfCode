@@ -23,7 +23,24 @@ Here's a brief summary of the 2022 advent of code **deep** lore.
 | :-----: | :--- |
 | Day 01  | Fat elves are counting calories and planning who to steal treats from. |
 | Day 02  | One of those fat elves gives us a rock paper scissors cheat table, so we can cheat while we wait. |
-| Day 03  | One of those fat elves loaded up the rucksacks wrong, and now we have to count them and find the badges |
+| Day 03  | One of those fat elves loaded up the rucksacks wrong, and now we have to count them and find the badges | Day 04  | We need to clean camp krusty before we leave. The elves try to find out the best way to get out of doing anything |
+| Day 05  | The elves need to move a bunch of supplies, and want to do the crane operators job for him |
+| Day 06  | We finally leave. The elves hand us the shittiest radio they have, so we have to start fixing it. |
+| Day 07  | Now we need to format the C:// drive on the radio so we can update it. |
+| Day 08  | The elves want to build a treehouse, so we plan out ideal locations. |
+| Day 09  | When crossing a rope bridge, it breaks. We get out our computer and calculate the trajectories for the dangling rope.
+| Day 10  | We survived, but our radio is broken. We need to replace the CRT on it.
+| Day 11  | Some monkeys stole our items and we have to watch them throw them around for 50 hours.
+| Day 12  | We can't contact the elves, so we need to find the highest nearby spot. Note that climbing up one meter is rough, but jumping down 26 is A-OK. Thanks eric.
+| Day 13  | We managed to get a signal - a *distress signal*. Unfortunately, it's borked. We need to sort the incoming packets to make sense of it.
+| Day 14  | The signal lead us to - and behind - a giant waterfall. We find that the cave is crumbling, and sand is pouring in. We decide to model what that will look like.
+| Day 15  | We come to a large network of underground tunnels, and decide to set out scanners out to track down exactly where the distress signal is coming from.
+| Day 16  | We find the original of the signal! A bunch of elephants have caused it! They are lost in the tunnels, and the tunnels are flooding with magma. We cooperate with exactly one elephant to close a bunch of suspiciously convenient flood management valves to buy escape time.
+| Day 17  | We find an alternative exit to the cave, but then we find that it, too, is crumbling. Tetrominos are falling into a chamber, and we have to model how if we are to escape.
+| Day 18  | We finally make it outside. It was a volcano all along! Bits of lava are being ejected out towards a nearby lake, and they could even make obsidian! We need to determine the scatter/impact pattern of the lava globules into the water (ie the visible surface area)
+| Day 19  | The lava did indeed form obsidian. We decide to use it to make some geode cracking robots - but first we need clay finding robots, obsidian finding robots, and ore finding robots - we have one factory that can spit out one robot per minute, and the elephants are only willing to wait 24 minutes.
+| Day 20  | It's time to meet with the elves again (where did the elephants go?). We need to decrypt a file with the location of the star fruit grove.
+| Day 21  | 
 
 ## Problem Ratings
 Here are my ratings for each problem, and what the time complexity of the solutions happens to be. If I use the letter N, it's line count (unless otherwise noted).
