@@ -50,9 +50,35 @@ Here are my ratings for each problem, and what the time complexity of the soluti
 | Day 01  | O(N) | O(N) | Both single and triple maximums can be done in a linear search |
 | Day 02  | O(N) | O(N) | You can just make a 3x3 lookup table for both sides on paper and hardcode it - and you should, it's the best solution |
 | Day 03  | O(N log N) | O(N log N) | Just use sets and retain functions. |
-
+| Day 04  | O(1) | O(1) | Calculating if two intervals intersect or engulf is super easy. |
 ## Solutions
 
 I'm only writing out the ones that were worthwhile.
+
+### Day 04: Camp Krusty Cleanup
+
+An easy (and reusable) thing to do is create a helper function for this later, like:
+```Java
+class Range {
+  int open, close
+  public Range(int open, int close) {
+    this.open = Math.min(open, close);
+    this.close = Math.max(open, close);
+  }
+  
+  /* these intervals are inclusive-inclusive */
+  public int size() { return close + 1 - open; }
+  
+  public Range intersection(Range target) {
+    if (close < target.open || open > target.close)
+      return null;
+    
+    return new Range(Math.max(open, target.open),
+                     Math.min(close, target.close));
+  }
+```
+
+1) One range engulfs the other if the output range has the size of one of the input ranges.
+2) The ranges intersect if you get even a single result
 
 ###  Table of Solutions
